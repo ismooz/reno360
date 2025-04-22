@@ -1,13 +1,129 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useNavigate } from "react-router-dom";
+import Layout from "@/components/layout/Layout";
+import SearchBar from "@/components/search/SearchBar";
+import { renovationTypes } from "@/data/renovationTypes";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowRight } from "lucide-react";
 
 const Index = () => {
+  const navigate = useNavigate();
+  
+  const handleServiceClick = (serviceId: string) => {
+    navigate(`/formulaire?renovation=${encodeURIComponent(serviceId)}`);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <Layout>
+      {/* Hero Section */}
+      <section className="bg-gradient-to-b from-secondary to-background py-20">
+        <div className="container mx-auto text-center px-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            Solutions de rénovation sur mesure pour votre propriété
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Des professionnels qualifiés pour tous vos projets de rénovation immobilière
+          </p>
+          
+          <div className="flex justify-center">
+            <SearchBar />
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-2 text-center">Nos services de rénovation</h2>
+          <p className="text-center text-muted-foreground mb-12">
+            Des solutions complètes pour tous vos besoins en rénovation
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {renovationTypes.slice(0, 6).map((service) => (
+              <Card key={service.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">{service.name}</h3>
+                  <p className="text-muted-foreground mb-4">
+                    {service.description}
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    className="mt-2"
+                    onClick={() => handleServiceClick(service.id)}
+                  >
+                    En savoir plus
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          
+          <div className="text-center mt-12">
+            <Button onClick={() => navigate("/services")}>
+              Voir tous nos services
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Comment ça marche Section */}
+      <section className="py-16 bg-secondary">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-2 text-center">Comment ça marche</h2>
+          <p className="text-center text-muted-foreground mb-12">
+            Un processus simple pour votre projet de rénovation
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center p-6">
+              <div className="bg-primary text-primary-foreground w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                1
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Demandez un devis</h3>
+              <p className="text-muted-foreground">
+                Remplissez notre formulaire en ligne avec les détails de votre projet de rénovation.
+              </p>
+            </div>
+            
+            <div className="text-center p-6">
+              <div className="bg-primary text-primary-foreground w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                2
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Recevez des propositions</h3>
+              <p className="text-muted-foreground">
+                Nos professionnels qualifiés vous envoient leurs propositions adaptées à vos besoins.
+              </p>
+            </div>
+            
+            <div className="text-center p-6">
+              <div className="bg-primary text-primary-foreground w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                3
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Réalisez vos travaux</h3>
+              <p className="text-muted-foreground">
+                Choisissez l'offre qui vous convient et faites réaliser vos travaux en toute sérénité.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">Prêt à transformer votre propriété?</h2>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Faites appel à nos experts en rénovation pour donner vie à vos projets immobiliers.
+          </p>
+          <Button size="lg" onClick={() => navigate("/contact")}>
+            Demander un devis gratuit
+          </Button>
+        </div>
+      </section>
+    </Layout>
   );
 };
 
