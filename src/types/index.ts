@@ -4,6 +4,7 @@ export interface RenovationType {
   name: string;
   description: string;
   icon?: string;
+  category: string;
 }
 
 export interface User {
@@ -26,7 +27,9 @@ export interface RenovationRequest {
   deadline: string;
   description: string;
   materialsNeeded: string;
+  budget?: string;
   documentUrl?: string;
   status: 'pending' | 'approved' | 'in-progress' | 'completed' | 'rejected';
   createdAt: string;
+  attachments?: string[]; // URLs des photos uploadées
 }

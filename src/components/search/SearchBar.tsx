@@ -11,6 +11,7 @@ interface SearchBarProps {
   showButton?: boolean;
   placeholder?: string;
   initialValue?: string;
+  className?: string;
 }
 
 const SearchBar = ({
@@ -18,6 +19,7 @@ const SearchBar = ({
   showButton = true,
   placeholder = "Je veux rénover :",
   initialValue = "",
+  className = "",
 }: SearchBarProps) => {
   const [searchTerm, setSearchTerm] = useState(initialValue);
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -75,7 +77,7 @@ const SearchBar = ({
   return (
     <div 
       ref={wrapperRef} 
-      className={`relative ${fullWidth ? "w-full" : "max-w-xl"}`}
+      className={`relative ${fullWidth ? "w-full" : "max-w-xl"} ${className}`}
     >
       <form onSubmit={handleSubmit} className="flex w-full items-center">
         <div className="relative flex-grow">
