@@ -152,8 +152,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         name,
         createdAt: now,
         lastLogin: now,
-        role: 'user',
-        status: 'active',
+        role: 'user' as const, // Fix: explicitly type as 'user'
+        status: 'active' as const, // Fix: explicitly type as 'active'
         requestCount: 0,
         password, // Dans une application réelle, ce mot de passe serait hashé
       };
