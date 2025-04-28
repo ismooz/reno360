@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/carousel";
 import Image from "@/components/ui/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { type CarouselApi } from "@/components/ui/carousel";
 
 interface ProjectCarouselProps {
   images: string[];
@@ -16,6 +17,20 @@ interface ProjectCarouselProps {
 
 const ProjectCarousel = ({ images }: ProjectCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [api, setApi] = useState<CarouselApi | null>(null);
+  
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    api.on("select", () => {
+      setCurrentIndex(api.selectedScrollSnap());
+    });
+
+    // Initial index
+    setCurrentIndex(api.selectedScrollSnap());
+  }, [api]);
   
   if (!images || images.length === 0) {
     return <div className="text-center py-8">Aucune image disponible</div>;
@@ -25,9 +40,7 @@ const ProjectCarousel = ({ images }: ProjectCarouselProps) => {
     <div className="w-full max-w-4xl mx-auto">
       <Carousel 
         className="w-full"
-        onSlideChange={(api) => {
-          if (api) setCurrentIndex(api.selectedScrollSnap());
-        }}
+        setApi={setApi}
       >
         <CarouselContent>
           {images.map((image, index) => (
