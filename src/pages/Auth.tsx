@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -66,6 +67,37 @@ const Auth = () => {
     } catch (err) {
       // Error is handled by useAuth
     }
+  };
+  
+  const resetAdminAccount = () => {
+    // Réinitialiser le compte administrateur
+    const now = new Date().toISOString();
+    const adminUser = {
+      id: "1",
+      email: "admin@reno360.ch",
+      name: "Administrateur",
+      createdAt: now,
+      lastLogin: now,
+      role: "admin",
+      status: "active",
+      password: "admin123",
+      requestCount: 0
+    };
+    
+    // Récupérer les utilisateurs existants
+    const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
+    
+    // Filtrer l'admin existant et ajouter le nouveau
+    const updatedUsers = [...storedUsers.filter((user: any) => user.email !== "admin@reno360.ch"), adminUser];
+    
+    // Sauvegarder dans localStorage
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+    
+    // Préremplir les champs de connexion
+    setLoginEmail("admin@reno360.ch");
+    setLoginPassword("admin123");
+    
+    toast.success("Compte administrateur réinitialisé avec succès");
   };
   
   return (
@@ -131,6 +163,18 @@ const Auth = () => {
                     >
                       {loading ? "Connexion en cours..." : "Se connecter"}
                     </Button>
+                    
+                    <div className="mt-4 pt-4 border-t text-center">
+                      <p className="text-sm text-muted-foreground mb-2">Problème d'accès administrateur?</p>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm"
+                        onClick={resetAdminAccount}
+                      >
+                        Réinitialiser le compte admin
+                      </Button>
+                    </div>
                   </div>
                 </form>
               </TabsContent>
@@ -172,7 +216,7 @@ const Auth = () => {
                         id="confirm-password" 
                         type="password"
                         value={registerConfirmPassword}
-                        onChange={(e) => setRegisterConfirmPassword(e.target.value)}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                       />
                     </div>
                     <Button 
