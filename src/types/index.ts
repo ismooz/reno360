@@ -1,4 +1,3 @@
-
 export interface RenovationType {
   id: string;
   name: string;
@@ -32,4 +31,16 @@ export interface RenovationRequest {
   status: 'pending' | 'approved' | 'in-progress' | 'completed' | 'rejected';
   createdAt: string;
   attachments?: string[]; // URLs des photos uploadées
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  year: number;
+  description: string;
+  images: string[];
+  beforeAfterImages?: {
+    before: string;
+    after: string;
+  };
 }
