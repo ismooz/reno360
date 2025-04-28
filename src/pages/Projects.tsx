@@ -22,7 +22,7 @@ const Projects = () => {
     }
   }, []);
 
-  const isAdmin = user?.id === "1"; // Même logique que dans Admin.tsx
+  const isAdmin = user?.role === "admin"; // Utilise la propriété role directement
 
   return (
     <Layout>
@@ -37,37 +37,51 @@ const Projects = () => {
             )}
           </div>
 
-          <div className="grid gap-8">
-            {projects.map((project) => (
-              <Card key={project.id} className="overflow-hidden">
-                <CardContent className="p-6">
-                  <div className="mb-4">
-                    <h2 className="text-2xl font-semibold mb-2">
-                      {project.name} ({project.year})
-                    </h2>
-                    <p className="text-muted-foreground">
-                      {project.description}
-                    </p>
-                  </div>
+          {projects.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-lg text-muted-foreground">
+                Aucune réalisation disponible pour le moment.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-12">
+              {projects.map((project) => (
+                <Card key={project.id} className="overflow-hidden">
+                  <CardContent className="p-6">
+                    <div className="mb-6">
+                      <h2 className="text-2xl font-semibold mb-2">
+                        {project.name} ({project.year})
+                      </h2>
+                      <p className="text-muted-foreground">
+                        {project.description}
+                      </p>
+                    </div>
 
-                  {project.beforeAfterImages ? (
-                    <BeforeAfterSlider
-                      beforeImage={project.beforeAfterImages.before}
-                      afterImage={project.beforeAfterImages.after}
-                    />
-                  ) : (
-                    <ProjectCarousel images={project.images} />
-                  )}
+                    <div className="my-6">
+                      {project.beforeAfterImages ? (
+                        <BeforeAfterSlider
+                          beforeImage={project.beforeAfterImages.before}
+                          afterImage={project.beforeAfterImages.after}
+                        />
+                      ) : project.images && project.images.length > 0 ? (
+                        <ProjectCarousel images={project.images} />
+                      ) : (
+                        <div className="text-center py-4 bg-muted rounded-md">
+                          Aucune image disponible
+                        </div>
+                      )}
+                    </div>
 
-                  <div className="mt-6 text-center">
-                    <Button onClick={() => navigate("/formulaire")}>
-                      Demander un devis
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    <div className="mt-6 text-center">
+                      <Button onClick={() => navigate("/formulaire")} size="lg">
+                        Demander un devis
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </Layout>
