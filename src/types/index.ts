@@ -1,3 +1,4 @@
+
 export interface RenovationType {
   id: string;
   name: string;
@@ -11,6 +12,12 @@ export interface User {
   email: string;
   name?: string;
   phone?: string;
+  createdAt: string;
+  lastLogin?: string;
+  role: 'user' | 'admin';
+  status: 'active' | 'inactive' | 'deleted';
+  requestCount?: number;
+  lastRequestDate?: string;
 }
 
 export interface RenovationRequest {
@@ -44,3 +51,26 @@ export interface Project {
     after: string;
   };
 }
+
+export interface UserNotification {
+  id: string;
+  userId: string;
+  type: 'account_creation' | 'password_change' | 'account_closure' | 'account_deletion' | 'request_status_change';
+  title: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
+
+export type EmailTemplate = {
+  subject: string;
+  body: string;
+};
+
+export type EmailTemplates = {
+  account_creation: EmailTemplate;
+  password_change: EmailTemplate;
+  account_closure: EmailTemplate;
+  account_deletion: EmailTemplate;
+  request_status_change: EmailTemplate;
+};

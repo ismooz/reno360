@@ -1,16 +1,27 @@
 
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
-import { renovationTypes } from "@/data/renovationTypes";
+import { renovationTypes, getRenovationCategories, getRenovationsByCategory } from "@/data/renovationTypes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowRight } from "lucide-react";
 
 const Services = () => {
   const navigate = useNavigate();
+  const categories = ["Toutes", ...getRenovationCategories()];
+  const [activeCategory, setActiveCategory] = useState("Toutes");
   
   const handleServiceClick = (serviceId: string) => {
     navigate(`/formulaire?renovation=${encodeURIComponent(serviceId)}`);
+  };
+
+  const getDisplayedServices = () => {
+    if (activeCategory === "Toutes") {
+      return renovationTypes;
+    }
+    return getRenovationsByCategory(activeCategory);
   };
 
   return (
@@ -25,29 +36,55 @@ const Services = () => {
         </div>
       </section>
 
-      {/* Services Section */}
-      <section className="py-16">
+      {/* Catégories Section */}
+      <section className="py-10">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {renovationTypes.map((service) => (
-              <Card key={service.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{service.name}</h3>
-                  <p className="text-muted-foreground mb-4">
-                    {service.description}
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    className="mt-2"
-                    onClick={() => handleServiceClick(service.id)}
-                  >
-                    Demander un devis
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
+          <Tabs 
+            defaultValue="Toutes" 
+            value={activeCategory}
+            onValueChange={setActiveCategory}
+            className="w-full"
+          >
+            <div className="flex justify-center mb-8">
+              <TabsList className="overflow-x-auto">
+                {categories.map((category) => (
+                  <TabsTrigger key={category} value={category} className="px-4">
+                    {category}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+            
+            {categories.map((category) => (
+              <TabsContent key={category} value={category}>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {getDisplayedServices().map((service) => (
+                    <Card key={service.id} className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-semibold mb-2">{service.name}</h3>
+                        <p className="text-muted-foreground mb-4">
+                          {service.description}
+                        </p>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">
+                            {service.category}
+                          </span>
+                          <Button 
+                            variant="outline" 
+                            className="mt-2"
+                            onClick={() => handleServiceClick(service.id)}
+                          >
+                            Demander un devis
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
             ))}
-          </div>
+          </Tabs>
         </div>
       </section>
 

@@ -12,7 +12,7 @@ const Header = () => {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-primary">RENOVO</span>
+            <span className="text-2xl font-bold text-primary">reno360</span>
             <span className="text-md font-medium">.ch</span>
           </Link>
         </div>
@@ -23,6 +23,9 @@ const Header = () => {
           </Link>
           <Link to="/services" className="text-sm font-medium hover:text-primary">
             Services
+          </Link>
+          <Link to="/projects" className="text-sm font-medium hover:text-primary">
+            Réalisations
           </Link>
           <Link to="/contact" className="text-sm font-medium hover:text-primary">
             Contact

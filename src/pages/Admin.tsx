@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RenovationRequest } from "@/types";
 import { Search } from "lucide-react";
+import UserManagement from "@/components/admin/UserManagement";
+import AdminSettings from "@/components/admin/AdminSettings";
 
 const statusLabels: Record<string, { label: string; variant: "default" | "outline" | "secondary" | "destructive" }> = {
   pending: { label: "En attente", variant: "outline" },
@@ -20,15 +22,9 @@ const statusLabels: Record<string, { label: string; variant: "default" | "outlin
   rejected: { label: "Rejeté", variant: "destructive" },
 };
 
-// Dans une application réelle, nous aurions une vérification plus robuste pour les administrateurs
-const isAdmin = (user: any) => {
-  // Simuler que l'utilisateur avec l'ID "1" est un administrateur
-  return user?.id === "1";
-};
-
 const Admin = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
   const [requests, setRequests] = useState<RenovationRequest[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<RenovationRequest[]>([]);
   const [filter, setFilter] = useState({
@@ -42,7 +38,7 @@ const Admin = () => {
       return;
     }
     
-    if (user && !isAdmin(user)) {
+    if (user && !isAdmin()) {
       navigate("/dashboard");
       return;
     }
@@ -50,7 +46,7 @@ const Admin = () => {
     // Charger toutes les demandes depuis localStorage
     const allRequests = JSON.parse(localStorage.getItem("renovationRequests") || "[]");
     setRequests(allRequests);
-  }, [user, loading, navigate]);
+  }, [user, loading, navigate, isAdmin]);
   
   useEffect(() => {
     // Appliquer les filtres
@@ -80,6 +76,23 @@ const Admin = () => {
     
     setRequests(updatedRequests);
     localStorage.setItem("renovationRequests", JSON.stringify(updatedRequests));
+    
+    // Mettre à jour le nombre de demandes pour l'utilisateur
+    const request = requests.find(req => req.id === requestId);
+    if (request) {
+      // Envoyer notification par email pour le changement de statut (simulé)
+      const notifications = JSON.parse(localStorage.getItem("userNotifications") || "[]");
+      notifications.push({
+        id: Date.now().toString(),
+        userId: request.clientId,
+        type: "request_status_change",
+        title: "Mise à jour de votre demande",
+        message: `Le statut de votre demande de "${request.renovationType}" a changé en "${statusLabels[newStatus as keyof typeof statusLabels].label}".`,
+        read: false,
+        createdAt: new Date().toISOString()
+      });
+      localStorage.setItem("userNotifications", JSON.stringify(notifications));
+    }
   };
   
   const formatDate = (dateString: string) => {
@@ -109,7 +122,7 @@ const Admin = () => {
             <CardHeader>
               <CardTitle className="text-2xl font-bold">Administration</CardTitle>
               <CardDescription>
-                Gérez les demandes de devis et les clients
+                Gérez les demandes de devis, les clients et les paramètres du système
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -235,21 +248,11 @@ const Admin = () => {
                 </TabsContent>
                 
                 <TabsContent value="clients">
-                  <div className="text-center py-10">
-                    <h3 className="text-lg font-medium mb-2">Gestion des clients</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Cette fonctionnalité sera disponible prochainement.
-                    </p>
-                  </div>
+                  <UserManagement />
                 </TabsContent>
                 
                 <TabsContent value="settings">
-                  <div className="text-center py-10">
-                    <h3 className="text-lg font-medium mb-2">Paramètres d'administration</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Cette fonctionnalité sera disponible prochainement.
-                    </p>
-                  </div>
+                  <AdminSettings />
                 </TabsContent>
               </Tabs>
             </CardContent>
