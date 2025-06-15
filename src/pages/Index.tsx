@@ -17,17 +17,17 @@ const Index = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-secondary to-background py-20">
+      <section className="bg-gradient-to-b from-secondary to-background py-16 sm:py-24">
         <div className="container mx-auto text-center px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
             Solutions de rénovation sur mesure pour votre propriété
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-muted-foreground mb-8 sm:mb-12 max-w-3xl mx-auto">
             Des professionnels qualifiés pour tous vos projets de rénovation immobilière
           </p>
           
-          <div className="flex justify-center">
-            <SearchBar />
+          <div className="flex justify-center px-4 sm:px-8">
+            <SearchBar fullWidth className="w-full" />
           </div>
         </div>
       </section>
@@ -41,7 +41,7 @@ const Index = () => {
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {renovationTypes.slice(0, 6).map((service) => (
+            {renovationTypes.slice(0, 9).map((service) => (
               <Card key={service.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold mb-2">{service.name}</h3>

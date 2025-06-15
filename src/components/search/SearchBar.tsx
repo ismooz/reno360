@@ -27,6 +27,16 @@ const SearchBar = ({
   const navigate = useNavigate();
   const wrapperRef = useRef<HTMLDivElement>(null);
 
+  // Termes de recherche supplémentaires pour améliorer l'autocomplétion
+  const additionalSearchTerms = [
+    "rénovation", "travaux", "aménagement", "transformation", "restauration",
+    "modernisation", "réhabilitation", "amélioration", "embellissement",
+    "ma cuisine", "ma salle de bain", "mon salon", "ma chambre", "mon bureau",
+    "ma maison", "mon appartement", "mon studio", "ma villa", "mon loft",
+    "mes combles", "mon sous-sol", "ma cave", "mon garage", "ma terrasse",
+    "mon balcon", "mon jardin", "ma véranda", "mon grenier", "ma mezzanine"
+  ];
+
   useEffect(() => {
     // Filtrer les suggestions basées sur le terme de recherche
     if (searchTerm.trim() === "") {
@@ -34,14 +44,39 @@ const SearchBar = ({
       return;
     }
 
-    const filtered = renovationTypes
+    const searchLower = searchTerm.toLowerCase();
+    
+    // Suggestions des types de rénovation
+    const typeMatches = renovationTypes
       .filter(type => 
-        type.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        type.description.toLowerCase().includes(searchTerm.toLowerCase())
+        type.name.toLowerCase().includes(searchLower) || 
+        type.description.toLowerCase().includes(searchLower)
       )
       .map(type => type.name);
     
-    setSuggestions(filtered);
+    // Suggestions des termes supplémentaires
+    const termMatches = additionalSearchTerms
+      .filter(term => term.toLowerCase().includes(searchLower))
+      .map(term => `${term.charAt(0).toUpperCase() + term.slice(1)}`);
+    
+    // Combinaisons intelligentes
+    const combinations = [];
+    if (searchLower.includes("cuisine")) {
+      combinations.push("Rénovation de cuisine", "Cuisine moderne", "Cuisine équipée");
+    }
+    if (searchLower.includes("salle de bain")) {
+      combinations.push("Rénovation de salle de bain", "Salle de bain moderne", "Douche à l'italienne");
+    }
+    if (searchLower.includes("peinture")) {
+      combinations.push("Peinture intérieure", "Peinture extérieure", "Peinture décorative");
+    }
+    if (searchLower.includes("sol")) {
+      combinations.push("Revêtement de sol", "Parquet", "Carrelage", "Sol stratifié");
+    }
+    
+    // Combiner toutes les suggestions et limiter à 8 résultats
+    const allSuggestions = [...new Set([...typeMatches, ...termMatches, ...combinations])];
+    setSuggestions(allSuggestions.slice(0, 8));
   }, [searchTerm]);
 
   useEffect(() => {
@@ -77,9 +112,9 @@ const SearchBar = ({
   return (
     <div 
       ref={wrapperRef} 
-      className={`relative ${fullWidth ? "w-full" : "max-w-xl"} ${className}`}
+      className={`relative ${fullWidth ? "w-full" : "w-full max-w-4xl"} ${className}`}
     >
-      <form onSubmit={handleSubmit} className="flex w-full items-center">
+      <form onSubmit={handleSubmit} className="flex w-full items-center gap-2 sm:gap-3">
         <div className="relative flex-grow">
           <Input
             type="text"
@@ -87,30 +122,34 @@ const SearchBar = ({
             value={searchTerm}
             onChange={handleInputChange}
             onFocus={() => setIsOpen(true)}
-            className="pr-10 h-12 text-base"
+            className="pr-12 h-14 sm:h-16 text-base sm:text-lg font-medium border-2 border-gray-200 focus:border-primary rounded-xl shadow-sm"
           />
-          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
         </div>
         {showButton && (
           <Button 
             type="submit" 
-            className="ml-2 h-12 px-5"
+            className="h-14 sm:h-16 px-6 sm:px-8 text-base sm:text-lg font-semibold rounded-xl shadow-sm"
             disabled={!searchTerm.trim()}
           >
-            Continuer
+            <span className="hidden sm:inline">Continuer</span>
+            <span className="sm:hidden">Go</span>
           </Button>
         )}
       </form>
 
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
+        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg max-h-80 overflow-auto">
           {suggestions.map((suggestion, index) => (
             <div
               key={index}
-              className="px-4 py-2 cursor-pointer hover:bg-secondary text-sm"
+              className="px-4 py-3 cursor-pointer hover:bg-secondary text-sm sm:text-base border-b border-gray-100 last:border-b-0 transition-colors"
               onClick={() => handleSuggestionClick(suggestion)}
             >
-              {suggestion}
+              <div className="flex items-center gap-2">
+                <Search className="h-4 w-4 text-muted-foreground" />
+                <span>{suggestion}</span>
+              </div>
             </div>
           ))}
         </div>
