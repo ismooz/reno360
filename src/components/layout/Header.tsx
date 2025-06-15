@@ -64,8 +64,7 @@ const Header = () => {
           )}
           <Link to="/contact">
             <Button size="default" className="h-10 whitespace-nowrap">
-              <span className="hidden lg:inline">Demande de devis</span>
-              <span className="lg:hidden">Devis</span>
+              Demander un devis
             </Button>
           </Link>
         </div>
