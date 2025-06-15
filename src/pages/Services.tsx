@@ -108,7 +108,7 @@ const Services = () => {
                     </Button>
                   </div>
                 </CardContent>
-              </div>
+              </Card>
             ))}
           </div>
         </div>
