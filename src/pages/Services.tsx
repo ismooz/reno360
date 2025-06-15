@@ -46,9 +46,13 @@ const Services = () => {
             className="w-full"
           >
             <div className="flex justify-center mb-8">
-              <TabsList className="overflow-x-auto">
+              <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:inline-flex lg:w-auto overflow-x-auto scrollbar-hide">
                 {categories.map((category) => (
-                  <TabsTrigger key={category} value={category} className="px-4">
+                  <TabsTrigger 
+                    key={category} 
+                    value={category} 
+                    className="px-3 py-2 text-xs md:text-sm md:px-4 whitespace-nowrap"
+                  >
                     {category}
                   </TabsTrigger>
                 ))}
