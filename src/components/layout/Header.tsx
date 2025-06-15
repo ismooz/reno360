@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -29,7 +28,7 @@ const Header = () => {
         </div>
         
         {/* Navigation desktop et tablette */}
-        <nav className="hidden lg:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-4 lg:gap-6">
           {navigationLinks.map((link) => (
             <Link
               key={link.to}
@@ -78,19 +77,17 @@ const Header = () => {
               </Link>
               <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-1">
                 <LogOut size={16} />
-                <span className="hidden xl:inline">Déconnexion</span>
               </Button>
             </>
           ) : (
             <Link to="/auth">
               <Button variant="outline" size="sm" className="flex items-center gap-1">
                 <LogIn size={16} />
-                <span className="hidden xl:inline">Connexion</span>
               </Button>
             </Link>
           )}
           <Link to="/contact">
-            <Button size="sm" className="whitespace-nowrap">
+            <Button size="sm" className="whitespace-nowrap text-xs px-2">
               Devis
             </Button>
           </Link>
