@@ -28,8 +28,8 @@ const Header = () => {
           </Link>
         </div>
         
-        {/* Navigation desktop */}
-        <nav className="hidden lg:flex items-center gap-6">
+        {/* Navigation desktop et tablette */}
+        <nav className="hidden md:flex items-center gap-6">
           {navigationLinks.map((link) => (
             <Link
               key={link.to}
