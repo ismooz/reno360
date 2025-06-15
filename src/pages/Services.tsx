@@ -61,25 +61,27 @@ const Services = () => {
             </Select>
           </div>
 
-          {/* Desktop: Tabs */}
+          {/* Desktop: Tabs avec scroll horizontal responsive */}
           <Tabs 
             defaultValue="Toutes" 
             value={activeCategory}
             onValueChange={setActiveCategory}
             className="w-full hidden md:block"
           >
-            <div className="flex justify-center mb-8">
-              <TabsList className="inline-flex">
-                {categories.map((category) => (
-                  <TabsTrigger 
-                    key={category} 
-                    value={category} 
-                    className="px-4 py-2 text-sm whitespace-nowrap"
-                  >
-                    {category}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+            <div className="w-full mb-8">
+              <div className="overflow-x-auto">
+                <TabsList className="flex w-max min-w-full justify-start lg:justify-center p-1">
+                  {categories.map((category) => (
+                    <TabsTrigger 
+                      key={category} 
+                      value={category} 
+                      className="px-3 py-2 text-sm whitespace-nowrap flex-shrink-0 min-w-fit"
+                    >
+                      {category}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </div>
             </div>
           </Tabs>
 
@@ -106,7 +108,7 @@ const Services = () => {
                     </Button>
                   </div>
                 </CardContent>
-              </Card>
+              </div>
             ))}
           </div>
         </div>
