@@ -29,7 +29,7 @@ const Header = () => {
         </div>
         
         {/* Navigation desktop et tablette */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden lg:flex items-center gap-6">
           {navigationLinks.map((link) => (
             <Link
               key={link.to}
@@ -42,29 +42,56 @@ const Header = () => {
         </nav>
         
         {/* Actions desktop */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-3">
           {user ? (
             <>
               <Link to="/dashboard" className="text-sm font-medium flex items-center gap-2 hover:text-primary">
                 <User size={18} />
-                <span className="hidden lg:inline">Mon compte</span>
+                <span>Mon compte</span>
               </Link>
               <Button variant="outline" size="default" onClick={signOut} className="flex items-center gap-2 h-10">
                 <LogOut size={18} />
-                <span className="hidden lg:inline">Déconnexion</span>
+                <span>Déconnexion</span>
               </Button>
             </>
           ) : (
             <Link to="/auth">
               <Button variant="outline" size="default" className="flex items-center gap-2 h-10">
                 <LogIn size={18} />
-                <span className="hidden lg:inline">Connexion</span>
+                <span>Connexion</span>
               </Button>
             </Link>
           )}
           <Link to="/contact">
             <Button size="default" className="h-10 whitespace-nowrap">
               Demander un devis
+            </Button>
+          </Link>
+        </div>
+
+        {/* Actions tablette (md-lg) */}
+        <div className="hidden md:flex lg:hidden items-center gap-2">
+          {user ? (
+            <>
+              <Link to="/dashboard" className="p-2 hover:text-primary">
+                <User size={20} />
+              </Link>
+              <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-1">
+                <LogOut size={16} />
+                <span className="hidden xl:inline">Déconnexion</span>
+              </Button>
+            </>
+          ) : (
+            <Link to="/auth">
+              <Button variant="outline" size="sm" className="flex items-center gap-1">
+                <LogIn size={16} />
+                <span className="hidden xl:inline">Connexion</span>
+              </Button>
+            </Link>
+          )}
+          <Link to="/contact">
+            <Button size="sm" className="whitespace-nowrap">
+              Devis
             </Button>
           </Link>
         </div>
