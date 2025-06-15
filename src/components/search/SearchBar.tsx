@@ -122,14 +122,14 @@ const SearchBar = ({
             value={searchTerm}
             onChange={handleInputChange}
             onFocus={() => setIsOpen(true)}
-            className="pr-12 h-14 sm:h-16 text-base sm:text-lg font-medium border-2 border-gray-200 focus:border-primary rounded-xl shadow-sm"
+            className="pr-12 h-12 sm:h-14 text-sm sm:text-base font-medium border-2 border-gray-200 focus:border-primary rounded-lg shadow-sm"
           />
-          <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
+          <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
         </div>
         {showButton && (
           <Button 
             type="submit" 
-            className="h-14 sm:h-16 px-6 sm:px-8 text-base sm:text-lg font-semibold rounded-xl shadow-sm"
+            className="h-12 sm:h-14 px-4 sm:px-6 text-sm sm:text-base font-semibold rounded-lg shadow-sm"
             disabled={!searchTerm.trim()}
           >
             <span className="hidden sm:inline">Continuer</span>
@@ -139,7 +139,7 @@ const SearchBar = ({
       </form>
 
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg max-h-80 overflow-auto">
+        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-80 overflow-auto">
           {suggestions.map((suggestion, index) => (
             <div
               key={index}

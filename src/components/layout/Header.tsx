@@ -35,28 +35,28 @@ const Header = () => {
           </Link>
         </nav>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {user ? (
             <>
               <Link to="/dashboard" className="text-sm font-medium flex items-center gap-2 hover:text-primary">
                 <User size={18} />
                 <span className="hidden md:inline">Mon compte</span>
               </Link>
-              <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-2">
+              <Button variant="outline" size="default" onClick={signOut} className="flex items-center gap-2 h-10">
                 <LogOut size={18} />
                 <span className="hidden md:inline">Déconnexion</span>
               </Button>
             </>
           ) : (
             <Link to="/auth">
-              <Button variant="default" size="sm" className="flex items-center gap-2">
+              <Button variant="outline" size="default" className="flex items-center gap-2 h-10">
                 <LogIn size={18} />
                 <span>Connexion</span>
               </Button>
             </Link>
           )}
-          <Link to="/contact" className="hidden md:block">
-            <Button className="ml-2">Demande de devis</Button>
+          <Link to="/contact">
+            <Button size="default" className="h-10">Demande de devis</Button>
           </Link>
         </div>
       </div>
