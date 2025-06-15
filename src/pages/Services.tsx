@@ -40,6 +40,11 @@ const Services = () => {
       {/* Catégories Section */}
       <section className="py-10">
         <div className="container mx-auto px-4">
+          {/* Titre de filtrage */}
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-center md:text-left">Filtrer par catégorie</h2>
+          </div>
+
           {/* Mobile: Dropdown */}
           <div className="md:hidden mb-8">
             <Select value={activeCategory} onValueChange={setActiveCategory}>
