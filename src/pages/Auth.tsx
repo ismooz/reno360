@@ -216,7 +216,7 @@ const Auth = () => {
                         id="confirm-password" 
                         type="password"
                         value={registerConfirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        onChange={(e) => setRegisterConfirmPassword(e.target.value)}
                       />
                     </div>
                     <Button 
