@@ -6,6 +6,7 @@ import { renovationTypes, getRenovationCategories, getRenovationsByCategory } fr
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowRight } from "lucide-react";
 
 const Services = () => {
@@ -39,56 +40,70 @@ const Services = () => {
       {/* Catégories Section */}
       <section className="py-10">
         <div className="container mx-auto px-4">
+          {/* Mobile: Dropdown */}
+          <div className="md:hidden mb-8">
+            <Select value={activeCategory} onValueChange={setActiveCategory}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Sélectionner une catégorie" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Desktop: Tabs */}
           <Tabs 
             defaultValue="Toutes" 
             value={activeCategory}
             onValueChange={setActiveCategory}
-            className="w-full"
+            className="w-full hidden md:block"
           >
             <div className="flex justify-center mb-8">
-              <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:inline-flex lg:w-auto overflow-x-auto scrollbar-hide">
+              <TabsList className="inline-flex">
                 {categories.map((category) => (
                   <TabsTrigger 
                     key={category} 
                     value={category} 
-                    className="px-3 py-2 text-xs md:text-sm md:px-4 whitespace-nowrap"
+                    className="px-4 py-2 text-sm whitespace-nowrap"
                   >
                     {category}
                   </TabsTrigger>
                 ))}
               </TabsList>
             </div>
-            
-            {categories.map((category) => (
-              <TabsContent key={category} value={category}>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {getDisplayedServices().map((service) => (
-                    <Card key={service.id} className="hover:shadow-md transition-shadow">
-                      <CardContent className="p-6">
-                        <h3 className="text-xl font-semibold mb-2">{service.name}</h3>
-                        <p className="text-muted-foreground mb-4">
-                          {service.description}
-                        </p>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">
-                            {service.category}
-                          </span>
-                          <Button 
-                            variant="outline" 
-                            className="mt-2"
-                            onClick={() => handleServiceClick(service.id)}
-                          >
-                            Demander un devis
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
-            ))}
           </Tabs>
+
+          {/* Services Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {getDisplayedServices().map((service) => (
+              <Card key={service.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">{service.name}</h3>
+                  <p className="text-muted-foreground mb-4">
+                    {service.description}
+                  </p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">
+                      {service.category}
+                    </span>
+                    <Button 
+                      variant="outline" 
+                      className="mt-2"
+                      onClick={() => handleServiceClick(service.id)}
+                    >
+                      Demander un devis
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
 
