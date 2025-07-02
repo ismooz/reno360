@@ -8,30 +8,26 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { RenovationType } from "@/types";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, Tag } from "lucide-react";
 
 const ServiceManagement = () => {
   const { toast } = useToast();
   const [services, setServices] = useState<RenovationType[]>([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [isServiceDialogOpen, setIsServiceDialogOpen] = useState(false);
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<RenovationType | null>(null);
+  const [newCategory, setNewCategory] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     category: "",
     icon: ""
   });
-
-  const categories = [
-    "Rénovation intérieure",
-    "Rénovation extérieure", 
-    "Plomberie et chauffage",
-    "Électricité",
-    "Menuiserie",
-    "Jardinage et extérieur"
-  ];
 
   const iconOptions = [
     { value: "🏠", label: "🏠 Maison" },
@@ -43,28 +39,68 @@ const ServiceManagement = () => {
     { value: "🌿", label: "🌿 Jardin" },
     { value: "⚡", label: "⚡ Énergie" },
     { value: "🛠️", label: "🛠️ Réparation" },
-    { value: "🏗️", label: "🏗️ Construction" }
+    { value: "🏗️", label: "🏗️ Construction" },
+    { value: "🧱", label: "🧱 Maçonnerie" },
+    { value: "🪟", label: "🪟 Fenêtre" },
+    { value: "🛁", label: "🛁 Salle de bain" },
+    { value: "🍽️", label: "🍽️ Cuisine" },
+    { value: "🌡️", label: "🌡️ Chauffage" },
+    { value: "❄️", label: "❄️ Climatisation" },
+    { value: "🛡️", label: "🛡️ Isolation" },
+    { value: "🔲", label: "🔲 Carrelage" },
+    { value: "🪵", label: "🪵 Parquet" },
+    { value: "💨", label: "💨 Ventilation" },
+    { value: "📱", label: "📱 Domotique" },
+    { value: "🌳", label: "🌳 Jardin" },
+    { value: "🏊", label: "🏊 Piscine" },
+    { value: "🪜", label: "🪜 Escalier" },
+    { value: "🗄️", label: "🗄️ Rangement" },
+    { value: "📚", label: "📚 Bibliothèque" },
+    { value: "🏢", label: "🏢 Mezzanine" },
+    { value: "☀️", label: "☀️ Terrasse" },
+    { value: "🚧", label: "🚧 Clôture" },
+    { value: "🚗", label: "🚗 Garage" },
+    { value: "⬆️", label: "⬆️ Surélévation" },
+    { value: "🧽", label: "🧽 Nettoyage" },
+    { value: "🧹", label: "🧹 Entretien" },
+    { value: "🚚", label: "🚚 Déménagement" },
+    { value: "💻", label: "💻 Bureau" },
+    { value: "🛏️", label: "🛏️ Chambre" },
+    { value: "🛋️", label: "🛋️ Salon" },
+    { value: "➡️", label: "➡️ Couloir" },
+    { value: "👕", label: "👕 Buanderie" },
+    { value: "📦", label: "📦 Cellier" },
+    { value: "🧘", label: "🧘 Spa" },
+    { value: "🎬", label: "🎬 Cinéma" },
+    { value: "🍷", label: "🍷 Cave à vin" },
+    { value: "🏋️", label: "🏋️ Sport" },
+    { value: "🏘️", label: "🏘️ Duplex" },
+    { value: "📐", label: "📐 Aménagement" },
+    { value: "📝", label: "📝 Conseil" }
   ];
 
   useEffect(() => {
     // Charger les services depuis localStorage ou utiliser les services par défaut
     const storedServices = localStorage.getItem("renovationServices");
     if (storedServices) {
-      setServices(JSON.parse(storedServices));
+      const parsedServices = JSON.parse(storedServices);
+      setServices(parsedServices);
+      // Extraire les catégories des services existants
+      const uniqueCategories = [...new Set(parsedServices.map((s: RenovationType) => s.category))].filter(Boolean) as string[];
+      setCategories(uniqueCategories);
     } else {
       // Charger les services par défaut depuis renovationTypes
       import("@/data/renovationTypes").then(({ renovationTypes }) => {
-        const servicesWithIcons = renovationTypes.map(service => ({
-          ...service,
-          icon: iconOptions[Math.floor(Math.random() * iconOptions.length)].value
-        }));
-        setServices(servicesWithIcons);
-        localStorage.setItem("renovationServices", JSON.stringify(servicesWithIcons));
+        setServices(renovationTypes);
+        localStorage.setItem("renovationServices", JSON.stringify(renovationTypes));
+        // Extraire les catégories des services par défaut
+        const uniqueCategories = [...new Set(renovationTypes.map(s => s.category))];
+        setCategories(uniqueCategories);
       });
     }
   }, []);
 
-  const handleSave = () => {
+  const handleSaveService = () => {
     if (!formData.name || !formData.description || !formData.category) {
       toast({
         title: "Erreur",
@@ -92,12 +128,49 @@ const ServiceManagement = () => {
     setServices(updatedServices);
     localStorage.setItem("renovationServices", JSON.stringify(updatedServices));
 
+    // Mettre à jour les catégories si nécessaire
+    if (!categories.includes(formData.category)) {
+      const updatedCategories = [...categories, formData.category];
+      setCategories(updatedCategories);
+    }
+
     toast({
       title: "Service sauvegardé",
       description: `Le service "${serviceData.name}" a été ${editingService ? 'modifié' : 'ajouté'} avec succès.`,
     });
 
-    handleCloseDialog();
+    handleCloseServiceDialog();
+  };
+
+  const handleSaveCategory = () => {
+    if (!newCategory.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Le nom de la catégorie ne peut pas être vide.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (categories.includes(newCategory)) {
+      toast({
+        title: "Erreur",
+        description: "Cette catégorie existe déjà.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const updatedCategories = [...categories, newCategory];
+    setCategories(updatedCategories);
+    
+    toast({
+      title: "Catégorie ajoutée",
+      description: `La catégorie "${newCategory}" a été créée.`,
+    });
+
+    setNewCategory("");
+    setIsCategoryDialogOpen(false);
   };
 
   const handleEdit = (service: RenovationType) => {
@@ -108,7 +181,7 @@ const ServiceManagement = () => {
       category: service.category,
       icon: service.icon || ""
     });
-    setIsDialogOpen(true);
+    setIsServiceDialogOpen(true);
   };
 
   const handleDelete = (service: RenovationType) => {
@@ -122,14 +195,125 @@ const ServiceManagement = () => {
     });
   };
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
+  const handleDeleteCategory = (categoryToDelete: string) => {
+    // Vérifier si des services utilisent cette catégorie
+    const servicesUsingCategory = services.filter(s => s.category === categoryToDelete);
+    
+    if (servicesUsingCategory.length > 0) {
+      toast({
+        title: "Impossible de supprimer",
+        description: `${servicesUsingCategory.length} service(s) utilisent encore cette catégorie.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const updatedCategories = categories.filter(c => c !== categoryToDelete);
+    setCategories(updatedCategories);
+    
+    toast({
+      title: "Catégorie supprimée",
+      description: `La catégorie "${categoryToDelete}" a été supprimée.`,
+    });
+  };
+
+  const handleCloseServiceDialog = () => {
+    setIsServiceDialogOpen(false);
     setEditingService(null);
     setFormData({ name: "", description: "", category: "", icon: "" });
   };
 
+  const getCategoryCount = (category: string) => {
+    return services.filter(s => s.category === category).length;
+  };
+
   return (
     <div className="space-y-6">
+      {/* Gestion des catégories */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>Gestion des catégories</CardTitle>
+              <CardDescription>
+                Gérez les catégories de services
+              </CardDescription>
+            </div>
+            <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline">
+                  <Tag className="w-4 h-4 mr-2" />
+                  Nouvelle catégorie
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Nouvelle catégorie</DialogTitle>
+                  <DialogDescription>
+                    Créez une nouvelle catégorie pour organiser vos services
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="categoryName">Nom de la catégorie</Label>
+                    <Input
+                      id="categoryName"
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      placeholder="Ex: Rénovation écologique"
+                    />
+                  </div>
+                </div>
+                
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsCategoryDialogOpen(false)}>
+                    Annuler
+                  </Button>
+                  <Button onClick={handleSaveCategory}>
+                    Ajouter
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <div key={category} className="flex items-center gap-2">
+                <Badge variant="secondary" className="px-3 py-1">
+                  {category} ({getCategoryCount(category)})
+                </Badge>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Supprimer la catégorie</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Êtes-vous sûr de vouloir supprimer la catégorie "{category}" ? 
+                        Cette action est irréversible.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDeleteCategory(category)}>
+                        Supprimer
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Gestion des services */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -139,14 +323,14 @@ const ServiceManagement = () => {
                 Gérez les services de rénovation proposés sur le site
               </CardDescription>
             </div>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog open={isServiceDialogOpen} onOpenChange={setIsServiceDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="w-4 h-4 mr-2" />
                   Nouveau service
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-lg">
                 <DialogHeader>
                   <DialogTitle>
                     {editingService ? "Modifier le service" : "Nouveau service"}
@@ -200,7 +384,7 @@ const ServiceManagement = () => {
                       <SelectTrigger>
                         <SelectValue placeholder="Choisir un pictogramme" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="max-h-60">
                         {iconOptions.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
                             {option.label}
@@ -212,10 +396,10 @@ const ServiceManagement = () => {
                 </div>
                 
                 <DialogFooter>
-                  <Button variant="outline" onClick={handleCloseDialog}>
+                  <Button variant="outline" onClick={handleCloseServiceDialog}>
                     Annuler
                   </Button>
-                  <Button onClick={handleSave}>
+                  <Button onClick={handleSaveService}>
                     {editingService ? "Modifier" : "Ajouter"}
                   </Button>
                 </DialogFooter>
@@ -243,9 +427,9 @@ const ServiceManagement = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm text-muted-foreground">
+                    <Badge variant="outline">
                       {service.category}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <span className="text-sm line-clamp-2">
@@ -261,13 +445,28 @@ const ServiceManagement = () => {
                       >
                         <Pencil className="w-4 h-4" />
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(service)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Supprimer le service</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Êtes-vous sûr de vouloir supprimer le service "{service.name}" ? 
+                              Cette action est irréversible.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(service)}>
+                              Supprimer
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </TableCell>
                 </TableRow>
