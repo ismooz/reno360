@@ -1,13 +1,19 @@
 
 import { RenovationType } from "@/types";
+import { renovationTypes } from "@/data/renovationTypes";
 
 export const getCustomServices = (): RenovationType[] => {
   const storedServices = localStorage.getItem("renovationServices");
   if (storedServices) {
-    return JSON.parse(storedServices);
+    try {
+      const parsed = JSON.parse(storedServices);
+      return parsed.length > 0 ? parsed : renovationTypes;
+    } catch {
+      return renovationTypes;
+    }
   }
   // Fallback vers les services par défaut
-  return [];
+  return renovationTypes;
 };
 
 export const getRenovationCategories = (): string[] => {
