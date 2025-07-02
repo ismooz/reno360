@@ -119,7 +119,7 @@ const EmailSettings = () => {
         <CardHeader>
           <CardTitle>Templates d'emails</CardTitle>
           <CardDescription>
-            Personnalisez les messages envoyés aux clients. Utilisez {{name}}, {{renovationType}}, {{status}} comme variables.
+            Personnalisez les messages envoyés aux clients. Utilisez les variables: nom, type de rénovation, statut.
           </CardDescription>
         </CardHeader>
         <CardContent>

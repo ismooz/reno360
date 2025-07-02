@@ -1,5 +1,7 @@
 
-export const getCustomServices = () => {
+import { RenovationType } from "@/types";
+
+export const getCustomServices = (): RenovationType[] => {
   const storedServices = localStorage.getItem("renovationServices");
   if (storedServices) {
     return JSON.parse(storedServices);
@@ -8,13 +10,13 @@ export const getCustomServices = () => {
   return [];
 };
 
-export const getRenovationCategories = () => {
+export const getRenovationCategories = (): string[] => {
   const services = getCustomServices();
-  const categories = [...new Set(services.map((service: any) => service.category))];
+  const categories = [...new Set(services.map((service: RenovationType) => service.category))];
   return categories;
 };
 
-export const getRenovationsByCategory = (category: string) => {
+export const getRenovationsByCategory = (category: string): RenovationType[] => {
   const services = getCustomServices();
-  return services.filter((service: any) => service.category === category);
+  return services.filter((service: RenovationType) => service.category === category);
 };
