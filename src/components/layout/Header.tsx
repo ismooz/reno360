@@ -2,14 +2,21 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { LogIn, LogOut, User, Menu, X } from "lucide-react";
+import { LogIn, LogOut, User, Menu, Shield, Settings } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const Header = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
-  const navigationLinks = [
+  // Navigation différente selon le rôle
+  const navigationLinks = user?.role === "admin" ? [
+    { to: "/", label: "Accueil" },
+    { to: "/services", label: "Services" },
+    { to: "/projects", label: "Réalisations" },
+    { to: "/admin", label: "Administration" },
+    { to: "/contact", label: "Contact" },
+  ] : [
     { to: "/", label: "Accueil" },
     { to: "/services", label: "Services" },
     { to: "/projects", label: "Réalisations" },
@@ -44,10 +51,23 @@ const Header = () => {
         <div className="hidden lg:flex items-center gap-3">
           {user ? (
             <>
-              <Link to="/dashboard" className="text-sm font-medium flex items-center gap-2 hover:text-primary">
-                <User size={18} />
-                <span>Mon compte</span>
-              </Link>
+              {user.role === "admin" ? (
+                <>
+                  <Link to="/admin" className="text-sm font-medium flex items-center gap-2 hover:text-primary">
+                    <Shield size={18} />
+                    <span>Administration</span>
+                  </Link>
+                  <Link to="/dashboard" className="text-sm font-medium flex items-center gap-2 hover:text-primary">
+                    <Settings size={18} />
+                    <span>Tableau de bord</span>
+                  </Link>
+                </>
+              ) : (
+                <Link to="/dashboard" className="text-sm font-medium flex items-center gap-2 hover:text-primary">
+                  <User size={18} />
+                  <span>Mon compte</span>
+                </Link>
+              )}
               <Button variant="outline" size="default" onClick={signOut} className="flex items-center gap-2 h-10">
                 <LogOut size={18} />
                 <span>Déconnexion</span>
@@ -61,20 +81,33 @@ const Header = () => {
               </Button>
             </Link>
           )}
-          <Link to="/contact">
-            <Button size="default" className="h-10 whitespace-nowrap">
-              Demander un devis
-            </Button>
-          </Link>
+          {user?.role !== "admin" && (
+            <Link to="/contact">
+              <Button size="default" className="h-10 whitespace-nowrap">
+                Demander un devis
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Actions tablette (md-lg) */}
         <div className="hidden md:flex lg:hidden items-center gap-2">
           {user ? (
             <>
-              <Link to="/dashboard" className="p-2 hover:text-primary">
-                <User size={20} />
-              </Link>
+              {user.role === "admin" ? (
+                <>
+                  <Link to="/admin" className="p-2 hover:text-primary">
+                    <Shield size={20} />
+                  </Link>
+                  <Link to="/dashboard" className="p-2 hover:text-primary">
+                    <Settings size={20} />
+                  </Link>
+                </>
+              ) : (
+                <Link to="/dashboard" className="p-2 hover:text-primary">
+                  <User size={20} />
+                </Link>
+              )}
               <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-1">
                 <LogOut size={16} />
               </Button>
@@ -86,11 +119,13 @@ const Header = () => {
               </Button>
             </Link>
           )}
-          <Link to="/contact">
-            <Button size="sm" className="whitespace-nowrap text-xs px-2">
-              Devis
-            </Button>
-          </Link>
+          {user?.role !== "admin" && (
+            <Link to="/contact">
+              <Button size="sm" className="whitespace-nowrap text-xs px-2">
+                Devis
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Menu mobile */}
@@ -125,14 +160,35 @@ const Header = () => {
                 <div className="flex flex-col gap-3 pt-4 border-t">
                   {user ? (
                     <>
-                      <Link 
-                        to="/dashboard" 
-                        className="flex items-center gap-2 text-lg font-medium hover:text-primary py-2"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <User size={20} />
-                        Mon compte
-                      </Link>
+                      {user.role === "admin" ? (
+                        <>
+                          <Link 
+                            to="/admin" 
+                            className="flex items-center gap-2 text-lg font-medium hover:text-primary py-2"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            <Shield size={20} />
+                            Administration
+                          </Link>
+                          <Link 
+                            to="/dashboard" 
+                            className="flex items-center gap-2 text-lg font-medium hover:text-primary py-2"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            <Settings size={20} />
+                            Tableau de bord
+                          </Link>
+                        </>
+                      ) : (
+                        <Link 
+                          to="/dashboard" 
+                          className="flex items-center gap-2 text-lg font-medium hover:text-primary py-2"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          <User size={20} />
+                          Mon compte
+                        </Link>
+                      )}
                       <Button 
                         variant="outline" 
                         onClick={() => {
@@ -153,11 +209,13 @@ const Header = () => {
                       </Button>
                     </Link>
                   )}
-                  <Link to="/contact" onClick={() => setIsOpen(false)}>
-                    <Button className="w-full h-12">
-                      Demande de devis
-                    </Button>
-                  </Link>
+                  {user?.role !== "admin" && (
+                    <Link to="/contact" onClick={() => setIsOpen(false)}>
+                      <Button className="w-full h-12">
+                        Demande de devis
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </div>
             </SheetContent>
