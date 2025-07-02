@@ -1,14 +1,21 @@
-
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import SearchBar from "@/components/search/SearchBar";
-import { renovationTypes } from "@/data/renovationTypes";
+import { getCustomServices } from "@/utils/serviceUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
+import { RenovationType } from "@/types";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [services, setServices] = useState<RenovationType[]>([]);
+  
+  useEffect(() => {
+    const customServices = getCustomServices();
+    setServices(customServices);
+  }, []);
   
   const handleServiceClick = (serviceId: string) => {
     navigate(`/formulaire?renovation=${encodeURIComponent(serviceId)}`);
@@ -41,10 +48,13 @@ const Index = () => {
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {renovationTypes.slice(0, 9).map((service) => (
+            {services.slice(0, 9).map((service) => (
               <Card key={service.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{service.name}</h3>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">{service.icon}</span>
+                    <h3 className="text-xl font-semibold">{service.name}</h3>
+                  </div>
                   <p className="text-muted-foreground mb-4">
                     {service.description}
                   </p>

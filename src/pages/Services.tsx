@@ -1,18 +1,27 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
-import { renovationTypes, getRenovationCategories, getRenovationsByCategory } from "@/data/renovationTypes";
+import { getCustomServices, getRenovationCategories, getRenovationsByCategory } from "@/utils/serviceUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowRight } from "lucide-react";
+import { RenovationType } from "@/types";
 
 const Services = () => {
   const navigate = useNavigate();
-  const categories = ["Toutes", ...getRenovationCategories()];
+  const [services, setServices] = useState<RenovationType[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState("Toutes");
+  
+  useEffect(() => {
+    const customServices = getCustomServices();
+    setServices(customServices);
+    const serviceCategories = ["Toutes", ...getRenovationCategories()];
+    setCategories(serviceCategories);
+  }, []);
   
   const handleServiceClick = (serviceId: string) => {
     navigate(`/formulaire?renovation=${encodeURIComponent(serviceId)}`);
@@ -20,7 +29,7 @@ const Services = () => {
 
   const getDisplayedServices = () => {
     if (activeCategory === "Toutes") {
-      return renovationTypes;
+      return services;
     }
     return getRenovationsByCategory(activeCategory);
   };
@@ -90,7 +99,10 @@ const Services = () => {
             {getDisplayedServices().map((service) => (
               <Card key={service.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{service.name}</h3>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">{service.icon}</span>
+                    <h3 className="text-xl font-semibold">{service.name}</h3>
+                  </div>
                   <p className="text-muted-foreground mb-4">
                     {service.description}
                   </p>

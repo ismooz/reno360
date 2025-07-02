@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -13,6 +12,8 @@ import { RenovationRequest } from "@/types";
 import { Search } from "lucide-react";
 import UserManagement from "@/components/admin/UserManagement";
 import AdminSettings from "@/components/admin/AdminSettings";
+import EmailSettings from "@/components/admin/EmailSettings";
+import ServiceManagement from "@/components/admin/ServiceManagement";
 
 const statusLabels: Record<string, { label: string; variant: "default" | "outline" | "secondary" | "destructive" }> = {
   pending: { label: "En attente", variant: "outline" },
@@ -129,7 +130,9 @@ const Admin = () => {
               <Tabs defaultValue="requests">
                 <TabsList className="mb-6">
                   <TabsTrigger value="requests">Demandes</TabsTrigger>
+                  <TabsTrigger value="services">Services</TabsTrigger>
                   <TabsTrigger value="clients">Clients</TabsTrigger>
+                  <TabsTrigger value="emails">Emails</TabsTrigger>
                   <TabsTrigger value="settings">Paramètres</TabsTrigger>
                 </TabsList>
                 
@@ -247,8 +250,16 @@ const Admin = () => {
                   </div>
                 </TabsContent>
                 
+                <TabsContent value="services">
+                  <ServiceManagement />
+                </TabsContent>
+                
                 <TabsContent value="clients">
                   <UserManagement />
+                </TabsContent>
+                
+                <TabsContent value="emails">
+                  <EmailSettings />
                 </TabsContent>
                 
                 <TabsContent value="settings">

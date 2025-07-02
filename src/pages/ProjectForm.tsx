@@ -6,47 +6,66 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const ProjectForm = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { toast } = useToast();
   const [name, setName] = useState("");
   const [year, setYear] = useState(new Date().getFullYear());
   const [description, setDescription] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [beforeImage, setBeforeImage] = useState<File | null>(null);
   const [afterImage, setAfterImage] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Vérification admin
-  if (!user || user.id !== "1") {
+  if (!user || user.role !== "admin") {
     navigate("/");
     return null;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    // Dans une vraie application, on uploaderait les images vers un service de stockage
-    // Pour l'exemple, on simule avec des URLs locales
-    const project = {
-      id: Date.now().toString(),
-      name,
-      year,
-      description,
-      images: images.map(file => URL.createObjectURL(file)),
-      ...(beforeImage && afterImage ? {
-        beforeAfterImages: {
-          before: URL.createObjectURL(beforeImage),
-          after: URL.createObjectURL(afterImage)
-        }
-      } : {})
-    };
+    try {
+      // Dans une vraie application, on uploaderait les images vers un service de stockage
+      // Pour l'exemple, on simule avec des URLs locales
+      const project = {
+        id: Date.now().toString(),
+        name,
+        year,
+        description,
+        images: images.map(file => URL.createObjectURL(file)),
+        ...(beforeImage && afterImage ? {
+          beforeAfterImages: {
+            before: URL.createObjectURL(beforeImage),
+            after: URL.createObjectURL(afterImage)
+          }
+        } : {})
+      };
 
-    // Sauvegarder dans localStorage
-    const existingProjects = JSON.parse(localStorage.getItem("projects") || "[]");
-    localStorage.setItem("projects", JSON.stringify([...existingProjects, project]));
+      // Sauvegarder dans localStorage
+      const existingProjects = JSON.parse(localStorage.getItem("projects") || "[]");
+      localStorage.setItem("projects", JSON.stringify([...existingProjects, project]));
 
-    navigate("/projects");
+      toast({
+        title: "Réalisation ajoutée",
+        description: "La nouvelle réalisation a été enregistrée avec succès.",
+      });
+
+      navigate("/projects");
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'enregistrement.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -64,6 +83,7 @@ const ProjectForm = () => {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                disabled={isSubmitting}
               />
             </div>
 
@@ -76,6 +96,7 @@ const ProjectForm = () => {
                 required
                 value={year}
                 onChange={(e) => setYear(Number(e.target.value))}
+                disabled={isSubmitting}
               />
             </div>
 
@@ -87,6 +108,7 @@ const ProjectForm = () => {
                 required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                disabled={isSubmitting}
               />
             </div>
 
@@ -102,6 +124,7 @@ const ProjectForm = () => {
                   const files = Array.from(e.target.files || []);
                   setImages(files);
                 }}
+                disabled={isSubmitting}
               />
             </div>
 
@@ -113,6 +136,7 @@ const ProjectForm = () => {
                   type="file"
                   accept="image/*"
                   onChange={(e) => setBeforeImage(e.target.files?.[0] || null)}
+                  disabled={isSubmitting}
                 />
               </div>
               <div>
@@ -121,16 +145,20 @@ const ProjectForm = () => {
                   type="file"
                   accept="image/*"
                   onChange={(e) => setAfterImage(e.target.files?.[0] || null)}
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
 
             <div className="flex gap-4">
-              <Button type="submit">Enregistrer</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Enregistrement..." : "Enregistrer"}
+              </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => navigate("/projects")}
+                disabled={isSubmitting}
               >
                 Annuler
               </Button>
