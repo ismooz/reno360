@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { RenovationType } from "@/types";
+import { HeroBackground } from "@/components/ui/hero-background";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -24,12 +25,12 @@ const Index = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-secondary to-background py-16 sm:py-24">
+      <HeroBackground>
         <div className="container mx-auto text-center px-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
             Solutions de rénovation sur mesure pour votre propriété
           </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground mb-8 sm:mb-12 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-white/90 mb-8 sm:mb-12 max-w-3xl mx-auto">
             Des professionnels qualifiés pour tous vos projets de rénovation immobilière
           </p>
           
@@ -37,7 +38,7 @@ const Index = () => {
             <SearchBar fullWidth className="w-full" />
           </div>
         </div>
-      </section>
+      </HeroBackground>
 
       {/* Services Section */}
       <section className="py-16">
