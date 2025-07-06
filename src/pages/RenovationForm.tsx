@@ -21,6 +21,8 @@ import RenovationFormProject from "@/components/renovation-form/RenovationFormPr
 import RenovationFormFiles from "@/components/renovation-form/RenovationFormFiles";
 import RenovationFormContact from "@/components/renovation-form/RenovationFormContact";
 import RenovationFormTerms from "@/components/renovation-form/RenovationFormTerms";
+import { ServiceHeader } from "@/components/renovation-form/ServiceHeader";
+import { RenovationType } from "@/types";
 
 const buildingTypes = [
   { value: "appartement", label: "Appartement" },
@@ -62,6 +64,7 @@ const RenovationForm = () => {
   const renovationParam = searchParams.get("renovation");
   
   const [renovationType, setRenovationType] = useState("");
+  const [currentService, setCurrentService] = useState<RenovationType | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [files, setFiles] = useState<File[]>([]);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -86,12 +89,15 @@ const RenovationForm = () => {
       const typeById = findRenovationTypeById(renovationParam);
       if (typeById) {
         setRenovationType(typeById.name);
+        setCurrentService(typeById);
       } else {
         const typeByName = findRenovationTypeByName(renovationParam);
         if (typeByName) {
           setRenovationType(typeByName.name);
+          setCurrentService(typeByName);
         } else {
           setRenovationType(renovationParam);
+          setCurrentService(null);
         }
       }
     }
@@ -183,12 +189,16 @@ const RenovationForm = () => {
   
   return (
     <Layout>
+      <ServiceHeader 
+        renovationType={currentService}
+        serviceName={renovationType}
+      />
       <div className="container py-10">
         <div className="max-w-3xl mx-auto">
           <Card>
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl font-bold">
-                Je veux rénover : {renovationType}
+                Formulaire de demande
               </CardTitle>
               <CardDescription>
                 Remplissez ce formulaire pour recevoir un devis personnalisé
