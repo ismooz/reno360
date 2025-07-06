@@ -193,7 +193,7 @@ const RenovationForm = () => {
         renovationType={currentService}
         serviceName={renovationType}
       />
-      <div className="container py-10">
+      <div className="container py-10" id="formulaire">
         <div className="max-w-3xl mx-auto">
           <Card>
             <CardHeader className="space-y-1">

@@ -55,11 +55,14 @@ export const ServiceHeader = ({ renovationType, serviceName }: ServiceHeaderProp
           <p className="text-lg sm:text-xl text-white/90 mb-6 max-w-2xl mx-auto">
             {description}
           </p>
-          <div className="inline-block bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-6 py-2">
+          <a 
+            href="#formulaire"
+            className="inline-block bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-6 py-2 hover:bg-white/20 transition-colors cursor-pointer"
+          >
             <span className="text-white font-medium">
               Demande de devis personnalisé
             </span>
-          </div>
+          </a>
         </div>
       </div>
     </section>
