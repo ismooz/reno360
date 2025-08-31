@@ -14,7 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      renovation_requests: {
+        Row: {
+          address: string | null
+          attachments: string[] | null
+          budget: string | null
+          building_type: string | null
+          created_at: string
+          deadline: string | null
+          description: string | null
+          email: string
+          id: string
+          materials_needed: string | null
+          name: string
+          phone: string | null
+          postal_code: string | null
+          preferred_date: string | null
+          renovation_type: string
+          status: string | null
+          surface_type: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          address?: string | null
+          attachments?: string[] | null
+          budget?: string | null
+          building_type?: string | null
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          email: string
+          id?: string
+          materials_needed?: string | null
+          name: string
+          phone?: string | null
+          postal_code?: string | null
+          preferred_date?: string | null
+          renovation_type: string
+          status?: string | null
+          surface_type?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          address?: string | null
+          attachments?: string[] | null
+          budget?: string | null
+          building_type?: string | null
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          email?: string
+          id?: string
+          materials_needed?: string | null
+          name?: string
+          phone?: string | null
+          postal_code?: string | null
+          preferred_date?: string | null
+          renovation_type?: string
+          status?: string | null
+          surface_type?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
