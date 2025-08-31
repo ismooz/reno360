@@ -13,6 +13,7 @@ import { Search } from "lucide-react";
 import UserManagement from "@/components/admin/UserManagement";
 import AdminSettings from "@/components/admin/AdminSettings";
 import EmailSettings from "@/components/admin/EmailSettings";
+import SecuritySettings from "@/components/admin/SecuritySettings";
 import ServiceManagement from "@/components/admin/ServiceManagement";
 
 const statusLabels: Record<string, { label: string; variant: "default" | "outline" | "secondary" | "destructive" }> = {
@@ -133,6 +134,7 @@ const Admin = () => {
                   <TabsTrigger value="services">Services</TabsTrigger>
                   <TabsTrigger value="clients">Clients</TabsTrigger>
                   <TabsTrigger value="emails">Emails</TabsTrigger>
+                  <TabsTrigger value="security">Sécurité</TabsTrigger>
                   <TabsTrigger value="settings">Paramètres</TabsTrigger>
                 </TabsList>
                 
@@ -260,6 +262,10 @@ const Admin = () => {
                 
                 <TabsContent value="emails">
                   <EmailSettings />
+                </TabsContent>
+                
+                <TabsContent value="security">
+                  <SecuritySettings />
                 </TabsContent>
                 
                 <TabsContent value="settings">

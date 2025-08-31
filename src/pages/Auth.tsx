@@ -81,10 +81,10 @@ const Auth = () => {
     }
   };
   
-  const resetAdminAccount = () => {
+  const resetAdminAccount = async () => {
     // Réinitialiser le compte administrateur
     const now = new Date().toISOString();
-    // Note: En production, ce mot de passe devrait être hashé
+    const hashedPassword = await hashPassword("admin123");
     const adminUser = {
       id: "1",
       email: "admin@reno360.ch",
@@ -93,7 +93,7 @@ const Auth = () => {
       lastLogin: now,
       role: "admin",
       status: "active",
-      password: "admin123", // Sera hashé lors de la connexion
+      password: hashedPassword,
       requestCount: 0
     };
     

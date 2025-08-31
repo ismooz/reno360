@@ -178,12 +178,12 @@ const EmailSettings = () => {
         <CardContent>
           <Tabs defaultValue="account_creation">
             <div className="w-full overflow-x-auto mb-4">
-              <TabsList className="flex w-max min-w-full h-auto flex-wrap sm:flex-nowrap">
+              <TabsList className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-1 h-auto p-1 bg-muted">
               {Object.keys(templateLabels).map((key) => (
                   <TabsTrigger 
                     key={key} 
                     value={key} 
-                    className="text-xs px-2 py-2 whitespace-nowrap flex-shrink-0 min-w-fit data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                    className="text-xs sm:text-sm px-2 py-2 h-auto text-center whitespace-normal break-words data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
                   >
                   {templateLabels[key as keyof typeof templateLabels]}
                 </TabsTrigger>
@@ -208,12 +208,14 @@ const EmailSettings = () => {
                     value={templates[key as keyof EmailTemplates].body}
                     onChange={(e) => handleTemplateChange(key as keyof EmailTemplates, 'body', e.target.value)}
                     rows={10}
-                    className="min-h-[200px] resize-y font-mono text-sm"
+                    className="min-h-[200px] sm:min-h-[250px] resize-y font-mono text-sm leading-relaxed"
                   />
-                  <div className="mt-2 text-xs text-muted-foreground">
-                    <strong>Variables disponibles:</strong> nom, renovationType, status
-                    <br />
-                    <strong>Exemple:</strong> Bonjour nom, votre demande de renovationType a été status.
+                  <div className="mt-2 p-3 bg-muted rounded-md">
+                    <div className="text-xs sm:text-sm text-muted-foreground space-y-1">
+                      <div><strong>Variables disponibles:</strong> {"{{name}}, {{renovationType}}, {{status}}"}</div>
+                      <div><strong>Exemple:</strong> Bonjour {"{{name}}"}, votre demande de {"{{renovationType}}"} a été {"{{status}}"}</div>
+                      <div className="text-xs text-muted-foreground/75">Les templates sont automatiquement adaptés pour mobile et desktop.</div>
+                    </div>
                   </div>
                 </div>
               </TabsContent>
