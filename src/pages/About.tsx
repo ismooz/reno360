@@ -2,7 +2,6 @@
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { HeroBackground } from "@/components/ui/hero-background";
 
 const About = () => {
   const navigate = useNavigate();
@@ -10,14 +9,14 @@ const About = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <HeroBackground>
+      <section className="bg-secondary py-16">
         <div className="container mx-auto text-center px-4">
-          <h1 className="text-4xl font-bold mb-4 text-white">À Propos de RENOVO.ch</h1>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto">
+          <h1 className="text-4xl font-bold mb-4">À Propos de RENOVO.ch</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Votre partenaire de confiance pour tous vos projets de rénovation immobilière
           </p>
         </div>
-      </HeroBackground>
+      </section>
 
       {/* Who We Are Section */}
       <section className="py-16">
@@ -25,7 +24,7 @@ const About = () => {
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold mb-6">Qui sommes-nous?</h2>
             <p className="text-lg mb-4 text-muted-foreground">
-              RENOVO.ch est une entreprise suisse spécialisée dans la mise en relation entre propriétaires de biens immobiliers et professionnels qualifiés de la rénovation.
+              reno360.ch est une entreprise suisse spécialisée dans la mise en relation entre propriétaires de biens immobiliers et professionnels qualifiés de la rénovation.
             </p>
             <p className="text-lg mb-4 text-muted-foreground">
               Fondée en 2023, notre mission est de simplifier le processus de rénovation en offrant un service transparent, fiable et de haute qualité à nos clients.
