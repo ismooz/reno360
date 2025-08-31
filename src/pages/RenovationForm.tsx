@@ -70,7 +70,7 @@ const RenovationForm = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.name || "",
+    name: user?.user_metadata?.name || "",
     email: user?.email || "",
     phone: "",
     postalCode: "",

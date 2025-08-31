@@ -2,26 +2,31 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { User } from "@/types";
 import { toast } from "sonner";
-import { hashPassword, verifyPassword } from "@/utils/security";
+import { supabase } from "@/integrations/supabase/client";
+import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
-  user: User | null;
+  user: SupabaseUser | null;
+  session: Session | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+  signInWithApple: () => Promise<void>;
   signOut: () => void;
   updatePassword: (currentPassword: string, newPassword: string) => Promise<void>;
-  updateUserProfile: (userData: Partial<User>) => Promise<void>;
+  updateUserProfile: (userData: any) => Promise<void>;
   loading: boolean;
   error: string | null;
   isAdmin: () => boolean;
 }
 
-// Dans une application réelle, ceci serait connecté à un backend
-// Pour l'instant, nous utilisons localStorage pour simuler la persistance
 const AuthContext = createContext<AuthContextType>({
   user: null,
+  session: null,
   signIn: async () => {},
   signUp: async () => {},
+  signInWithGoogle: async () => {},
+  signInWithApple: async () => {},
   signOut: () => {},
   updatePassword: async () => {},
   updateUserProfile: async () => {},
@@ -31,62 +36,79 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Vérifier si l'utilisateur est déjà connecté au chargement
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('Auth state changed:', event, session);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Check for admin status
   const isAdmin = () => {
-    return user?.role === 'admin';
+    return user?.user_metadata?.role === 'admin';
   };
 
-  const sendEmailNotification = (userId: string, type: string) => {
-    // Dans une application réelle, ceci enverrait un email via un backend
-    console.log(`Email notification sent: ${type} to user ${userId}`);
-    
-    // Simuler un envoi d'email
-    const templates: Record<string, { subject: string, message: string }> = {
+  const sendEmailNotification = async (email: string, type: string, data?: any) => {
+    const templates: Record<string, { subject: string, html: string }> = {
       account_creation: {
         subject: "Bienvenue sur reno360.ch",
-        message: "Votre compte a été créé avec succès."
+        html: `
+          <h1>Bienvenue sur Reno360 !</h1>
+          <p>Votre compte a été créé avec succès.</p>
+          <p>Vous pouvez maintenant accéder à votre espace client pour suivre vos demandes de rénovation.</p>
+          <p>Cordialement,<br>L'équipe Reno360</p>
+        `
       },
-      password_change: {
-        subject: "Modification du mot de passe",
-        message: "Votre mot de passe a été modifié avec succès."
-      },
-      account_closure: {
-        subject: "Désactivation de compte",
-        message: "Votre compte a été désactivé."
-      },
-      account_deletion: {
-        subject: "Suppression de compte",
-        message: "Votre compte a été supprimé."
+      renovation_request_copy: {
+        subject: "Copie de votre demande de rénovation",
+        html: `
+          <h1>Votre demande de rénovation</h1>
+          <p>Bonjour ${data?.name || ''},</p>
+          <p>Nous avons bien reçu votre demande de rénovation. Voici un résumé :</p>
+          <ul>
+            <li><strong>Type de rénovation :</strong> ${data?.renovationType || ''}</li>
+            <li><strong>Description :</strong> ${data?.description || ''}</li>
+            <li><strong>Budget :</strong> ${data?.budget || 'Non spécifié'}</li>
+          </ul>
+          <p>Nous vous contacterons dans les plus brefs délais.</p>
+          <p>Cordialement,<br>L'équipe Reno360</p>
+        `
       }
     };
     
     const template = templates[type];
     if (template) {
-      // Sauvegarder la notification dans localStorage
-      const notifications = JSON.parse(localStorage.getItem("userNotifications") || "[]");
-      notifications.push({
-        id: Date.now().toString(),
-        userId,
-        type,
-        title: template.subject,
-        message: template.message,
-        read: false,
-        createdAt: new Date().toISOString()
-      });
-      localStorage.setItem("userNotifications", JSON.stringify(notifications));
+      try {
+        await supabase.functions.invoke('send-email', {
+          body: {
+            to: email,
+            subject: template.subject,
+            html: template.html
+          }
+        });
+      } catch (error) {
+        console.error('Failed to send email:', error);
+      }
     }
   };
 
@@ -95,43 +117,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       
-      // Simuler une requête API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Dans une application réelle, nous vérifierions les identifiants avec le backend
-      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      const foundUser = storedUsers.find((u: User & { password: string }) => 
-        u.email === email && u.status !== 'deleted'
-      );
-      
-      if (!foundUser) {
-        throw new Error("Email ou mot de passe incorrect");
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw error;
       }
-      
-      // Vérifier le mot de passe hashé
-      const isPasswordValid = await verifyPassword(password, foundUser.password);
-      if (!isPasswordValid) {
-        throw new Error("Email ou mot de passe incorrect");
-      }
-      
-      if (foundUser.status === 'inactive') {
-        throw new Error("Ce compte est désactivé. Veuillez contacter l'administrateur.");
-      }
-      
-      // Update last login date
-      const updatedUsers = storedUsers.map((u: User & { password: string }) => 
-        u.id === foundUser.id ? { ...u, lastLogin: new Date().toISOString() } : u
-      );
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-      
-      const { password: _, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword);
-      localStorage.setItem("user", JSON.stringify(userWithoutPassword));
       
       toast.success("Connexion réussie");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur s'est produite");
-      toast.error(err instanceof Error ? err.message : "Une erreur s'est produite");
+    } catch (err: any) {
+      const errorMessage = err.message === 'Invalid login credentials' 
+        ? "Email ou mot de passe incorrect" 
+        : err.message;
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -142,46 +143,80 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       
-      // Simuler une requête API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const redirectUrl = `${window.location.origin}/`;
       
-      // Vérifier si l'utilisateur existe déjà
-      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      if (storedUsers.some((u: User) => u.email === email && u.status !== 'deleted')) {
-        throw new Error("Cet email est déjà utilisé");
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            name: name,
+            role: 'user'
+          }
+        }
+      });
+
+      if (error) {
+        throw error;
       }
       
-      // Créer un nouvel utilisateur
-      const now = new Date().toISOString();
-      const hashedPassword = await hashPassword(password);
-      const newUser = {
-        id: Date.now().toString(),
-        email,
-        name,
-        createdAt: now,
-        lastLogin: now,
-        role: 'user' as const, // Fix: explicitly type as 'user'
-        status: 'active' as const, // Fix: explicitly type as 'active'
-        requestCount: 0,
-        password: hashedPassword,
-      };
-      
-      // Sauvegarder dans localStorage
-      storedUsers.push(newUser);
-      localStorage.setItem("users", JSON.stringify(storedUsers));
-      
-      // Connecter l'utilisateur
-      const { password: _, ...userWithoutPassword } = newUser;
-      setUser(userWithoutPassword);
-      localStorage.setItem("user", JSON.stringify(userWithoutPassword));
-      
       // Envoyer notification de création de compte
-      sendEmailNotification(newUser.id, 'account_creation');
+      await sendEmailNotification(email, 'account_creation');
       
-      toast.success("Compte créé avec succès");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur s'est produite");
-      toast.error(err instanceof Error ? err.message : "Une erreur s'est produite");
+      toast.success("Compte créé avec succès ! Vérifiez votre email.");
+    } catch (err: any) {
+      const errorMessage = err.message === 'User already registered' 
+        ? "Cet email est déjà utilisé" 
+        : err.message;
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+    } catch (err: any) {
+      setError(err.message);
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signInWithApple = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+    } catch (err: any) {
+      setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
@@ -196,45 +231,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error("Utilisateur non connecté");
       }
       
-      // Simuler une requête API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Vérifier le mot de passe actuel
-      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      const foundUser = storedUsers.find((u: User & { password: string }) => 
-        u.id === user.id
-      );
-      
-      if (!foundUser) {
-        throw new Error("Utilisateur non trouvé");
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        throw error;
       }
-      
-      // Vérifier le mot de passe actuel
-      const isCurrentPasswordValid = await verifyPassword(currentPassword, foundUser.password);
-      if (!isCurrentPasswordValid) {
-        throw new Error("Mot de passe actuel incorrect");
-      }
-      
-      // Mettre à jour le mot de passe
-      const hashedNewPassword = await hashPassword(newPassword);
-      const updatedUsers = storedUsers.map((u: User & { password: string }) => 
-        u.id === user.id ? { ...u, password: hashedNewPassword } : u
-      );
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-      
-      // Envoyer notification de changement de mot de passe
-      sendEmailNotification(user.id, 'password_change');
       
       toast.success("Mot de passe mis à jour");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur s'est produite");
-      toast.error(err instanceof Error ? err.message : "Une erreur s'est produite");
+    } catch (err: any) {
+      setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const updateUserProfile = async (userData: Partial<User>) => {
+  const updateUserProfile = async (userData: any) => {
     try {
       setLoading(true);
       setError(null);
@@ -243,49 +257,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error("Utilisateur non connecté");
       }
       
-      // Simuler une requête API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Mettre à jour les données utilisateur
-      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      const updatedUsers = storedUsers.map((u: User & { password: string }) => 
-        u.id === user.id ? { ...u, ...userData } : u
-      );
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-      
-      // Mettre à jour l'utilisateur courant
-      const updatedUser = { ...user, ...userData };
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      
-      // Si le statut change, envoyer la notification appropriée
-      if (userData.status === 'inactive') {
-        sendEmailNotification(user.id, 'account_closure');
-      }
-      if (userData.status === 'deleted') {
-        sendEmailNotification(user.id, 'account_deletion');
+      const { error } = await supabase.auth.updateUser({
+        data: userData
+      });
+
+      if (error) {
+        throw error;
       }
       
       toast.success("Profil mis à jour");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur s'est produite");
-      toast.error(err instanceof Error ? err.message : "Une erreur s'est produite");
+    } catch (err: any) {
+      setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const signOut = () => {
-    setUser(null);
-    localStorage.removeItem("user");
+  const signOut = async () => {
+    await supabase.auth.signOut();
     toast.info("Vous êtes déconnecté");
   };
 
   return (
     <AuthContext.Provider value={{ 
-      user, 
+      user,
+      session,
       signIn, 
-      signUp, 
+      signUp,
+      signInWithGoogle,
+      signInWithApple,
       signOut, 
       updatePassword, 
       updateUserProfile, 

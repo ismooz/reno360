@@ -341,7 +341,7 @@ const Dashboard = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <p className="text-sm font-medium">Nom:</p>
-                          <p>{user?.name || "-"}</p>
+                          <p>{user?.user_metadata?.name || "-"}</p>
                         </div>
                         <div>
                           <p className="text-sm font-medium">Email:</p>
