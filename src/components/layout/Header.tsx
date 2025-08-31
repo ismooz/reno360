@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { LogIn, LogOut, User, Menu, Shield, Settings } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { sanitizeUserData } from "@/utils/security";
+import logo from "../public/reno360.png"; // Import du logo
 
 const Header = () => {
   const { user: rawUser, signOut, isAdmin } = useAuth();
@@ -33,8 +34,8 @@ const Header = () => {
       <div className="container flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-primary">reno360</span>
-            <span className="text-md font-medium">.ch</span>
+            {/* Remplacement du texte par l'image */}
+            <img src={logo} alt="Reno360" className="h-8" />
           </Link>
         </div>
         
