@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Dialog,
@@ -11,8 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+// Correction : Importation unique des fonctions nécessaires
 import { validatePassword, hashPassword } from "@/utils/security";
-import { validatePassword } from "@/utils/security";
 import { Eye, EyeOff } from "lucide-react";
 
 interface UserPasswordDialogProps {
@@ -31,17 +30,12 @@ const UserPasswordDialog = ({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  // Correction : Déclaration unique de l'état
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handlePasswordChange = (value: string) => {
-    setPassword(value);
-    const validation = validatePassword(value);
-    setPasswordErrors(validation.errors);
-  };
-
+  // Correction : Déclaration unique de la fonction
   const handlePasswordChange = (value: string) => {
     setPassword(value);
     const validation = validatePassword(value);
@@ -59,16 +53,11 @@ const UserPasswordDialog = ({
       return;
     }
     
+    // Correction : Appel de la validation une seule fois
     const validation = validatePassword(password);
     if (!validation.isValid) {
       setError("Le mot de passe ne respecte pas les critères de sécurité");
       setIsSubmitting(false);
-      return;
-    }
-    
-    const validation = validatePassword(password);
-    if (!validation.isValid) {
-      setError("Le mot de passe ne respecte pas les critères de sécurité");
       return;
     }
     
@@ -81,6 +70,7 @@ const UserPasswordDialog = ({
     try {
       const hashedPassword = await hashPassword(password);
       onSave(userId, hashedPassword);
+      onClose();
     } catch (err) {
       setError("Erreur lors du traitement du mot de passe");
     } finally {
@@ -128,15 +118,6 @@ const UserPasswordDialog = ({
               </Button>
             </div>
           </div>
-          
-          {passwordErrors.length > 0 && (
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">Critères de sécurité :</p>
-              {passwordErrors.map((error, index) => (
-                <p key={index} className="text-xs text-destructive">• {error}</p>
-              ))}
-            </div>
-          )}
           
           {passwordErrors.length > 0 && (
             <div className="space-y-1">
