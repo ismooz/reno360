@@ -8,8 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { RenovationRequest } from "@/types";
-import { Search } from "lucide-react";
+import { Search, Eye, Phone } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import UserManagement from "@/components/admin/UserManagement";
 import AdminSettings from "@/components/admin/AdminSettings";
 import EmailSettings from "@/components/admin/EmailSettings";
@@ -27,8 +29,10 @@ const statusLabels: Record<string, { label: string; variant: "default" | "outlin
 const Admin = () => {
   const navigate = useNavigate();
   const { user, loading, isAdmin } = useAuth();
+  const { toast } = useToast();
   const [requests, setRequests] = useState<RenovationRequest[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<RenovationRequest[]>([]);
+  const [selectedRequest, setSelectedRequest] = useState<RenovationRequest | null>(null);
   const [filter, setFilter] = useState({
     status: "all",
     search: "",
@@ -104,6 +108,24 @@ const Admin = () => {
       month: "2-digit",
       year: "numeric",
     }).format(date);
+  };
+
+  const handleViewDetails = (request: RenovationRequest) => {
+    setSelectedRequest(request);
+  };
+
+  const handleContactClient = (request: RenovationRequest) => {
+    // Créer un lien mailto avec les informations préremplies
+    const subject = encodeURIComponent(`Concernant votre demande de ${request.renovationType}`);
+    const body = encodeURIComponent(`Bonjour ${request.name},\n\nNous avons bien reçu votre demande de ${request.renovationType} (Demande #${request.id.slice(-6)}).\n\nCordialement,\nÉquipe Reno360`);
+    const mailtoUrl = `mailto:${request.email}?subject=${subject}&body=${body}`;
+    
+    window.open(mailtoUrl, '_blank');
+    
+    toast({
+      title: "Client contacté",
+      description: `Email préparé pour ${request.name}`,
+    });
   };
   
   if (loading) {
@@ -237,10 +259,83 @@ const Admin = () => {
                               </div>
                               
                               <div className="flex gap-2">
-                                <Button variant="outline" size="sm">
-                                  Voir les détails
-                                </Button>
-                                <Button size="sm">
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm" onClick={() => handleViewDetails(request)}>
+                                      <Eye className="h-4 w-4 mr-2" />
+                                      Voir les détails
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                                    <DialogHeader>
+                                      <DialogTitle>Détails de la demande #{request.id.slice(-6)}</DialogTitle>
+                                      <DialogDescription>
+                                        Demande de {request.renovationType} soumise le {formatDate(request.createdAt)}
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="space-y-6">
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                          <h4 className="font-semibold mb-2">Informations client</h4>
+                                          <div className="space-y-1 text-sm">
+                                            <p><strong>Nom:</strong> {request.name}</p>
+                                            <p><strong>Email:</strong> {request.email}</p>
+                                            <p><strong>Téléphone:</strong> {request.phone || "Non spécifié"}</p>
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <h4 className="font-semibold mb-2">Projet</h4>
+                                          <div className="space-y-1 text-sm">
+                                            <p><strong>Type:</strong> {request.renovationType}</p>
+                                            <p><strong>Bâtiment:</strong> {request.buildingType || "Non spécifié"}</p>
+                                            <p><strong>Surface:</strong> {request.surfaceType || "Non spécifiée"}</p>
+                                            <p><strong>Délai:</strong> {request.deadline || "Non spécifié"}</p>
+                                            <p><strong>Budget:</strong> {request.budget || "Non spécifié"}</p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      <div>
+                                        <h4 className="font-semibold mb-2">Localisation</h4>
+                                        <p className="text-sm">Code postal: {request.postalCode || "Non spécifié"}</p>
+                                      </div>
+                                      
+                                      <div>
+                                        <h4 className="font-semibold mb-2">Description du projet</h4>
+                                        <p className="text-sm">{request.description || "Aucune description fournie"}</p>
+                                      </div>
+                                      
+                                      {request.materialsNeeded && (
+                                        <div>
+                                          <h4 className="font-semibold mb-2">Matériaux nécessaires</h4>
+                                          <p className="text-sm">{request.materialsNeeded}</p>
+                                        </div>
+                                      )}
+                                      
+                                      
+                                      {request.attachments && request.attachments.length > 0 && (
+                                        <div>
+                                          <h4 className="font-semibold mb-2">Pièces jointes</h4>
+                                          <div className="space-y-1">
+                                            {request.attachments.map((attachment, index) => (
+                                              <p key={index} className="text-sm text-blue-600">{attachment}</p>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                      
+                                      <div>
+                                        <h4 className="font-semibold mb-2">Statut actuel</h4>
+                                        <Badge variant={statusLabels[request.status].variant}>
+                                          {statusLabels[request.status].label}
+                                        </Badge>
+                                      </div>
+                                    </div>
+                                  </DialogContent>
+                                </Dialog>
+                                
+                                <Button size="sm" onClick={() => handleContactClient(request)}>
+                                  <Phone className="h-4 w-4 mr-2" />
                                   Contacter le client
                                 </Button>
                               </div>
