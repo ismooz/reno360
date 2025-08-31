@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowRight } from "lucide-react";
 import { RenovationType } from "@/types";
+import { HeroBackground } from "@/components/ui/hero-background";
 
 const Services = () => {
   const navigate = useNavigate();
@@ -37,14 +38,14 @@ const Services = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="bg-secondary py-16">
+      <HeroBackground>
         <div className="container mx-auto text-center px-4">
-          <h1 className="text-4xl font-bold mb-4">Nos services de rénovation</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <h1 className="text-4xl font-bold mb-4 text-white">Nos services de rénovation</h1>
+          <p className="text-xl text-white/90 max-w-2xl mx-auto">
             Découvrez l'ensemble de nos services de rénovation pour votre propriété
           </p>
         </div>
-      </section>
+      </HeroBackground>
 
       {/* Catégories Section */}
       <section className="py-10">

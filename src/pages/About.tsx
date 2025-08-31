@@ -2,6 +2,7 @@
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { HeroBackground } from "@/components/ui/hero-background";
 
 const About = () => {
   const navigate = useNavigate();
@@ -9,14 +10,14 @@ const About = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="bg-secondary py-16">
+      <HeroBackground>
         <div className="container mx-auto text-center px-4">
-          <h1 className="text-4xl font-bold mb-4">À Propos de RENOVO.ch</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <h1 className="text-4xl font-bold mb-4 text-white">À Propos de RENOVO.ch</h1>
+          <p className="text-xl text-white/90 max-w-2xl mx-auto">
             Votre partenaire de confiance pour tous vos projets de rénovation immobilière
           </p>
         </div>
-      </section>
+      </HeroBackground>
 
       {/* Who We Are Section */}
       <section className="py-16">
