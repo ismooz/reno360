@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { LogIn, LogOut, User, Menu, Shield, Settings } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { sanitizeUserData } from "@/utils/security";
-import logo from "../public/reno360.png"; // Import du logo
+import logo from "/reno360.png";
 
 const Header = () => {
   const { user: rawUser, signOut, isAdmin } = useAuth();
