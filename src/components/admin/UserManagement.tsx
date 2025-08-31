@@ -33,6 +33,7 @@ import { Search, Edit, Trash, MailCheck, UserCog, Eye } from "lucide-react";
 import UserFormDialog from "./UserFormDialog";
 import UserViewDialog from "./UserViewDialog";
 import UserPasswordDialog from "./UserPasswordDialog";
+import { sanitizeUserData, hashPassword } from "@/utils/security";
 
 const UserManagement = () => {
   const { user: currentUser, isAdmin } = useAuth();
@@ -51,11 +52,8 @@ const UserManagement = () => {
   useEffect(() => {
     // Charger les utilisateurs depuis localStorage
     const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-    // Retirer les mots de passe pour la sécurité
-    const usersWithoutPasswords = storedUsers.map((u: any) => {
-      const { password, ...userWithoutPassword } = u;
-      return userWithoutPassword;
-    });
+    // Nettoyer les données sensibles
+    const usersWithoutPasswords = storedUsers.map(sanitizeUserData);
     setUsers(usersWithoutPasswords);
   }, []);
 
@@ -136,7 +134,7 @@ const UserManagement = () => {
   };
 
   const handleUserSaved = (updatedUser: User) => {
-    // Mettre à jour l'utilisateur dans localStorage
+    // Mettre à jour l'utilisateur dans localStorage avec sécurité
     const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
     const userIndex = storedUsers.findIndex((u: any) => u.id === updatedUser.id);
     
@@ -145,8 +143,12 @@ const UserManagement = () => {
       const existingPassword = storedUsers[userIndex].password;
       storedUsers[userIndex] = { ...updatedUser, password: existingPassword };
     } else {
-      // Nouvel utilisateur avec mot de passe par défaut
-      storedUsers.push({ ...updatedUser, password: "password123" });
+      // Nouvel utilisateur avec mot de passe par défaut hashé
+      hashPassword("password123").then(hashedPassword => {
+        storedUsers.push({ ...updatedUser, password: hashedPassword });
+        localStorage.setItem("users", JSON.stringify(storedUsers));
+      });
+      return; // Sortir ici pour éviter la double sauvegarde
     }
     
     localStorage.setItem("users", JSON.stringify(storedUsers));
@@ -166,7 +168,7 @@ const UserManagement = () => {
   };
 
   const handlePasswordChanged = (userId: string, newPassword: string) => {
-    // Mettre à jour le mot de passe dans localStorage
+    // Le mot de passe est déjà hashé par UserPasswordDialog
     const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
     const updatedUsers = storedUsers.map((u: any) =>
       u.id === userId ? { ...u, password: newPassword } : u

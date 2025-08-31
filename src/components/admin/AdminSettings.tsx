@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { validatePassword } from "@/utils/security";
 
 const AdminSettings = () => {
   const { user, isAdmin, updatePassword } = useAuth();
@@ -14,6 +15,7 @@ const AdminSettings = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -28,12 +30,23 @@ const AdminSettings = () => {
     );
   }
 
+  const handleNewPasswordChange = (value: string) => {
+    setNewPassword(value);
+    const validation = validatePassword(value);
+    setPasswordErrors(validation.errors);
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     
     if (!currentPassword || !newPassword || !confirmPassword) {
       setError("Tous les champs sont obligatoires");
+      return;
+    }
+    
+    const validation = validatePassword(newPassword);
+    if (!validation.isValid) {
+      setError("Le nouveau mot de passe ne respecte pas les critères de sécurité");
       return;
     }
     
@@ -106,9 +119,18 @@ const AdminSettings = () => {
                 id="newPassword"
                 type={showPassword ? "text" : "password"}
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                onChange={(e) => handleNewPasswordChange(e.target.value)}
               />
             </div>
+            
+            {passwordErrors.length > 0 && (
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">Critères de sécurité :</p>
+                {passwordErrors.map((error, index) => (
+                  <p key={index} className="text-xs text-destructive">• {error}</p>
+                ))}
+              </div>
+            )}
             
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label>
@@ -124,7 +146,7 @@ const AdminSettings = () => {
               <p className="text-sm text-destructive">{error}</p>
             )}
             
-            <Button type="submit" disabled={isUpdating}>
+            <Button type="submit" disabled={isUpdating || passwordErrors.length > 0}>
               {isUpdating ? "Mise à jour..." : "Mettre à jour le mot de passe"}
             </Button>
           </form>

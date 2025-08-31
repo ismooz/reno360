@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { User } from "@/types";
 import { toast } from "sonner";
+import { hashPassword, verifyPassword } from "@/utils/security";
 
 interface AuthContextType {
   user: User | null;
@@ -100,10 +101,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Dans une application réelle, nous vérifierions les identifiants avec le backend
       const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
       const foundUser = storedUsers.find((u: User & { password: string }) => 
-        u.email === email && u.password === password && u.status !== 'deleted'
+        u.email === email && u.status !== 'deleted'
       );
       
       if (!foundUser) {
+        throw new Error("Email ou mot de passe incorrect");
+      }
+      
+      // Vérifier le mot de passe hashé
+      const isPasswordValid = await verifyPassword(password, foundUser.password);
+      if (!isPasswordValid) {
         throw new Error("Email ou mot de passe incorrect");
       }
       
@@ -146,6 +153,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       // Créer un nouvel utilisateur
       const now = new Date().toISOString();
+      const hashedPassword = await hashPassword(password);
       const newUser = {
         id: Date.now().toString(),
         email,
@@ -155,7 +163,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         role: 'user' as const, // Fix: explicitly type as 'user'
         status: 'active' as const, // Fix: explicitly type as 'active'
         requestCount: 0,
-        password, // Dans une application réelle, ce mot de passe serait hashé
+        password: hashedPassword,
       };
       
       // Sauvegarder dans localStorage
@@ -194,16 +202,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Vérifier le mot de passe actuel
       const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
       const foundUser = storedUsers.find((u: User & { password: string }) => 
-        u.id === user.id && u.password === currentPassword
+        u.id === user.id
       );
       
       if (!foundUser) {
+        throw new Error("Utilisateur non trouvé");
+      }
+      
+      // Vérifier le mot de passe actuel
+      const isCurrentPasswordValid = await verifyPassword(currentPassword, foundUser.password);
+      if (!isCurrentPasswordValid) {
         throw new Error("Mot de passe actuel incorrect");
       }
       
       // Mettre à jour le mot de passe
+      const hashedNewPassword = await hashPassword(newPassword);
       const updatedUsers = storedUsers.map((u: User & { password: string }) => 
-        u.id === user.id ? { ...u, password: newPassword } : u
+        u.id === user.id ? { ...u, password: hashedNewPassword } : u
       );
       localStorage.setItem("users", JSON.stringify(updatedUsers));
       

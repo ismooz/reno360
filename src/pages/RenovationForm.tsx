@@ -23,6 +23,7 @@ import RenovationFormContact from "@/components/renovation-form/RenovationFormCo
 import RenovationFormTerms from "@/components/renovation-form/RenovationFormTerms";
 import { ServiceHeader } from "@/components/renovation-form/ServiceHeader";
 import { RenovationType } from "@/types";
+import { EmailService } from "@/utils/emailService";
 
 const buildingTypes = [
   { value: "appartement", label: "Appartement" },
@@ -178,6 +179,9 @@ const RenovationForm = () => {
     const storedRequests = JSON.parse(localStorage.getItem("renovationRequests") || "[]");
     storedRequests.push(newRequest);
     localStorage.setItem("renovationRequests", JSON.stringify(storedRequests));
+    
+    // Envoyer notification par email à l'équipe
+    EmailService.sendRequestNotification(newRequest);
     
     toast({
       title: "Demande envoyée",

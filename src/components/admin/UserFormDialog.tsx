@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { validateEmail, hashPassword } from "@/utils/security";
 
 interface UserFormDialogProps {
   user: User | null;
@@ -86,7 +87,7 @@ const UserFormDialog = ({ user, isOpen, onClose, onSave }: UserFormDialogProps) 
     
     if (!formData.email?.trim()) {
       errors.email = "L'email est requis";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    } else if (!validateEmail(formData.email)) {
       errors.email = "Email invalide";
     }
     
@@ -94,7 +95,7 @@ const UserFormDialog = ({ user, isOpen, onClose, onSave }: UserFormDialogProps) 
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) {

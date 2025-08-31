@@ -74,3 +74,10 @@ export type EmailTemplates = {
   account_deletion: EmailTemplate;
   request_status_change: EmailTemplate;
 };
+
+export interface EmailSettings {
+  fromEmail: string;
+  replyToEmail: string;
+  requestsEmail: string;
+  templates: EmailTemplates;
+}

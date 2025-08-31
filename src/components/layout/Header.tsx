@@ -4,10 +4,14 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { LogIn, LogOut, User, Menu, Shield, Settings } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { sanitizeUserData } from "@/utils/security";
 
 const Header = () => {
-  const { user, signOut, isAdmin } = useAuth();
+  const { user: rawUser, signOut, isAdmin } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  
+  // Nettoyer les données utilisateur pour éviter l'exposition de données sensibles
+  const user = rawUser ? sanitizeUserData(rawUser) : null;
 
   // Navigation différente selon le rôle
   const navigationLinks = user?.role === "admin" ? [

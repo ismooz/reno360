@@ -4,9 +4,11 @@ import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, ArrowRight } from "lucide-react";
+import { EmailService } from "@/utils/emailService";
 
 const Confirmation = () => {
   const navigate = useNavigate();
+  const requestsEmail = EmailService.getRequestsEmail();
 
   // Générer un numéro de référence aléatoire
   const referenceNumber = `REF-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -34,6 +36,9 @@ const Confirmation = () => {
                 <p className="text-sm text-muted-foreground">
                   Un e-mail de confirmation a été envoyé à l'adresse fournie avec un récapitulatif
                   de votre demande. Vous pouvez suivre l'avancement de votre demande dans votre espace client.
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Notre équipe ({requestsEmail}) a été notifiée de votre demande.
                 </p>
               </div>
               

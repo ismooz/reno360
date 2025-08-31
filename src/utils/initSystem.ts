@@ -1,13 +1,15 @@
 
 import { User } from "@/types";
+import { hashPassword } from "@/utils/security";
 
-export const initSystem = () => {
+export const initSystem = async () => {
   // Vérifier si des utilisateurs existent
   const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
   
   // Si aucun utilisateur, créer un administrateur par défaut
   if (storedUsers.length === 0) {
     const now = new Date().toISOString();
+    const hashedPassword = await hashPassword("admin123");
     const adminUser = {
       id: "1",
       email: "admin@reno360.ch",
@@ -16,7 +18,7 @@ export const initSystem = () => {
       lastLogin: now,
       role: "admin",
       status: "active",
-      password: "admin123", // Dans une vraie application, ce serait hashé
+      password: hashedPassword,
       requestCount: 0
     };
     
@@ -31,6 +33,7 @@ export const initSystem = () => {
     // Si l'admin n'existe pas (a été supprimé ou est inactif), le restaurer
     if (!adminExists) {
       const now = new Date().toISOString();
+      const hashedPassword = await hashPassword("admin123");
       const adminUser = {
         id: "1",
         email: "admin@reno360.ch",
@@ -39,7 +42,7 @@ export const initSystem = () => {
         lastLogin: now,
         role: "admin",
         status: "active",
-        password: "admin123",
+        password: hashedPassword,
         requestCount: 0
       };
       

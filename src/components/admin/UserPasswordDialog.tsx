@@ -11,6 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { validatePassword, hashPassword } from "@/utils/security";
+import { validatePassword } from "@/utils/security";
 import { Eye, EyeOff } from "lucide-react";
 
 interface UserPasswordDialogProps {
@@ -29,23 +31,61 @@ const UserPasswordDialog = ({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    const validation = validatePassword(value);
+    setPasswordErrors(validation.errors);
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    const validation = validatePassword(value);
+    setPasswordErrors(validation.errors);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsSubmitting(true);
     
     if (!password) {
       setError("Veuillez entrer un mot de passe");
+      setIsSubmitting(false);
+      return;
+    }
+    
+    const validation = validatePassword(password);
+    if (!validation.isValid) {
+      setError("Le mot de passe ne respecte pas les critères de sécurité");
+      setIsSubmitting(false);
+      return;
+    }
+    
+    const validation = validatePassword(password);
+    if (!validation.isValid) {
+      setError("Le mot de passe ne respecte pas les critères de sécurité");
       return;
     }
     
     if (password !== confirmPassword) {
       setError("Les mots de passe ne correspondent pas");
+      setIsSubmitting(false);
       return;
     }
     
-    onSave(userId, password);
+    try {
+      const hashedPassword = await hashPassword(password);
+      onSave(userId, hashedPassword);
+    } catch (err) {
+      setError("Erreur lors du traitement du mot de passe");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const toggleShowPassword = () => {
@@ -70,7 +110,8 @@ const UserPasswordDialog = ({
                 id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => handlePasswordChange(e.target.value)}
+                disabled={isSubmitting}
               />
               <Button
                 type="button"
@@ -88,6 +129,24 @@ const UserPasswordDialog = ({
             </div>
           </div>
           
+          {passwordErrors.length > 0 && (
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Critères de sécurité :</p>
+              {passwordErrors.map((error, index) => (
+                <p key={index} className="text-xs text-destructive">• {error}</p>
+              ))}
+            </div>
+          )}
+          
+          {passwordErrors.length > 0 && (
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Critères de sécurité :</p>
+              {passwordErrors.map((error, index) => (
+                <p key={index} className="text-xs text-destructive">• {error}</p>
+              ))}
+            </div>
+          )}
+          
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
             <Input
@@ -95,6 +154,7 @@ const UserPasswordDialog = ({
               type={showPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={isSubmitting}
             />
           </div>
           
@@ -106,7 +166,9 @@ const UserPasswordDialog = ({
             <Button type="button" variant="outline" onClick={onClose}>
               Annuler
             </Button>
-            <Button type="submit">Enregistrer</Button>
+            <Button type="submit" disabled={isSubmitting || passwordErrors.length > 0}>
+              {isSubmitting ? "Enregistrement..." : "Enregistrer"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

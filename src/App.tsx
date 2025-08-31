@@ -20,8 +20,8 @@ import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
 import { initSystem } from "./utils/initSystem";
 
-// Initialiser le système au chargement de l'application
-initSystem();
+// Initialiser le système au chargement de l'application (async)
+initSystem().catch(console.error);
 
 const queryClient = new QueryClient();
 

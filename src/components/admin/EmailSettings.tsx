@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { EmailTemplates } from "@/types";
+import { validateEmail } from "@/utils/security";
 
 const defaultTemplates: EmailTemplates = {
   account_creation: {
@@ -37,12 +38,15 @@ const EmailSettings = () => {
   const [templates, setTemplates] = useState<EmailTemplates>(defaultTemplates);
   const [fromEmail, setFromEmail] = useState("noreply@reno360.ch");
   const [replyToEmail, setReplyToEmail] = useState("contact@reno360.ch");
+  const [requestsEmail, setRequestsEmail] = useState("demandes@reno360.ch");
+  const [emailErrors, setEmailErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     // Charger les paramètres depuis localStorage
     const savedTemplates = localStorage.getItem("emailTemplates");
     const savedFromEmail = localStorage.getItem("fromEmail");
     const savedReplyToEmail = localStorage.getItem("replyToEmail");
+    const savedRequestsEmail = localStorage.getItem("requestsEmail");
 
     if (savedTemplates) {
       setTemplates(JSON.parse(savedTemplates));
@@ -52,6 +56,9 @@ const EmailSettings = () => {
     }
     if (savedReplyToEmail) {
       setReplyToEmail(savedReplyToEmail);
+    }
+    if (savedRequestsEmail) {
+      setRequestsEmail(savedRequestsEmail);
     }
   }, []);
 
@@ -66,9 +73,34 @@ const EmailSettings = () => {
   };
 
   const handleSave = () => {
+    // Valider les emails
+    const errors: Record<string, string> = {};
+    
+    if (!validateEmail(fromEmail)) {
+      errors.fromEmail = "Format d'email invalide";
+    }
+    if (!validateEmail(replyToEmail)) {
+      errors.replyToEmail = "Format d'email invalide";
+    }
+    if (!validateEmail(requestsEmail)) {
+      errors.requestsEmail = "Format d'email invalide";
+    }
+    
+    if (Object.keys(errors).length > 0) {
+      setEmailErrors(errors);
+      toast({
+        title: "Erreur de validation",
+        description: "Veuillez corriger les erreurs dans les adresses email.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setEmailErrors({});
     localStorage.setItem("emailTemplates", JSON.stringify(templates));
     localStorage.setItem("fromEmail", fromEmail);
     localStorage.setItem("replyToEmail", replyToEmail);
+    localStorage.setItem("requestsEmail", requestsEmail);
     
     toast({
       title: "Paramètres sauvegardés",
@@ -101,7 +133,11 @@ const EmailSettings = () => {
               value={fromEmail}
               onChange={(e) => setFromEmail(e.target.value)}
               placeholder="noreply@reno360.ch"
+              className={emailErrors.fromEmail ? "border-destructive" : ""}
             />
+            {emailErrors.fromEmail && (
+              <p className="text-sm text-destructive">{emailErrors.fromEmail}</p>
+            )}
           </div>
           <div>
             <Label htmlFor="replyToEmail">Adresse de réponse</Label>
@@ -110,7 +146,24 @@ const EmailSettings = () => {
               value={replyToEmail}
               onChange={(e) => setReplyToEmail(e.target.value)}
               placeholder="contact@reno360.ch"
+              className={emailErrors.replyToEmail ? "border-destructive" : ""}
             />
+            {emailErrors.replyToEmail && (
+              <p className="text-sm text-destructive">{emailErrors.replyToEmail}</p>
+            )}
+          </div>
+          <div>
+            <Label htmlFor="requestsEmail">Email de réception des demandes</Label>
+            <Input
+              id="requestsEmail"
+              value={requestsEmail}
+              onChange={(e) => setRequestsEmail(e.target.value)}
+              placeholder="demandes@reno360.ch"
+              className={emailErrors.requestsEmail ? "border-destructive" : ""}
+            />
+            {emailErrors.requestsEmail && (
+              <p className="text-sm text-destructive">{emailErrors.requestsEmail}</p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -124,13 +177,19 @@ const EmailSettings = () => {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="account_creation">
-            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
+            <div className="w-full overflow-x-auto mb-4">
+              <TabsList className="flex w-max min-w-full h-auto flex-wrap sm:flex-nowrap">
               {Object.keys(templateLabels).map((key) => (
-                <TabsTrigger key={key} value={key} className="text-xs">
+                  <TabsTrigger 
+                    key={key} 
+                    value={key} 
+                    className="text-xs px-2 py-2 whitespace-nowrap flex-shrink-0 min-w-fit data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
                   {templateLabels[key as keyof typeof templateLabels]}
                 </TabsTrigger>
               ))}
             </TabsList>
+            </div>
             
             {Object.entries(templateLabels).map(([key, label]) => (
               <TabsContent key={key} value={key} className="space-y-4">
@@ -148,8 +207,14 @@ const EmailSettings = () => {
                     id={`${key}-body`}
                     value={templates[key as keyof EmailTemplates].body}
                     onChange={(e) => handleTemplateChange(key as keyof EmailTemplates, 'body', e.target.value)}
-                    rows={8}
+                    rows={10}
+                    className="min-h-[200px] resize-y font-mono text-sm"
                   />
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    <strong>Variables disponibles:</strong> nom, renovationType, status
+                    <br />
+                    <strong>Exemple:</strong> Bonjour nom, votre demande de renovationType a été status.
+                  </div>
                 </div>
               </TabsContent>
             ))}
@@ -158,7 +223,7 @@ const EmailSettings = () => {
       </Card>
 
       <div className="flex justify-end">
-        <Button onClick={handleSave}>
+        <Button onClick={handleSave} disabled={Object.keys(emailErrors).length > 0}>
           Sauvegarder les paramètres
         </Button>
       </div>

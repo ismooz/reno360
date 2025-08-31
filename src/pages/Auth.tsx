@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
+import { validateEmail, validatePassword, hashPassword } from "@/utils/security";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -56,6 +57,17 @@ const Auth = () => {
       return;
     }
     
+    if (!validateEmail(registerEmail)) {
+      setFormError("Format d'email invalide");
+      return;
+    }
+    
+    const passwordValidation = validatePassword(registerPassword);
+    if (!passwordValidation.isValid) {
+      setFormError(passwordValidation.errors[0]);
+      return;
+    }
+    
     if (registerPassword !== registerConfirmPassword) {
       setFormError("Les mots de passe ne correspondent pas");
       return;
@@ -72,6 +84,7 @@ const Auth = () => {
   const resetAdminAccount = () => {
     // Réinitialiser le compte administrateur
     const now = new Date().toISOString();
+    // Note: En production, ce mot de passe devrait être hashé
     const adminUser = {
       id: "1",
       email: "admin@reno360.ch",
@@ -80,7 +93,7 @@ const Auth = () => {
       lastLogin: now,
       role: "admin",
       status: "active",
-      password: "admin123",
+      password: "admin123", // Sera hashé lors de la connexion
       requestCount: 0
     };
     
