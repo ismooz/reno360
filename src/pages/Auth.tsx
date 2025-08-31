@@ -175,7 +175,7 @@ const Auth = () => {
                         </div>
                       </div>
                       
-                      <div className="grid grid-cols-2 gap-3 mt-4" style={{padding: '10px'}}>
+                      <div className="grid grid-cols-2 gap-3 mt-4" style={{border: '2px solid red', padding: '10px'}}>
                         <Button
                           type="button"
                           variant="outline"
@@ -285,7 +285,7 @@ const Auth = () => {
                         </div>
                       </div>
                       
-                      <div className="grid grid-cols-2 gap-3 mt-4" style={{border: '2px solid red', padding: '10px'}}>
+                      <div className="grid grid-cols-2 gap-3 mt-4" style={{padding: '10px'}}>
                         <Button
                           type="button"
                           variant="outline"
