@@ -28,6 +28,7 @@ const ProjectManagement = () => {
       after: ""
     }
   });
+  const projectImagesFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // Charger les projets depuis localStorage
@@ -120,19 +121,22 @@ const ProjectManagement = () => {
   };
 
   const handleImageAdd = () => {
-    setFormData({
-      ...formData,
-      images: [...formData.images, ""]
-    });
+    projectImagesFileInputRef.current?.click();
   };
 
-  const handleImageChange = (index: number, value: string) => {
-    const newImages = [...formData.images];
-    newImages[index] = value;
-    setFormData({
-      ...formData,
-      images: newImages
-    });
+  const handleProjectImageUpload = (file: File) => {
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setFormData({
+        ...formData,
+        images: [...formData.images, imageUrl]
+      });
+
+      toast({
+        title: "Image ajoutée",
+        description: "L'image du projet a été ajoutée avec succès.",
+      });
+    }
   };
 
   const handleImageRemove = (index: number) => {
@@ -250,12 +254,14 @@ const ProjectManagement = () => {
                   </Button>
                 </div>
                 {formData.images.map((image, index) => (
-                  <div key={index} className="flex gap-2">
-                    <Input
-                      value={image}
-                      onChange={(e) => handleImageChange(index, e.target.value)}
-                      placeholder="URL de l'image"
-                    />
+                  <div key={index} className="flex gap-2 items-center">
+                    <div className="relative flex-1">
+                      <img 
+                        src={image} 
+                        alt={`Image ${index + 1}`} 
+                        className="w-full h-20 object-cover rounded-md border"
+                      />
+                    </div>
                     <Button
                       type="button"
                       variant="outline"
@@ -266,6 +272,16 @@ const ProjectManagement = () => {
                     </Button>
                   </div>
                 ))}
+                <input
+                  ref={projectImagesFileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleProjectImageUpload(file);
+                  }}
+                />
               </div>
 
               <div className="space-y-4">
