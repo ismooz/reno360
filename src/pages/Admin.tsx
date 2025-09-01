@@ -17,6 +17,7 @@ import AdminSettings from "@/components/admin/AdminSettings";
 import EmailSettings from "@/components/admin/EmailSettings";
 import SecuritySettings from "@/components/admin/SecuritySettings";
 import ServiceManagement from "@/components/admin/ServiceManagement";
+import ProjectManagement from "@/components/admin/ProjectManagement";
 
 const statusLabels: Record<string, { label: string; variant: "default" | "outline" | "secondary" | "destructive" }> = {
   pending: { label: "En attente", variant: "outline" },
@@ -153,6 +154,7 @@ const Admin = () => {
               <Tabs defaultValue="requests">
                 <TabsList className="mb-6">
                   <TabsTrigger value="requests">Demandes</TabsTrigger>
+                  <TabsTrigger value="projects">Réalisations</TabsTrigger>
                   <TabsTrigger value="services">Services</TabsTrigger>
                   <TabsTrigger value="clients">Clients</TabsTrigger>
                   <TabsTrigger value="emails">Emails</TabsTrigger>
@@ -345,6 +347,10 @@ const Admin = () => {
                       </div>
                     )}
                   </div>
+                </TabsContent>
+                
+                <TabsContent value="projects">
+                  <ProjectManagement />
                 </TabsContent>
                 
                 <TabsContent value="services">

@@ -9,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { RenovationRequest, User } from "@/types";
 import { FileText, Users, TrendingUp, Calendar, Shield, Settings } from "lucide-react";
+import ProfileEditDialog from "@/components/profile/ProfileEditDialog";
+import DeleteAccountDialog from "@/components/profile/DeleteAccountDialog";
 
 const statusLabels: Record<string, { label: string; variant: "default" | "outline" | "secondary" | "destructive" }> = {
   pending: { label: "En attente", variant: "outline" },
@@ -23,6 +25,8 @@ const Dashboard = () => {
   const { user, loading, isAdmin } = useAuth();
   const [requests, setRequests] = useState<RenovationRequest[]>([]);
   const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [isProfileEditOpen, setIsProfileEditOpen] = useState(false);
+  const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
   const [stats, setStats] = useState({
     totalRequests: 0,
     pendingRequests: 0,
@@ -351,10 +355,17 @@ const Dashboard = () => {
                     </div>
                     
                     <div className="pt-4 border-t">
-                      <Button variant="outline" className="mr-2">
+                      <Button 
+                        variant="outline" 
+                        className="mr-2"
+                        onClick={() => setIsProfileEditOpen(true)}
+                      >
                         Modifier mon profil
                       </Button>
-                      <Button variant="destructive">
+                      <Button 
+                        variant="destructive"
+                        onClick={() => setIsDeleteAccountOpen(true)}
+                      >
                         Supprimer mon compte
                       </Button>
                     </div>
@@ -365,6 +376,16 @@ const Dashboard = () => {
           </Card>
         </div>
       </div>
+
+      {/* Dialogs */}
+      <ProfileEditDialog 
+        isOpen={isProfileEditOpen} 
+        onClose={() => setIsProfileEditOpen(false)} 
+      />
+      <DeleteAccountDialog 
+        isOpen={isDeleteAccountOpen} 
+        onClose={() => setIsDeleteAccountOpen(false)} 
+      />
     </Layout>
   );
 };
