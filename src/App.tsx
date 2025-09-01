@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Services from "./pages/Services";
 import Projects from "./pages/Projects";
+import ProjectDetail from "./pages/ProjectDetail";
 import ProjectForm from "./pages/ProjectForm";
 import RenovationForm from "./pages/RenovationForm";
 import About from "./pages/About";
@@ -54,6 +55,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/services" element={<Services />} />
             <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/:id" element={<ProjectDetail />} />
             <Route path="/projects/new" element={<ProjectForm />} />
             <Route path="/formulaire" element={<RenovationForm />} />
             <Route path="/a-propos" element={<About />} />

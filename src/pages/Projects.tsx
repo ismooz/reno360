@@ -44,37 +44,46 @@ const Projects = () => {
               </p>
             </div>
           ) : (
-            <div className="grid gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map((project) => (
                 <Card key={project.id} className="overflow-hidden">
-                  <CardContent className="p-6">
-                    <div className="mb-6">
-                      <h2 className="text-2xl font-semibold mb-2">
-                        {project.name} ({project.year})
-                      </h2>
-                      <p className="text-muted-foreground">
-                        {project.description}
-                      </p>
-                    </div>
-
-                    <div className="my-6">
+                  <CardContent className="p-0">
+                    <div className="aspect-video overflow-hidden">
                       {project.beforeAfterImages ? (
-                        <BeforeAfterSlider
-                          beforeImage={project.beforeAfterImages.before}
-                          afterImage={project.beforeAfterImages.after}
+                        <img 
+                          src={project.beforeAfterImages.before} 
+                          alt={project.name}
+                          className="w-full h-full object-cover"
                         />
                       ) : project.images && project.images.length > 0 ? (
-                        <ProjectCarousel images={project.images} />
+                        <img 
+                          src={project.images[0]} 
+                          alt={project.name}
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
-                        <div className="text-center py-4 bg-muted rounded-md">
-                          Aucune image disponible
+                        <div className="w-full h-full bg-muted flex items-center justify-center">
+                          <span className="text-muted-foreground">Aucune image</span>
                         </div>
                       )}
                     </div>
-
-                    <div className="mt-6 text-center">
-                      <Button onClick={() => navigate("/formulaire")} size="lg">
-                        Demander un devis
+                    
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold mb-1">
+                        {project.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Année: {project.year}
+                      </p>
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                        {project.description}
+                      </p>
+                      <Button 
+                        onClick={() => navigate(`/projects/${project.id}`)}
+                        className="w-full"
+                        variant="outline"
+                      >
+                        Voir plus
                       </Button>
                     </div>
                   </CardContent>
