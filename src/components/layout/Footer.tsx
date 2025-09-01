@@ -7,9 +7,9 @@ const Footer = () => {
       <div className="container">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-lg font-bold mb-4">RENOVO.ch</h3>
+            <h3 className="text-lg font-bold mb-4">reno360.ch</h3>
             <p className="text-sm text-muted-foreground">
-              Services de rénovation immobilière de qualité, partout en Suisse.
+              Entreprise de rénovation de qualité, partout en Suisse.
             </p>
           </div>
           
@@ -73,21 +73,21 @@ const Footer = () => {
           <div>
             <h3 className="text-sm font-bold mb-4">Contact</h3>
             <p className="text-sm text-muted-foreground mb-2">
-              Avenue de la Rénovation 123<br />
-              1200 Genève, Suisse
+              Route de Saint-Aubin 70<br />
+              1565 Missy, Vaud
             </p>
             <p className="text-sm text-muted-foreground mb-2">
-              <a href="tel:+41800123456" className="hover:text-primary">+41 800 123 456</a>
+              <a href="tel:+41218881010" className="hover:text-primary">+41 21 888 10 10</a>
             </p>
             <p className="text-sm text-muted-foreground">
-              <a href="mailto:info@renovo.ch" className="hover:text-primary">info@renovo.ch</a>
+              <a href="mailto:info@reno360.ch" className="hover:text-primary">info@ren360.ch</a>
             </p>
           </div>
         </div>
         
         <div className="mt-10 pt-6 border-t border-muted">
           <p className="text-sm text-center text-muted-foreground">
-            © {new Date().getFullYear()} RENOVO.ch. Tous droits réservés.
+            © {new Date().getFullYear()} reno360.ch. Tous droits réservés.
           </p>
         </div>
       </div>
