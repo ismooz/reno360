@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,13 +9,15 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Badge } from "@/components/ui/badge";
 import { Project } from "@/types";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Image } from "lucide-react";
+import { Plus, Edit, Trash2, Image, Upload, X } from "lucide-react";
 
 const ProjectManagement = () => {
   const { toast } = useToast();
   const [projects, setProjects] = useState<Project[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const beforeFileInputRef = useRef<HTMLInputElement>(null);
+  const afterFileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: "",
     year: new Date().getFullYear(),
@@ -141,6 +143,44 @@ const ProjectManagement = () => {
     });
   };
 
+  const handleFileUpload = (file: File, type: 'before' | 'after') => {
+    if (file) {
+      // Créer une URL locale pour l'image
+      const imageUrl = URL.createObjectURL(file);
+      
+      setFormData({
+        ...formData,
+        beforeAfterImages: {
+          ...formData.beforeAfterImages,
+          [type]: imageUrl
+        }
+      });
+
+      toast({
+        title: "Image ajoutée",
+        description: `L'image "${type}" a été ajoutée avec succès.`,
+      });
+    }
+  };
+
+  const handleBeforeImageUpload = () => {
+    beforeFileInputRef.current?.click();
+  };
+
+  const handleAfterImageUpload = () => {
+    afterFileInputRef.current?.click();
+  };
+
+  const removeBeforeAfterImage = (type: 'before' | 'after') => {
+    setFormData({
+      ...formData,
+      beforeAfterImages: {
+        ...formData.beforeAfterImages,
+        [type]: ""
+      }
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -232,27 +272,85 @@ const ProjectManagement = () => {
                 <Label>Images Avant/Après (optionnel)</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="before">Image "Avant"</Label>
-                    <Input
-                      id="before"
-                      value={formData.beforeAfterImages.before}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        beforeAfterImages: { ...formData.beforeAfterImages, before: e.target.value }
-                      })}
-                      placeholder="URL de l'image avant"
+                    <Label>Image "Avant"</Label>
+                    {formData.beforeAfterImages.before ? (
+                      <div className="relative">
+                        <img 
+                          src={formData.beforeAfterImages.before} 
+                          alt="Avant" 
+                          className="w-full h-32 object-cover rounded-md border"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-2 right-2"
+                          onClick={() => removeBeforeAfterImage('before')}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full h-32 border-dashed"
+                        onClick={handleBeforeImageUpload}
+                      >
+                        <Upload className="h-6 w-6 mr-2" />
+                        Ajouter une image "Avant"
+                      </Button>
+                    )}
+                    <input
+                      ref={beforeFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleFileUpload(file, 'before');
+                      }}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="after">Image "Après"</Label>
-                    <Input
-                      id="after"
-                      value={formData.beforeAfterImages.after}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        beforeAfterImages: { ...formData.beforeAfterImages, after: e.target.value }
-                      })}
-                      placeholder="URL de l'image après"
+                    <Label>Image "Après"</Label>
+                    {formData.beforeAfterImages.after ? (
+                      <div className="relative">
+                        <img 
+                          src={formData.beforeAfterImages.after} 
+                          alt="Après" 
+                          className="w-full h-32 object-cover rounded-md border"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-2 right-2"
+                          onClick={() => removeBeforeAfterImage('after')}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full h-32 border-dashed"
+                        onClick={handleAfterImageUpload}
+                      >
+                        <Upload className="h-6 w-6 mr-2" />
+                        Ajouter une image "Après"
+                      </Button>
+                    )}
+                    <input
+                      ref={afterFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleFileUpload(file, 'after');
+                      }}
                     />
                   </div>
                 </div>
