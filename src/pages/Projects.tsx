@@ -51,7 +51,7 @@ const Projects = () => {
                     <div className="aspect-video overflow-hidden">
                       {project.beforeAfterImages ? (
                         <img 
-                          src={project.beforeAfterImages.before} 
+                          src={project.beforeAfterImages.after} 
                           alt={project.name}
                           className="w-full h-full object-cover"
                         />
