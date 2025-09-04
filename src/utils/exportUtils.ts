@@ -137,14 +137,17 @@ export const exportRequestToPDF = async (request: RenovationRequest) => {
               currentY = 20;
             }
             
-            // Ajouter le nom du fichier
+            // Ajouter le nom du fichier et le lien
             doc.setFontSize(10);
             doc.text(`${fileName}:`, 20, currentY);
             currentY += 10;
+            doc.setFontSize(8);
+            doc.text(`Lien: ${fileUrl}`, 20, currentY);
+            currentY += 15;
             
-            // Ajouter l'image (taille maximale: 160x120)
-            const imgWidth = 80;
-            const imgHeight = 60;
+            // Ajouter l'image (prendre toute la largeur moins les marges)
+            const imgWidth = 170; // Largeur de page (210) - marges (20 de chaque côté)
+            const imgHeight = 120; // Hauteur proportionnelle
             
             doc.addImage(base64, 'JPEG', 20, currentY, imgWidth, imgHeight);
             currentY += imgHeight + 15;
