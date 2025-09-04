@@ -145,31 +145,18 @@ const EmailSettings = () => {
       localStorage.setItem("requestsEmail", requestsEmail);
       localStorage.setItem("emailConfig", JSON.stringify(config));
       
-      // Configurer automatiquement les secrets Supabase
       toast({
         title: "Configuration en cours...",
         description: "Sauvegarde des paramètres et configuration des secrets Supabase.",
       });
 
-      // Attendre un peu pour l'interface utilisateur
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      // IMPORTANT: Les secrets doivent être configurés manuellement via les outils
+      // Voici un message explicite pour l'utilisateur
       toast({
-        title: "Configuration terminée",
-        description: "Les paramètres email ont été sauvegardés et les secrets Supabase configurés.",
+        title: "⚠️ Configuration des secrets requise",
+        description: "Veuillez configurer manuellement les secrets SMTP dans Supabase Edge Functions pour finaliser la configuration.",
+        variant: "destructive",
       });
-      
-      // Recharger le statut des secrets
-      setTimeout(async () => {
-        try {
-          const { data } = await supabase.functions.invoke('email-secrets-status');
-          if (data?.status) {
-            setSecretsStatus(data.status as Record<string, boolean>);
-          }
-        } catch (e) {
-          console.warn('Impossible de recharger le statut des secrets');
-        }
-      }, 2000);
       
     } catch (error) {
       console.error("Erreur:", error);
@@ -386,10 +373,63 @@ const EmailSettings = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end">
-                <Button onClick={saveConfig} disabled={isLoading}>
-                  {isLoading ? "Sauvegarde..." : "Sauvegarder et configurer Supabase"}
+              <div className="flex flex-col gap-3">
+                <Button onClick={saveConfig} disabled={isLoading} className="w-full">
+                  {isLoading ? "Sauvegarde..." : "Sauvegarder la configuration"}
                 </Button>
+                
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={async () => {
+                      toast({
+                        title: "Actualisation...",
+                        description: "Vérification du statut des secrets.",
+                      });
+                      try {
+                        const { data } = await supabase.functions.invoke('email-secrets-status');
+                        if (data?.status) {
+                          setSecretsStatus(data.status as Record<string, boolean>);
+                          toast({
+                            title: "Statut actualisé",
+                            description: "Le statut des secrets a été mis à jour.",
+                          });
+                        }
+                      } catch (e) {
+                        toast({
+                          title: "Erreur",
+                          description: "Impossible de vérifier le statut des secrets.",
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                  >
+                    🔄 Actualiser le statut
+                  </Button>
+                  
+                  <a
+                    href={`https://supabase.com/dashboard/project/fbkprtfdoeoazfgmsecm/settings/functions`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 text-xs"
+                  >
+                    ⚙️ Configurer dans Supabase
+                  </a>
+                </div>
+                
+                <div className="text-xs text-muted-foreground bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded p-3">
+                  <p className="font-medium text-amber-800 dark:text-amber-200 mb-1">🔑 Configuration manuelle requise</p>
+                  <p>Pour finaliser la configuration, vous devez configurer manuellement les secrets suivants dans Supabase Edge Functions :</p>
+                  <ul className="mt-2 space-y-1 text-amber-700 dark:text-amber-300">
+                    <li>• SMTP_HOST = {config.smtp_host}</li>
+                    <li>• SMTP_PORT = {config.smtp_port}</li>
+                    <li>• SMTP_USER = {config.smtp_user}</li>
+                    <li>• SMTP_PASS = [votre mot de passe]</li>
+                    <li>• SMTP_FROM = {config.smtp_from}</li>
+                    <li>• SMTP_TLS = {config.smtp_tls.toString()}</li>
+                  </ul>
+                </div>
               </div>
             </CardContent>
           </Card>
