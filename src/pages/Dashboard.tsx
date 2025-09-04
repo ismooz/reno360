@@ -12,6 +12,8 @@ import { FileText, Users, TrendingUp, Calendar, Shield, Settings } from "lucide-
 import ProfileEditDialog from "@/components/profile/ProfileEditDialog";
 import DeleteAccountDialog from "@/components/profile/DeleteAccountDialog";
 import ImageGallery from "@/components/ui/image-gallery";
+import RequestDetailDialog from "@/components/admin/RequestDetailDialog";
+import { useRenovationRequests } from "@/hooks/useRenovationRequests";
 
 const statusLabels: Record<string, { label: string; variant: "default" | "outline" | "secondary" | "destructive" }> = {
   pending: { label: "En attente", variant: "outline" },
@@ -24,10 +26,12 @@ const statusLabels: Record<string, { label: string; variant: "default" | "outlin
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, loading, isAdmin } = useAuth();
-  const [requests, setRequests] = useState<RenovationRequest[]>([]);
+  const { requests, updateRequestStatus } = useRenovationRequests();
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [isProfileEditOpen, setIsProfileEditOpen] = useState(false);
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<RenovationRequest | null>(null);
+  const [isRequestDetailOpen, setIsRequestDetailOpen] = useState(false);
   const [stats, setStats] = useState({
     totalRequests: 0,
     pendingRequests: 0,
@@ -42,30 +46,27 @@ const Dashboard = () => {
     }
     
     if (user) {
-      // Charger les demandes depuis localStorage
-      const allRequests = JSON.parse(localStorage.getItem("renovationRequests") || "[]");
-      
       if (user.role === "admin") {
-        // Pour les admins : charger toutes les demandes et tous les utilisateurs
-        setRequests(allRequests);
+        // Pour les admins : charger tous les utilisateurs
         const users = JSON.parse(localStorage.getItem("users") || "[]");
         setAllUsers(users);
         
         // Calculer les statistiques
         setStats({
-          totalRequests: allRequests.length,
-          pendingRequests: allRequests.filter((req: RenovationRequest) => req.status === 'pending').length,
+          totalRequests: requests.length,
+          pendingRequests: requests.filter((req: RenovationRequest) => req.status === 'pending').length,
           totalUsers: users.length,
-          completedRequests: allRequests.filter((req: RenovationRequest) => req.status === 'completed').length
+          completedRequests: requests.filter((req: RenovationRequest) => req.status === 'completed').length
         });
-      } else {
-        // Pour les clients : seulement leurs demandes
-        const userRequests = allRequests.filter((req: RenovationRequest) => req.clientId === user.id);
-        setRequests(userRequests);
       }
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, navigate, requests]);
   
+  const handleViewRequest = (request: RenovationRequest) => {
+    setSelectedRequest(request);
+    setIsRequestDetailOpen(true);
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat("fr-CH", {
@@ -197,20 +198,20 @@ const Dashboard = () => {
                       </div>
                       
                       {requests.slice(0, 5).map((request) => (
-                        <Card key={request.id}>
-                          <CardContent className="p-4">
-                            <div className="flex justify-between items-start mb-2">
-                              <div>
-                                <h4 className="font-semibold">{request.renovationType}</h4>
-                                <p className="text-sm text-muted-foreground">
-                                  {request.name} • #{request.id.slice(-6)}
-                                </p>
-                              </div>
-                              <Badge variant={statusLabels[request.status].variant}>
-                                {statusLabels[request.status].label}
-                              </Badge>
-                            </div>
-                             <p className="text-sm">{request.postalCode} • {formatDate(request.createdAt)}</p>
+                         <Card key={request.id}>
+                           <CardContent className="p-4">
+                             <div className="flex justify-between items-start mb-2">
+                               <div>
+                                 <h4 className="font-semibold">{request.renovationType || request.renovation_type}</h4>
+                                 <p className="text-sm text-muted-foreground">
+                                   {request.name} • #{request.id.slice(-6)}
+                                 </p>
+                               </div>
+                               <Badge variant={statusLabels[request.status].variant}>
+                                 {statusLabels[request.status].label}
+                               </Badge>
+                             </div>
+                              <p className="text-sm">{request.postalCode || request.postal_code} • {formatDate(request.createdAt || request.created_at)}</p>
                              {request.attachments && request.attachments.length > 0 && (
                                <div className="mt-2">
                                  <ImageGallery attachments={request.attachments} />
@@ -301,39 +302,50 @@ const Dashboard = () => {
                         {requests.map((request) => (
                           <Card key={request.id}>
                             <CardContent className="p-6">
-                              <div className="flex justify-between items-start mb-4">
-                                <div>
-                                  <h4 className="text-lg font-semibold">{request.renovationType}</h4>
-                                  <p className="text-sm text-muted-foreground">
-                                    Demande #{request.id.slice(-6)} • {formatDate(request.createdAt)}
-                                  </p>
-                                </div>
-                                <Badge variant={statusLabels[request.status].variant}>
-                                  {statusLabels[request.status].label}
-                                </Badge>
-                              </div>
+                               <div className="flex justify-between items-start mb-4">
+                                 <div>
+                                   <h4 className="text-lg font-semibold">{request.renovationType || request.renovation_type}</h4>
+                                   <p className="text-sm text-muted-foreground">
+                                     Demande #{request.id.slice(-6)} • {formatDate(request.createdAt || request.created_at)}
+                                   </p>
+                                 </div>
+                                 <Badge variant={statusLabels[request.status].variant}>
+                                   {statusLabels[request.status].label}
+                                 </Badge>
+                               </div>
                               
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                  <p className="text-sm font-medium">Type de bâtiment:</p>
-                                  <p className="text-sm">{request.buildingType}</p>
-                                </div>
-                                <div>
-                                  <p className="text-sm font-medium">Code postal:</p>
-                                  <p className="text-sm">{request.postalCode}</p>
-                                </div>
-                                <div>
-                                  <p className="text-sm font-medium">Délai:</p>
-                                  <p className="text-sm">{request.deadline}</p>
-                                </div>
-                              </div>
+                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                 <div>
+                                   <p className="text-sm font-medium">Type de bâtiment:</p>
+                                   <p className="text-sm">{request.buildingType || request.building_type}</p>
+                                 </div>
+                                 <div>
+                                   <p className="text-sm font-medium">Code postal:</p>
+                                   <p className="text-sm">{request.postalCode || request.postal_code}</p>
+                                 </div>
+                                 <div>
+                                   <p className="text-sm font-medium">Délai:</p>
+                                   <p className="text-sm">{request.deadline}</p>
+                                 </div>
+                               </div>
                               
                               <div className="mb-4">
                                 <p className="text-sm font-medium">Description:</p>
                                 <p className="text-sm line-clamp-2">{request.description}</p>
                               </div>
                               
-                              <Button variant="outline" size="sm">
+                              {request.attachments && request.attachments.length > 0 && (
+                                <div className="mt-2">
+                                  <ImageGallery attachments={request.attachments} />
+                                </div>
+                              )}
+                              
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="mt-2"
+                                onClick={() => handleViewRequest(request)}
+                              >
                                 Voir les détails
                               </Button>
                             </CardContent>
@@ -384,7 +396,14 @@ const Dashboard = () => {
       </div>
 
       {/* Dialogs */}
-      <ProfileEditDialog 
+      <RequestDetailDialog
+        request={selectedRequest}
+        isOpen={isRequestDetailOpen}
+        onClose={() => setIsRequestDetailOpen(false)}
+        onStatusChange={updateRequestStatus}
+        isAdmin={false}
+      />
+      <ProfileEditDialog
         isOpen={isProfileEditOpen} 
         onClose={() => setIsProfileEditOpen(false)} 
       />

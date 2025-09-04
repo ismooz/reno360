@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 interface RenovationFormFilesProps {
   files: File[];
-  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleFileChange: (files: File[]) => void;
   removeFile: (index: number) => void;
 }
 
@@ -24,16 +24,7 @@ const RenovationFormFiles = ({ files, handleFileChange, removeFile }: Renovation
     try {
       const optimizedFiles = await processFiles(selectedFiles);
       
-      // Créer un événement simulé avec les fichiers optimisés
-      const fakeEvent = {
-        ...e,
-        target: {
-          ...e.target,
-          files: optimizedFiles as any
-        }
-      } as React.ChangeEvent<HTMLInputElement>;
-      
-      handleFileChange(fakeEvent);
+      handleFileChange(optimizedFiles);
       
       if (optimizedFiles.length !== selectedFiles.length) {
         toast({

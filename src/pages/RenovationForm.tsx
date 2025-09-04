@@ -24,6 +24,7 @@ import RenovationFormTerms from "@/components/renovation-form/RenovationFormTerm
 import { ServiceHeader } from "@/components/renovation-form/ServiceHeader";
 import { RenovationType } from "@/types";
 import { EmailService } from "@/utils/emailService";
+import { useRenovationRequests } from "@/hooks/useRenovationRequests";
 
 const buildingTypes = [
   { value: "appartement", label: "Appartement" },
@@ -60,6 +61,7 @@ const RenovationForm = () => {
   const location = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { createRequest, uploadFiles } = useRenovationRequests();
   
   const searchParams = new URLSearchParams(location.search);
   const renovationParam = searchParams.get("renovation");
@@ -124,38 +126,26 @@ const RenovationForm = () => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      
-      if (files.length + newFiles.length > 5) {
-        toast({
-          title: "Limite atteinte",
-          description: "Vous ne pouvez pas télécharger plus de 5 fichiers.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      const oversizedFiles = newFiles.filter(file => file.size > 15 * 1024 * 1024);
-      if (oversizedFiles.length > 0) {
-        toast({
-          title: "Fichier(s) trop volumineux",
-          description: "Chaque fichier doit être inférieur à 15 Mo.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      setFiles(prev => [...prev, ...newFiles]);
+  const handleFileChange = async (optimizedFiles: File[]) => {
+    // Vérifier les limites
+    if (files.length + optimizedFiles.length > 5) {
+      toast({
+        title: "Limite atteinte",
+        description: "Vous ne pouvez pas télécharger plus de 5 fichiers.",
+        variant: "destructive",
+      });
+      return;
     }
+    
+    // Les fichiers ont déjà été optimisés par RenovationFormFiles
+    setFiles(prev => [...prev, ...optimizedFiles]);
   };
 
   const removeFile = (index: number) => {
     setFiles(files.filter((_, i) => i !== index));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!agreedToTerms) {
@@ -167,32 +157,69 @@ const RenovationForm = () => {
       return;
     }
     
-    // Créer des URLs pour les fichiers uploadés
-    const attachments = files.map(file => URL.createObjectURL(file));
-    
-    const newRequest = {
-      id: Date.now().toString(),
-      renovationType,
-      clientId: user?.id || "anonymous",
-      ...formData,
-      attachments, // Ajouter les fichiers à la demande
-      status: "pending",
-      createdAt: new Date().toISOString(),
-    };
-    
-    const storedRequests = JSON.parse(localStorage.getItem("renovationRequests") || "[]");
-    storedRequests.push(newRequest);
-    localStorage.setItem("renovationRequests", JSON.stringify(storedRequests));
-    
-    // Envoyer notification par email à l'équipe
-    EmailService.sendRequestNotification(newRequest);
-    
-    toast({
-      title: "Demande envoyée",
-      description: "Votre demande a été enregistrée avec succès.",
-    });
-    
-    navigate("/confirmation");
+    try {
+      toast({
+        title: "Envoi en cours...",
+        description: "Traitement de votre demande et upload des fichiers.",
+      });
+
+      // Upload des fichiers vers Supabase Storage
+      let attachmentUrls: string[] = [];
+      if (files.length > 0) {
+        attachmentUrls = await uploadFiles(files);
+      }
+      
+      const requestData = {
+        renovation_type: renovationType,
+        renovationType: renovationType, // Pour compatibilité
+        clientId: user?.id || "anonymous", // Pour compatibilité localStorage
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        postal_code: formData.postalCode,
+        postalCode: formData.postalCode, // Pour compatibilité
+        address: formData.address,
+        building_type: formData.buildingType,
+        buildingType: formData.buildingType, // Pour compatibilité
+        surface_type: formData.surfaceType,
+        surfaceType: formData.surfaceType, // Pour compatibilité
+        deadline: formData.deadline,
+        budget: formData.budget,
+        description: formData.description,
+        materials_needed: formData.materialsNeeded,
+        materialsNeeded: formData.materialsNeeded, // Pour compatibilité
+        preferred_date: formData.preferredDate ? new Date(formData.preferredDate).toISOString() : null,
+        attachments: attachmentUrls,
+        status: "pending" as const,
+      };
+
+      await createRequest(requestData);
+      
+      // Envoyer notification par email à l'équipe
+      EmailService.sendRequestNotification({
+        id: Date.now().toString(),
+        renovationType,
+        clientId: user?.id || "anonymous",
+        ...formData,
+        attachments: attachmentUrls,
+        status: "pending",
+        createdAt: new Date().toISOString(),
+      });
+      
+      toast({
+        title: "Demande envoyée",
+        description: "Votre demande a été enregistrée avec succès.",
+      });
+      
+      navigate("/confirmation");
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur s'est produite lors de l'envoi de votre demande.",
+        variant: "destructive",
+      });
+    }
   };
   
   return (

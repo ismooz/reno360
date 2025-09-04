@@ -22,21 +22,30 @@ export interface User {
 
 export interface RenovationRequest {
   id: string;
-  renovationType: string;
-  clientId: string;
+  renovation_type: string; // Correspond à la colonne DB
+  user_id?: string; // Correspond à la colonne DB
+  clientId?: string; // Pour compatibilité localStorage
+  renovationType?: string; // Pour compatibilité localStorage
   name: string;
   email: string;
-  phone: string;
-  postalCode: string;
-  buildingType: string;
-  surfaceType: string;
-  deadline: string;
-  description: string;
-  materialsNeeded: string;
+  phone?: string;
+  postal_code?: string; // Correspond à la colonne DB
+  postalCode?: string; // Pour compatibilité localStorage
+  address?: string;
+  building_type?: string; // Correspond à la colonne DB
+  buildingType?: string; // Pour compatibilité localStorage
+  surface_type?: string; // Correspond à la colonne DB
+  surfaceType?: string; // Pour compatibilité localStorage
+  deadline?: string;
+  description?: string;
+  materials_needed?: string; // Correspond à la colonne DB
+  materialsNeeded?: string; // Pour compatibilité localStorage
   budget?: string;
-  documentUrl?: string;
+  preferred_date?: string | null; // Correspond à la colonne DB
   status: 'pending' | 'approved' | 'in-progress' | 'completed' | 'rejected';
-  createdAt: string;
+  created_at: string; // Correspond à la colonne DB
+  createdAt?: string; // Pour compatibilité localStorage
+  updated_at: string; // Correspond à la colonne DB
   attachments?: string[]; // URLs des photos uploadées
 }
 

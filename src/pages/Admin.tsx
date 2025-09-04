@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { RenovationRequest } from "@/types";
 import { Search, Eye, Phone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +18,8 @@ import SecuritySettings from "@/components/admin/SecuritySettings";
 import ServiceManagement from "@/components/admin/ServiceManagement";
 import ProjectManagement from "@/components/admin/ProjectManagement";
 import ImageGallery from "@/components/ui/image-gallery";
+import RequestDetailDialog from "@/components/admin/RequestDetailDialog";
+import { useRenovationRequests } from "@/hooks/useRenovationRequests";
 
 const statusLabels: Record<string, { label: string; variant: "default" | "outline" | "secondary" | "destructive" }> = {
   pending: { label: "En attente", variant: "outline" },
@@ -32,9 +33,10 @@ const Admin = () => {
   const navigate = useNavigate();
   const { user, loading, isAdmin } = useAuth();
   const { toast } = useToast();
-  const [requests, setRequests] = useState<RenovationRequest[]>([]);
+  const { requests, updateRequestStatus } = useRenovationRequests();
   const [filteredRequests, setFilteredRequests] = useState<RenovationRequest[]>([]);
   const [selectedRequest, setSelectedRequest] = useState<RenovationRequest | null>(null);
+  const [isRequestDetailOpen, setIsRequestDetailOpen] = useState(false);
   const [filter, setFilter] = useState({
     status: "all",
     search: "",
@@ -50,10 +52,6 @@ const Admin = () => {
       navigate("/dashboard");
       return;
     }
-    
-    // Charger toutes les demandes depuis localStorage
-    const allRequests = JSON.parse(localStorage.getItem("renovationRequests") || "[]");
-    setRequests(allRequests);
   }, [user, loading, navigate, isAdmin]);
   
   useEffect(() => {
@@ -67,41 +65,21 @@ const Admin = () => {
     if (filter.search) {
       const searchLower = filter.search.toLowerCase();
       result = result.filter(
-        req => req.renovationType.toLowerCase().includes(searchLower) ||
+        req => (req.renovationType || req.renovation_type)?.toLowerCase().includes(searchLower) ||
               req.name.toLowerCase().includes(searchLower) ||
               req.email.toLowerCase().includes(searchLower) ||
-              req.postalCode.includes(searchLower)
+              (req.postalCode || req.postal_code || "").includes(searchLower)
       );
     }
     
     setFilteredRequests(result);
   }, [requests, filter]);
   
-  const handleStatusChange = async (requestId: string, newStatus: string) => {
-    const updatedRequests = requests.map(req => 
-      req.id === requestId ? { ...req, status: newStatus as any } : req
-    );
-    
-    setRequests(updatedRequests);
-    localStorage.setItem("renovationRequests", JSON.stringify(updatedRequests));
-    
-    // Mettre à jour le nombre de demandes pour l'utilisateur
-    const request = requests.find(req => req.id === requestId);
-    if (request) {
-      // Envoyer notification par email pour le changement de statut (simulé)
-      const notifications = JSON.parse(localStorage.getItem("userNotifications") || "[]");
-      notifications.push({
-        id: Date.now().toString(),
-        userId: request.clientId,
-        type: "request_status_change",
-        title: "Mise à jour de votre demande",
-        message: `Le statut de votre demande de "${request.renovationType}" a changé en "${statusLabels[newStatus as keyof typeof statusLabels].label}".`,
-        read: false,
-        createdAt: new Date().toISOString()
-      });
-      localStorage.setItem("userNotifications", JSON.stringify(notifications));
-    }
+  const handleViewDetails = (request: RenovationRequest) => {
+    setSelectedRequest(request);
+    setIsRequestDetailOpen(true);
   };
+
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -110,10 +88,6 @@ const Admin = () => {
       month: "2-digit",
       year: "numeric",
     }).format(date);
-  };
-
-  const handleViewDetails = (request: RenovationRequest) => {
-    setSelectedRequest(request);
   };
 
   const handleContactClient = (request: RenovationRequest) => {
@@ -212,32 +186,32 @@ const Admin = () => {
                         {filteredRequests.map((request) => (
                           <Card key={request.id}>
                             <CardContent className="p-6">
-                              <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
-                                <div>
-                                  <h4 className="text-lg font-semibold">{request.renovationType}</h4>
-                                  <p className="text-sm text-muted-foreground">
-                                    Demande #{request.id.slice(-6)} • {formatDate(request.createdAt)}
-                                  </p>
-                                </div>
+                               <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
+                                 <div>
+                                   <h4 className="text-lg font-semibold">{request.renovationType || request.renovation_type}</h4>
+                                   <p className="text-sm text-muted-foreground">
+                                     Demande #{request.id.slice(-6)} • {formatDate(request.createdAt || request.created_at)}
+                                   </p>
+                                 </div>
                                 <div className="flex items-center gap-2">
                                   <Badge variant={statusLabels[request.status].variant}>
                                     {statusLabels[request.status].label}
                                   </Badge>
-                                  <Select
-                                    value={request.status}
-                                    onValueChange={(value) => handleStatusChange(request.id, value)}
-                                  >
-                                    <SelectTrigger className="w-36">
-                                      <SelectValue placeholder="Changer le statut" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="pending">En attente</SelectItem>
-                                      <SelectItem value="approved">Approuvé</SelectItem>
-                                      <SelectItem value="in-progress">En cours</SelectItem>
-                                      <SelectItem value="completed">Terminé</SelectItem>
-                                      <SelectItem value="rejected">Rejeté</SelectItem>
-                                    </SelectContent>
-                                  </Select>
+                                   <Select
+                                     value={request.status}
+                                     onValueChange={(value) => updateRequestStatus(request.id, value)}
+                                   >
+                                     <SelectTrigger className="w-36">
+                                       <SelectValue placeholder="Changer le statut" />
+                                     </SelectTrigger>
+                                     <SelectContent>
+                                       <SelectItem value="pending">En attente</SelectItem>
+                                       <SelectItem value="approved">Approuvé</SelectItem>
+                                       <SelectItem value="in-progress">En cours</SelectItem>
+                                       <SelectItem value="completed">Terminé</SelectItem>
+                                       <SelectItem value="rejected">Rejeté</SelectItem>
+                                     </SelectContent>
+                                   </Select>
                                 </div>
                               </div>
                               
@@ -252,96 +226,36 @@ const Admin = () => {
                                 </div>
                                 <div className="space-y-3">
                                   <h5 className="text-sm font-semibold text-primary border-b border-border pb-1">Détails du projet</h5>
-                                  <div className="space-y-1">
-                                    <p className="text-sm"><span className="text-muted-foreground">Type:</span> <span className="font-medium">{request.buildingType}</span></p>
-                                    <p className="text-sm"><span className="text-muted-foreground">Surface:</span> <span className="font-medium">{request.surfaceType}</span></p>
-                                    <p className="text-sm"><span className="text-muted-foreground">Code postal:</span> <span className="font-medium">{request.postalCode}</span></p>
-                                    <p className="text-sm"><span className="text-muted-foreground">Délai:</span> <span className="font-medium">{request.deadline}</span></p>
-                                  </div>
+                                     <div className="space-y-1">
+                                       <p className="text-sm"><span className="text-muted-foreground">Type:</span> <span className="font-medium">{request.buildingType || request.building_type}</span></p>
+                                       <p className="text-sm"><span className="text-muted-foreground">Surface:</span> <span className="font-medium">{request.surfaceType || request.surface_type}</span></p>
+                                       <p className="text-sm"><span className="text-muted-foreground">Code postal:</span> <span className="font-medium">{request.postalCode || request.postal_code}</span></p>
+                                       <p className="text-sm"><span className="text-muted-foreground">Délai:</span> <span className="font-medium">{request.deadline}</span></p>
+                                     </div>
+                                   </div>
+                                   <div className="space-y-3">
+                                     <h5 className="text-sm font-semibold text-primary border-b border-border pb-1">Description</h5>
+                                     <p className="text-sm text-foreground line-clamp-4">{request.description}</p>
                                 </div>
-                                <div className="space-y-3">
-                                  <h5 className="text-sm font-semibold text-primary border-b border-border pb-1">Description</h5>
-                                  <p className="text-sm text-foreground line-clamp-4">{request.description}</p>
+                               </div>
+                               
+                               {request.attachments && request.attachments.length > 0 && (
+                                 <div className="mb-4">
+                                   <ImageGallery attachments={request.attachments} />
+                                 </div>
+                               )}
+                               
+                                <div className="flex gap-2">
+                                  <Button variant="outline" size="sm" onClick={() => handleViewDetails(request)}>
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    Voir les détails
+                                  </Button>
+                                  
+                                  <Button size="sm" onClick={() => handleContactClient(request)}>
+                                    <Phone className="h-4 w-4 mr-2" />
+                                    Contacter le client
+                                  </Button>
                                 </div>
-                              </div>
-                              
-                              <div className="flex gap-2">
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <Button variant="outline" size="sm" onClick={() => handleViewDetails(request)}>
-                                      <Eye className="h-4 w-4 mr-2" />
-                                      Voir les détails
-                                    </Button>
-                                  </DialogTrigger>
-                                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                                    <DialogHeader>
-                                      <DialogTitle>Détails de la demande #{request.id.slice(-6)}</DialogTitle>
-                                      <DialogDescription>
-                                        Demande de {request.renovationType} soumise le {formatDate(request.createdAt)}
-                                      </DialogDescription>
-                                    </DialogHeader>
-                                    <div className="space-y-6">
-                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                          <h4 className="font-semibold mb-2">Informations client</h4>
-                                          <div className="space-y-1 text-sm">
-                                            <p><strong>Nom:</strong> {request.name}</p>
-                                            <p><strong>Email:</strong> {request.email}</p>
-                                            <p><strong>Téléphone:</strong> {request.phone || "Non spécifié"}</p>
-                                          </div>
-                                        </div>
-                                        <div>
-                                          <h4 className="font-semibold mb-2">Projet</h4>
-                                          <div className="space-y-1 text-sm">
-                                            <p><strong>Type:</strong> {request.renovationType}</p>
-                                            <p><strong>Bâtiment:</strong> {request.buildingType || "Non spécifié"}</p>
-                                            <p><strong>Surface:</strong> {request.surfaceType || "Non spécifiée"}</p>
-                                            <p><strong>Délai:</strong> {request.deadline || "Non spécifié"}</p>
-                                            <p><strong>Budget:</strong> {request.budget || "Non spécifié"}</p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      
-                                      <div>
-                                        <h4 className="font-semibold mb-2">Localisation</h4>
-                                        <p className="text-sm">Code postal: {request.postalCode || "Non spécifié"}</p>
-                                      </div>
-                                      
-                                      <div>
-                                        <h4 className="font-semibold mb-2">Description du projet</h4>
-                                        <p className="text-sm">{request.description || "Aucune description fournie"}</p>
-                                      </div>
-                                      
-                                      {request.materialsNeeded && (
-                                        <div>
-                                          <h4 className="font-semibold mb-2">Matériaux nécessaires</h4>
-                                          <p className="text-sm">{request.materialsNeeded}</p>
-                                        </div>
-                                      )}
-                                      
-                                      
-                                      {request.attachments && request.attachments.length > 0 && (
-                                        <div>
-                                          <h4 className="font-semibold mb-2">Pièces jointes</h4>
-                                          <ImageGallery attachments={request.attachments} />
-                                        </div>
-                                      )}
-                                      
-                                      <div>
-                                        <h4 className="font-semibold mb-2">Statut actuel</h4>
-                                        <Badge variant={statusLabels[request.status].variant}>
-                                          {statusLabels[request.status].label}
-                                        </Badge>
-                                      </div>
-                                    </div>
-                                  </DialogContent>
-                                </Dialog>
-                                
-                                <Button size="sm" onClick={() => handleContactClient(request)}>
-                                  <Phone className="h-4 w-4 mr-2" />
-                                  Contacter le client
-                                </Button>
-                              </div>
                             </CardContent>
                           </Card>
                         ))}
@@ -378,6 +292,14 @@ const Admin = () => {
           </Card>
         </div>
       </div>
+
+      <RequestDetailDialog
+        request={selectedRequest}
+        isOpen={isRequestDetailOpen}
+        onClose={() => setIsRequestDetailOpen(false)}
+        onStatusChange={updateRequestStatus}
+        isAdmin={true}
+      />
     </Layout>
   );
 };
