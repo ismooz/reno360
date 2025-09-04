@@ -131,35 +131,45 @@ export const exportRequestToPDF = async (request: RenovationRequest) => {
         try {
           const base64 = await getImageBase64(fileUrl);
           if (base64) {
-            // Vérifier si on a assez d'espace sur la page
-            if (currentY > 200) {
-              doc.addPage();
-              currentY = 20;
-            }
+            // Nouvelle page pour chaque image
+            doc.addPage();
+            currentY = 20;
             
-            // Ajouter le nom du fichier et le lien
-            doc.setFontSize(10);
-            doc.text(`${fileName}:`, 20, currentY);
-            currentY += 10;
-            doc.setFontSize(8);
-            doc.text(`Lien: ${fileUrl}`, 20, currentY);
+            // Ajouter le nom du fichier
+            doc.setFontSize(12);
+            doc.text(`Image: ${fileName}`, 20, currentY);
             currentY += 15;
+            
+            // Ajouter le lien avec gestion des retours à la ligne
+            doc.setFontSize(8);
+            const splitLink = doc.splitTextToSize(`Lien: ${fileUrl}`, 170);
+            doc.text(splitLink, 20, currentY);
+            currentY += splitLink.length * 4 + 10;
             
             // Ajouter l'image (prendre toute la largeur moins les marges)
             const imgWidth = 170; // Largeur de page (210) - marges (20 de chaque côté)
             const imgHeight = 120; // Hauteur proportionnelle
             
             doc.addImage(base64, 'JPEG', 20, currentY, imgWidth, imgHeight);
-            currentY += imgHeight + 15;
           } else {
-            // Si l'image ne peut pas être chargée, afficher juste le nom
+            // Si l'image ne peut pas être chargée
+            doc.addPage();
+            currentY = 20;
+            doc.setFontSize(10);
             doc.text(`${fileName} (image non disponible)`, 20, currentY);
             currentY += 10;
+            const splitLink = doc.splitTextToSize(`Lien: ${fileUrl}`, 170);
+            doc.text(splitLink, 20, currentY);
           }
         } catch (error) {
           console.error('Error adding image to PDF:', error);
+          doc.addPage();
+          currentY = 20;
+          doc.setFontSize(10);
           doc.text(`${fileName} (erreur de chargement)`, 20, currentY);
           currentY += 10;
+          const splitLink = doc.splitTextToSize(`Lien: ${fileUrl}`, 170);
+          doc.text(splitLink, 20, currentY);
         }
       } else {
         // Pour les fichiers non-image, afficher juste le nom
