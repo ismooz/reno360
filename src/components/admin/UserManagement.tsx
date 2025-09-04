@@ -29,11 +29,12 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { Search, Edit, Trash, MailCheck, UserCog, Eye } from "lucide-react";
+import { Search, Edit, Trash, MailCheck, UserCog, Eye, RefreshCw } from "lucide-react";
 import UserFormDialog from "./UserFormDialog";
 import UserViewDialog from "./UserViewDialog";
 import UserPasswordDialog from "./UserPasswordDialog";
 import { sanitizeUserData, hashPassword } from "@/utils/security";
+import { supabase } from "@/integrations/supabase/client";
 
 const UserManagement = () => {
   const { user: currentUser, isAdmin } = useAuth();
@@ -44,17 +45,42 @@ const UserManagement = () => {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState({
     status: "all",
     search: "",
   });
 
+  // Fonction pour charger tous les utilisateurs depuis Supabase
+  const loadUsers = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.functions.invoke('list-users');
+      
+      if (error) {
+        console.error('Erreur lors du chargement des utilisateurs:', error);
+        toast.error('Erreur lors du chargement des utilisateurs');
+        // Fallback sur localStorage en cas d'erreur
+        const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
+        const usersWithoutPasswords = storedUsers.map(sanitizeUserData);
+        setUsers(usersWithoutPasswords);
+      } else {
+        console.log('Utilisateurs chargés:', data.users);
+        setUsers(data.users || []);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des utilisateurs:', error);
+      // Fallback sur localStorage
+      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
+      const usersWithoutPasswords = storedUsers.map(sanitizeUserData);
+      setUsers(usersWithoutPasswords);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Charger les utilisateurs depuis localStorage
-    const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-    // Nettoyer les données sensibles
-    const usersWithoutPasswords = storedUsers.map(sanitizeUserData);
-    setUsers(usersWithoutPasswords);
+    loadUsers();
   }, []);
 
   useEffect(() => {
@@ -246,7 +272,15 @@ const UserManagement = () => {
             />
           </div>
         </div>
-        <div>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={loadUsers} 
+            disabled={isLoading}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            Actualiser
+          </Button>
           <Button onClick={() => {
             setSelectedUser(null);
             setIsUserFormOpen(true);

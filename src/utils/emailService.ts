@@ -40,18 +40,23 @@ export class EmailService {
         body = body.replace(new RegExp(placeholder, 'g'), value);
       });
 
-      // Dans une vraie application, ici on enverrait l'email via un service comme SendGrid, Mailgun, etc.
-      console.log("Email envoyé:", {
-        from: settings.fromEmail,
-        to,
-        replyTo: settings.replyToEmail,
-        subject,
-        body
+      // Envoyer l'email via Edge Function
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data, error } = await supabase.functions.invoke('send-email', {
+        body: {
+          to,
+          subject,
+          html: body,
+          from: settings.fromEmail
+        }
       });
 
-      // Simuler l'envoi d'email
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      if (error) {
+        console.error("Erreur lors de l'envoi de l'email:", error);
+        return false;
+      }
+
+      console.log("Email envoyé avec succès:", data);
       return true;
     } catch (error) {
       console.error("Erreur lors de l'envoi de l'email:", error);
@@ -65,28 +70,38 @@ export class EmailService {
       
       // Email à l'équipe pour nouvelle demande
       const emailContent = `
-        Nouvelle demande de devis reçue:
+        <h2>Nouvelle demande de devis reçue</h2>
         
-        Client: ${requestData.name}
-        Email: ${requestData.email}
-        Téléphone: ${requestData.phone}
-        Type de rénovation: ${requestData.renovationType}
-        Code postal: ${requestData.postalCode}
+        <p><strong>Client:</strong> ${requestData.name}</p>
+        <p><strong>Email:</strong> ${requestData.email}</p>
+        <p><strong>Téléphone:</strong> ${requestData.phone}</p>
+        <p><strong>Type de rénovation:</strong> ${requestData.renovationType}</p>
+        <p><strong>Code postal:</strong> ${requestData.postalCode}</p>
         
-        Description:
-        ${requestData.description}
+        <h3>Description:</h3>
+        <p>${requestData.description}</p>
         
-        Délai souhaité: ${requestData.deadline}
-        Budget: ${requestData.budget || "Non spécifié"}
+        <p><strong>Délai souhaité:</strong> ${requestData.deadline}</p>
+        <p><strong>Budget:</strong> ${requestData.budget || "Non spécifié"}</p>
       `;
 
-      console.log("Notification envoyée à l'équipe:", {
-        from: settings.fromEmail,
-        to: settings.requestsEmail,
-        subject: `Nouvelle demande: ${requestData.renovationType}`,
-        body: emailContent
+      // Envoyer via Edge Function
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data, error } = await supabase.functions.invoke('send-email', {
+        body: {
+          to: settings.requestsEmail,
+          subject: `Nouvelle demande: ${requestData.renovationType}`,
+          html: emailContent,
+          from: settings.fromEmail
+        }
       });
 
+      if (error) {
+        console.error("Erreur lors de l'envoi de la notification:", error);
+        return false;
+      }
+
+      console.log("Notification envoyée avec succès:", data);
       return true;
     } catch (error) {
       console.error("Erreur lors de l'envoi de la notification:", error);
