@@ -122,6 +122,13 @@ export const exportRequestToPDF = async (request: RenovationRequest) => {
     for (let i = 0; i < request.attachments.length; i++) {
       const attachment = request.attachments[i];
       const fileUrl = getFileUrl(attachment);
+      
+      // Chercher les métadonnées correspondantes
+      const metadata = request.attachment_metadata?.find((meta: any) => 
+        meta.filename === attachment || meta.originalName === attachment.split('/').pop()
+      );
+      
+      const displayName = metadata?.displayName || attachment.split('/').pop() || `Fichier ${i + 1}`;
       const fileName = attachment.split('/').pop() || `Fichier ${i + 1}`;
       
       // Vérifier si c'est une image
@@ -135,10 +142,15 @@ export const exportRequestToPDF = async (request: RenovationRequest) => {
             doc.addPage();
             currentY = 20;
             
-            // Ajouter le nom du fichier
-            doc.setFontSize(12);
-            doc.text(`Image: ${fileName}`, 20, currentY);
+            // Ajouter le nom personnalisé
+            doc.setFontSize(14);
+            doc.text(`Image: ${displayName}`, 20, currentY);
             currentY += 15;
+            
+            // Ajouter le nom du fichier original
+            doc.setFontSize(10);
+            doc.text(`Fichier original: ${fileName}`, 20, currentY);
+            currentY += 10;
             
             // Ajouter le lien avec gestion des retours à la ligne
             doc.setFontSize(8);
@@ -155,9 +167,10 @@ export const exportRequestToPDF = async (request: RenovationRequest) => {
             // Si l'image ne peut pas être chargée
             doc.addPage();
             currentY = 20;
-            doc.setFontSize(10);
-            doc.text(`${fileName} (image non disponible)`, 20, currentY);
+            doc.setFontSize(12);
+            doc.text(`${displayName} (image non disponible)`, 20, currentY);
             currentY += 10;
+            doc.setFontSize(8);
             const splitLink = doc.splitTextToSize(`Lien: ${fileUrl}`, 170);
             doc.text(splitLink, 20, currentY);
           }
@@ -165,9 +178,10 @@ export const exportRequestToPDF = async (request: RenovationRequest) => {
           console.error('Error adding image to PDF:', error);
           doc.addPage();
           currentY = 20;
-          doc.setFontSize(10);
-          doc.text(`${fileName} (erreur de chargement)`, 20, currentY);
+          doc.setFontSize(12);
+          doc.text(`${displayName} (erreur de chargement)`, 20, currentY);
           currentY += 10;
+          doc.setFontSize(8);
           const splitLink = doc.splitTextToSize(`Lien: ${fileUrl}`, 170);
           doc.text(splitLink, 20, currentY);
         }

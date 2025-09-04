@@ -22,7 +22,7 @@ import RenovationFormFiles from "@/components/renovation-form/RenovationFormFile
 import RenovationFormContact from "@/components/renovation-form/RenovationFormContact";
 import RenovationFormTerms from "@/components/renovation-form/RenovationFormTerms";
 import { ServiceHeader } from "@/components/renovation-form/ServiceHeader";
-import { RenovationType } from "@/types";
+import { RenovationType, AttachmentMetadata } from "@/types";
 import { EmailService } from "@/utils/emailService";
 import { useRenovationRequests } from "@/hooks/useRenovationRequests";
 
@@ -70,6 +70,7 @@ const RenovationForm = () => {
   const [currentService, setCurrentService] = useState<RenovationType | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [files, setFiles] = useState<File[]>([]);
+  const [fileMetadata, setFileMetadata] = useState<AttachmentMetadata[]>([]);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.user_metadata?.name || "",
@@ -126,7 +127,7 @@ const RenovationForm = () => {
     }
   };
 
-  const handleFileChange = async (optimizedFiles: File[]) => {
+  const handleFileChange = async (optimizedFiles: File[], metadata: AttachmentMetadata[]) => {
     // Vérifier les limites
     if (files.length + optimizedFiles.length > 5) {
       toast({
@@ -138,11 +139,13 @@ const RenovationForm = () => {
     }
     
     // Les fichiers ont déjà été optimisés par RenovationFormFiles
-    setFiles(prev => [...prev, ...optimizedFiles]);
+    setFiles(optimizedFiles);
+    setFileMetadata(metadata);
   };
 
   const removeFile = (index: number) => {
     setFiles(files.filter((_, i) => i !== index));
+    setFileMetadata(fileMetadata.filter((_, i) => i !== index));
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -165,8 +168,14 @@ const RenovationForm = () => {
 
       // Upload des fichiers vers Supabase Storage
       let attachmentUrls: string[] = [];
+      let updatedMetadata: AttachmentMetadata[] = [];
       if (files.length > 0) {
         attachmentUrls = await uploadFiles(files);
+        // Mettre à jour les métadonnées avec les URLs finales
+        updatedMetadata = fileMetadata.map((meta, index) => ({
+          ...meta,
+          filename: attachmentUrls[index] || meta.filename
+        }));
       }
       
       const requestData = {
@@ -190,6 +199,7 @@ const RenovationForm = () => {
         materialsNeeded: formData.materialsNeeded, // Pour compatibilité
         preferred_date: formData.preferredDate ? new Date(formData.preferredDate).toISOString() : null,
         attachments: attachmentUrls,
+        attachment_metadata: updatedMetadata,
         status: "pending" as const,
       };
 
@@ -259,6 +269,7 @@ const RenovationForm = () => {
                 />
                 <RenovationFormFiles
                   files={files}
+                  fileMetadata={fileMetadata}
                   handleFileChange={handleFileChange}
                   removeFile={removeFile}
                 />

@@ -44,6 +44,7 @@ export type Database = {
       renovation_requests: {
         Row: {
           address: string | null
+          attachment_metadata: Json | null
           attachments: string[] | null
           budget: string | null
           building_type: string | null
@@ -65,6 +66,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          attachment_metadata?: Json | null
           attachments?: string[] | null
           budget?: string | null
           building_type?: string | null
@@ -86,6 +88,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          attachment_metadata?: Json | null
           attachments?: string[] | null
           budget?: string | null
           building_type?: string | null

@@ -235,7 +235,44 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
           {request.attachments && request.attachments.length > 0 && (
             <div className="bg-muted/50 rounded-lg p-4">
               <h3 className="font-semibold mb-3">Pièces jointes ({request.attachments.length})</h3>
-              <ImageGallery attachments={request.attachments} />
+              <div className="space-y-3">
+                {request.attachments.map((attachment, index) => {
+                  // Chercher les métadonnées correspondantes
+                  const metadata = request.attachment_metadata?.find((meta: any) => 
+                    meta.filename === attachment || meta.originalName === attachment.split('/').pop()
+                  );
+                  
+                  const displayName = metadata?.displayName || attachment.split('/').pop() || `Fichier ${index + 1}`;
+                  const originalName = metadata?.originalName || attachment.split('/').pop();
+                  
+                  return (
+                    <div key={index} className="border rounded-lg p-3 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-sm">{displayName}</p>
+                          {originalName !== displayName && (
+                            <p className="text-xs text-muted-foreground">Fichier: {originalName}</p>
+                          )}
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => window.open(attachment.startsWith('http') ? attachment : `https://fbkprtfdoeoazfgmsecm.supabase.co/storage/v1/object/public/request-attachments/${attachment}`, '_blank')}
+                        >
+                          Ouvrir
+                        </Button>
+                      </div>
+                      {/\.(jpg|jpeg|png|gif|webp)$/i.test(attachment) && (
+                        <img 
+                          src={attachment.startsWith('http') ? attachment : `https://fbkprtfdoeoazfgmsecm.supabase.co/storage/v1/object/public/request-attachments/${attachment}`}
+                          alt={displayName}
+                          className="w-full max-w-sm h-32 object-cover rounded"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

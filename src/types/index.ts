@@ -1,4 +1,11 @@
 
+export interface AttachmentMetadata {
+  filename: string; // Chemin du fichier dans le storage
+  displayName: string; // Nom personnalisé donné par l'utilisateur
+  type: 'image' | 'document'; // Type de fichier
+  originalName: string; // Nom original du fichier
+}
+
 export interface RenovationType {
   id: string;
   name: string;
@@ -47,6 +54,7 @@ export interface RenovationRequest {
   createdAt?: string; // Pour compatibilité localStorage
   updated_at: string; // Correspond à la colonne DB
   attachments?: string[]; // URLs des photos uploadées
+  attachment_metadata?: AttachmentMetadata[] | any; // Métadonnées des fichiers avec noms personnalisés (JSON from DB)
 }
 
 export interface Project {
