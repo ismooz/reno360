@@ -41,11 +41,13 @@ class SMTPClient {
   }
 
   async sendEmail(to: string, subject: string, html: string, from?: string): Promise<any> {
-    const actualFrom = from || this.from;
+    const envelopeFrom = (this.from && this.from.includes("@")) ? this.from : this.username;
+    const headerFrom = envelopeFrom;
+    const replyTo = (from && from.includes("@")) ? from : undefined;
     
     try {
       // Connect to SMTP server
-      const conn = await Deno.connect({
+      let conn = await Deno.connect({
         hostname: this.host,
         port: this.port,
       });
@@ -79,7 +81,12 @@ class SMTPClient {
       if (this.useTLS) {
         response = await sendCommand("STARTTLS");
         console.log("STARTTLS response:", response);
-        // Note: For production, you'd need to upgrade to TLS connection here
+        // Upgrade connection to TLS
+        // @ts-ignore - startTls is available in Deno runtime
+        conn = await (Deno as any).startTls(conn, { hostname: this.host });
+        // Re-EHLO after STARTTLS
+        response = await sendCommand(`EHLO ${this.host}`);
+        console.log("EHLO after STARTTLS:", response);
       }
 
       // AUTH LOGIN
@@ -97,7 +104,7 @@ class SMTPClient {
       console.log("Password response:", response);
 
       // MAIL FROM
-      response = await sendCommand(`MAIL FROM:<${actualFrom}>`);
+      response = await sendCommand(`MAIL FROM:<${envelopeFrom}>`);
       console.log("MAIL FROM response:", response);
 
       // RCPT TO
@@ -109,18 +116,22 @@ class SMTPClient {
       console.log("DATA response:", response);
 
       // Email headers and body
-      const emailContent = [
-        `From: ${actualFrom}`,
+      const headers: string[] = [
+        `From: Reno360 <${headerFrom}>`,
         `To: ${to}`,
         `Subject: ${subject}`,
+        `MIME-Version: 1.0`,
         `Content-Type: text/html; charset=utf-8`,
-        "",
-        html,
-        "."
-      ].join("\r\n");
+      ];
+      if (replyTo) headers.push(`Reply-To: ${replyTo}`);
+      headers.push("", html, ".");
+      const emailContent = headers.join("\r\n");
 
       response = await sendCommand(emailContent);
       console.log("Email content response:", response);
+      if (!response.startsWith("250")) {
+        throw new Error(`SMTP rejected message: ${response}`);
+      }
 
       // QUIT
       response = await sendCommand("QUIT");
@@ -130,7 +141,7 @@ class SMTPClient {
 
       return {
         id: `email_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        from: actualFrom,
+        from: headerFrom,
         to: [to],
         subject,
         html,
