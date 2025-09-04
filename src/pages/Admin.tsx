@@ -9,7 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RenovationRequest } from "@/types";
-import { Search, Eye, Phone } from "lucide-react";
+import { Search, Eye, Phone, Download, FileSpreadsheet } from "lucide-react";
+import { exportRequestsToCSV, exportRequestsToExcel } from "@/utils/exportUtils";
 import { useToast } from "@/hooks/use-toast";
 import UserManagement from "@/components/admin/UserManagement";
 import AdminSettings from "@/components/admin/AdminSettings";
@@ -169,8 +170,29 @@ const Admin = () => {
                           />
                         </div>
                       </div>
-                      <div>
-                        <Button variant="outline">Exporter</Button>
+                      <div className="flex gap-2">
+                        <Select onValueChange={(value) => {
+                          if (value === "csv") exportRequestsToCSV(filteredRequests);
+                          if (value === "excel") exportRequestsToExcel(filteredRequests);
+                        }}>
+                          <SelectTrigger className="w-32">
+                            <SelectValue placeholder="Exporter" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="csv">
+                              <div className="flex items-center gap-2">
+                                <FileSpreadsheet className="h-4 w-4" />
+                                CSV
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="excel">
+                              <div className="flex items-center gap-2">
+                                <Download className="h-4 w-4" />
+                                Excel
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                     

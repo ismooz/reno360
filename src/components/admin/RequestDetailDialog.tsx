@@ -4,8 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RenovationRequest } from "@/types";
-import { Phone, Mail, MapPin, Calendar, DollarSign, FileText } from "lucide-react";
+import { Phone, Mail, MapPin, Calendar, DollarSign, FileText, Download } from "lucide-react";
 import ImageGallery from "@/components/ui/image-gallery";
+import { exportRequestToPDF } from "@/utils/exportUtils";
 
 interface RequestDetailDialogProps {
   request: RenovationRequest | null;
@@ -64,6 +65,14 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
               </DialogDescription>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => exportRequestToPDF(request)}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                PDF
+              </Button>
               <Badge variant={statusLabels[request.status].variant}>
                 {statusLabels[request.status].label}
               </Badge>

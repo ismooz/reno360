@@ -186,6 +186,8 @@ export const useRenovationRequests = () => {
         const fileExt = file.name.split('.').pop();
         const fileName = `${user?.id || 'anonymous'}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
 
+        console.log('Uploading file:', fileName);
+
         const { data, error } = await supabase.storage
           .from('request-attachments')
           .upload(fileName, file);
@@ -193,21 +195,24 @@ export const useRenovationRequests = () => {
         if (error) {
           console.error('Erreur upload:', error);
           // Fallback: créer une URL locale
-          uploadedUrls.push(URL.createObjectURL(file));
+          const blobUrl = URL.createObjectURL(file);
+          console.log('Using blob URL as fallback:', blobUrl);
+          uploadedUrls.push(blobUrl);
         } else {
-          // Obtenir l'URL publique signée pour accéder au fichier
-          const { data: { publicUrl } } = supabase.storage
-            .from('request-attachments')
-            .getPublicUrl(fileName);
-          uploadedUrls.push(publicUrl);
+          console.log('Upload successful:', data);
+          // Stocker juste le path, pas l'URL complète
+          uploadedUrls.push(fileName);
         }
       } catch (error) {
         console.error('Erreur upload fichier:', error);
         // Fallback: créer une URL locale
-        uploadedUrls.push(URL.createObjectURL(file));
+        const blobUrl = URL.createObjectURL(file);
+        console.log('Using blob URL as fallback:', blobUrl);
+        uploadedUrls.push(blobUrl);
       }
     }
 
+    console.log('All uploaded URLs:', uploadedUrls);
     return uploadedUrls;
   };
 
