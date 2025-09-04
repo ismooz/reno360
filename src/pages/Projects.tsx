@@ -8,6 +8,7 @@ import ProjectCarousel from "@/components/projects/ProjectCarousel";
 import BeforeAfterSlider from "@/components/projects/BeforeAfterSlider";
 import { Project } from "@/types";
 import { useNavigate } from "react-router-dom";
+import { sampleProjects } from "@/data/sampleProjects";
 
 const Projects = () => {
   const { user } = useAuth();
@@ -15,11 +16,13 @@ const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    // Charger les projets depuis localStorage
+    // Charger les projets depuis localStorage et combiner avec les exemples
     const storedProjects = localStorage.getItem("projects");
-    if (storedProjects) {
-      setProjects(JSON.parse(storedProjects));
-    }
+    const userProjects = storedProjects ? JSON.parse(storedProjects) : [];
+    
+    // Combiner les projets d'exemple avec ceux créés par l'admin
+    const allProjects = [...sampleProjects, ...userProjects];
+    setProjects(allProjects);
   }, []);
 
   const isAdmin = user?.role === "admin"; // Utilise la propriété role directement

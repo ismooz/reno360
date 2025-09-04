@@ -167,11 +167,15 @@ const RenovationForm = () => {
       return;
     }
     
+    // Créer des URLs pour les fichiers uploadés
+    const attachments = files.map(file => URL.createObjectURL(file));
+    
     const newRequest = {
       id: Date.now().toString(),
       renovationType,
       clientId: user?.id || "anonymous",
       ...formData,
+      attachments, // Ajouter les fichiers à la demande
       status: "pending",
       createdAt: new Date().toISOString(),
     };
