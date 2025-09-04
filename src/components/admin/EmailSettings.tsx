@@ -63,6 +63,7 @@ const EmailSettings = () => {
   const [testEmail, setTestEmail] = useState("");
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [emailErrors, setEmailErrors] = useState<Record<string, string>>({});
+  const [secretsStatus, setSecretsStatus] = useState<Record<string, boolean> | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -84,6 +85,20 @@ const EmailSettings = () => {
     if (savedConfig) {
       setConfig(JSON.parse(savedConfig));
     }
+  }, []);
+
+  useEffect(() => {
+    // Vérifier la présence des secrets côté Edge Functions
+    (async () => {
+      try {
+        const { data } = await supabase.functions.invoke('email-secrets-status');
+        if (data?.status) {
+          setSecretsStatus(data.status as Record<string, boolean>);
+        }
+      } catch (e) {
+        console.warn('Impossible de lire le statut des secrets');
+      }
+    })();
   }, []);
 
   const handleTemplateChange = (type: keyof EmailTemplates, field: 'subject' | 'body', value: string) => {
@@ -362,19 +377,44 @@ const EmailSettings = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2 text-sm bg-muted p-4 rounded-md">
+              <div className="space-y-3 text-sm bg-muted p-4 rounded-md">
                 <p><strong>Secrets requis dans Supabase Edge Functions:</strong></p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                  <li>SMTP_HOST: {config.smtp_host}</li>
-                  <li>SMTP_PORT: {config.smtp_port}</li>
-                  <li>SMTP_USER: {config.smtp_user}</li>
-                  <li>SMTP_PASS: [mot de passe masqué]</li>
-                  <li>SMTP_FROM: {config.smtp_from}</li>
-                  <li>SMTP_TLS: {config.smtp_tls.toString()}</li>
+                <ul className="list-disc list-inside space-y-1">
+                  {[
+                    { key: 'SMTP_HOST', label: `SMTP_HOST: ${config.smtp_host}` },
+                    { key: 'SMTP_PORT', label: `SMTP_PORT: ${config.smtp_port}` },
+                    { key: 'SMTP_USER', label: `SMTP_USER: ${config.smtp_user || '—'}` },
+                    { key: 'SMTP_PASS', label: 'SMTP_PASS: [mot de passe masqué]' },
+                    { key: 'SMTP_FROM', label: `SMTP_FROM: ${config.smtp_from || '—'}` },
+                    { key: 'SMTP_TLS', label: `SMTP_TLS: ${config.smtp_tls.toString()}` },
+                  ].map((item) => (
+                    <li key={item.key} className="flex items-center justify-between gap-2 text-muted-foreground">
+                      <span>{item.label}</span>
+                      {secretsStatus ? (
+                        secretsStatus[item.key] ? (
+                          <span className="text-green-600 text-xs flex items-center gap-1"><CheckCircle className="h-3 w-3" /> Présent</span>
+                        ) : (
+                          <span className="text-red-600 text-xs flex items-center gap-1"><AlertCircle className="h-3 w-3" /> Manquant</span>
+                        )
+                      ) : (
+                        <span className="text-xs">Vérification…</span>
+                      )}
+                    </li>
+                  ))}
                 </ul>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Ces valeurs doivent être ajoutées manuellement dans les secrets des Edge Functions de Supabase.
+                <p className="text-xs text-muted-foreground">
+                  Pour des raisons de sécurité, ces valeurs ne peuvent pas être écrites depuis l'interface. Nous pouvons les enregistrer pour vous (recommandé) ou vous pouvez les configurer manuellement dans Supabase.
                 </p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <a
+                    href={`https://supabase.com/dashboard/project/fbkprtfdoeoazfgmsecm/settings/functions`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm"
+                  >
+                    Ouvrir les Secrets Supabase
+                  </a>
+                </div>
               </div>
             </CardContent>
           </Card>
