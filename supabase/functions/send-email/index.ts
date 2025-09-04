@@ -23,12 +23,21 @@ class SMTPClient {
   private from: string;
 
   constructor() {
-    this.host = Deno.env.get("SMTP_HOST") || "";
-    this.port = parseInt(Deno.env.get("SMTP_PORT") || "587");
+    this.host = Deno.env.get("SMTP_HOST") || "smtp.gmail.com";
+    const portStr = Deno.env.get("SMTP_PORT") || "587";
+    this.port = parseInt(portStr, 10) || 587;
     this.username = Deno.env.get("SMTP_USER") || "";
     this.password = Deno.env.get("SMTP_PASS") || "";
-    this.useTLS = Deno.env.get("SMTP_TLS") === "true";
+    this.useTLS = (Deno.env.get("SMTP_TLS") || "true") === "true";
     this.from = Deno.env.get("SMTP_FROM") || "";
+    
+    console.log("SMTP Config:", {
+      host: this.host,
+      port: this.port,
+      username: this.username ? this.username.substring(0, 3) + "***" : "not set",
+      from: this.from,
+      useTLS: this.useTLS
+    });
   }
 
   async sendEmail(to: string, subject: string, html: string, from?: string): Promise<any> {

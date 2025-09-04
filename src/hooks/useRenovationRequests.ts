@@ -24,6 +24,8 @@ export const useRenovationRequests = () => {
         query = query.eq('user_id', user?.id);
       }
 
+      console.log('Fetching requests for user:', user?.id, 'isAdmin:', isAdmin());
+
       const { data, error } = await query;
 
       if (error) {
@@ -33,6 +35,8 @@ export const useRenovationRequests = () => {
         const filteredRequests = isAdmin() 
           ? localRequests 
           : localRequests.filter((req: RenovationRequest) => req.clientId === user?.id || req.user_id === user?.id);
+        
+        console.log('Using localStorage data:', filteredRequests);
         setRequests(filteredRequests);
       } else {
         // Normaliser les données pour la compatibilité
@@ -47,7 +51,16 @@ export const useRenovationRequests = () => {
           createdAt: req.created_at,
           status: req.status as 'pending' | 'approved' | 'in-progress' | 'completed' | 'rejected'
         }));
+        
+        console.log('Supabase data:', normalizedData);
         setRequests(normalizedData);
+        
+        // Si admin et pas de données Supabase, on essaie le localStorage aussi
+        if (isAdmin() && normalizedData.length === 0) {
+          const localRequests = JSON.parse(localStorage.getItem("renovationRequests") || "[]");
+          console.log('Admin: also loading from localStorage:', localRequests);
+          setRequests(localRequests);
+        }
       }
     } catch (error) {
       console.error('Erreur réseau:', error);
@@ -56,6 +69,8 @@ export const useRenovationRequests = () => {
         const filteredRequests = isAdmin() 
           ? localRequests 
           : localRequests.filter((req: RenovationRequest) => req.clientId === user?.id || req.user_id === user?.id);
+        
+        console.log('Network error, using localStorage:', filteredRequests);
         setRequests(filteredRequests);
     } finally {
       setIsLoading(false);
