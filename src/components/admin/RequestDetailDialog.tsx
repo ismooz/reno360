@@ -68,7 +68,13 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => exportRequestToPDF(request)}
+                onClick={async () => {
+                  try {
+                    await exportRequestToPDF(request);
+                  } catch (error) {
+                    console.error('Error exporting PDF:', error);
+                  }
+                }}
               >
                 <Download className="h-4 w-4 mr-2" />
                 PDF

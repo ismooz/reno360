@@ -2,8 +2,45 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { RenovationRequest } from '@/types';
+import { supabase } from '@/integrations/supabase/client';
 
-export const exportRequestToPDF = (request: RenovationRequest) => {
+// Helper function to convert image URL to base64
+const getImageBase64 = async (url: string): Promise<string | null> => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    
+    const blob = await response.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error('Error converting image to base64:', error);
+    return null;
+  }
+};
+
+// Helper function to get file URL from Supabase
+const getFileUrl = (attachment: string): string => {
+  if (attachment.startsWith('blob:') || attachment.startsWith('http')) {
+    return attachment;
+  }
+  
+  try {
+    const { data: { publicUrl } } = supabase.storage
+      .from('request-attachments')
+      .getPublicUrl(attachment);
+    
+    return publicUrl;
+  } catch (error) {
+    console.error('Error generating public URL for', attachment, error);
+    return attachment;
+  }
+};
+
+export const exportRequestToPDF = async (request: RenovationRequest) => {
   const doc = new jsPDF();
   
   // En-tête
@@ -73,12 +110,60 @@ export const exportRequestToPDF = (request: RenovationRequest) => {
     currentY += 40;
   }
   
-  // Pièces jointes
+  // Pièces jointes avec images
   if (request.attachments && request.attachments.length > 0) {
     doc.setFontSize(16);
     doc.text('Pièces Jointes', 20, currentY);
     doc.setFontSize(10);
     doc.text(`${request.attachments.length} fichier(s) joint(s)`, 20, currentY + 15);
+    currentY += 25;
+    
+    // Traiter chaque pièce jointe
+    for (let i = 0; i < request.attachments.length; i++) {
+      const attachment = request.attachments[i];
+      const fileUrl = getFileUrl(attachment);
+      const fileName = attachment.split('/').pop() || `Fichier ${i + 1}`;
+      
+      // Vérifier si c'est une image
+      const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(attachment);
+      
+      if (isImage) {
+        try {
+          const base64 = await getImageBase64(fileUrl);
+          if (base64) {
+            // Vérifier si on a assez d'espace sur la page
+            if (currentY > 200) {
+              doc.addPage();
+              currentY = 20;
+            }
+            
+            // Ajouter le nom du fichier
+            doc.setFontSize(10);
+            doc.text(`${fileName}:`, 20, currentY);
+            currentY += 10;
+            
+            // Ajouter l'image (taille maximale: 160x120)
+            const imgWidth = 80;
+            const imgHeight = 60;
+            
+            doc.addImage(base64, 'JPEG', 20, currentY, imgWidth, imgHeight);
+            currentY += imgHeight + 15;
+          } else {
+            // Si l'image ne peut pas être chargée, afficher juste le nom
+            doc.text(`${fileName} (image non disponible)`, 20, currentY);
+            currentY += 10;
+          }
+        } catch (error) {
+          console.error('Error adding image to PDF:', error);
+          doc.text(`${fileName} (erreur de chargement)`, 20, currentY);
+          currentY += 10;
+        }
+      } else {
+        // Pour les fichiers non-image, afficher juste le nom
+        doc.text(`${fileName} (fichier joint)`, 20, currentY);
+        currentY += 10;
+      }
+    }
   }
   
   // Télécharger le PDF
