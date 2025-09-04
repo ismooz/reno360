@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { AlertCircle, CheckCircle, Mail, Send, Settings, Database } from "lucide-react";
+import { AlertCircle, CheckCircle, Mail, Send, Settings } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { EmailTemplates } from "@/types";
 import { validateEmail } from "@/utils/security";
@@ -48,7 +48,7 @@ const defaultTemplates: EmailTemplates = {
 
 const EmailSettings = () => {
   const [config, setConfig] = useState<EmailConfig>({
-    smtp_host: "smtp.gmail.com",
+    smtp_host: "",
     smtp_port: "587",
     smtp_user: "",
     smtp_pass: "",
@@ -58,48 +58,50 @@ const EmailSettings = () => {
   const [templates, setTemplates] = useState<EmailTemplates>(defaultTemplates);
   const [replyToEmail, setReplyToEmail] = useState("contact@reno360.ch");
   const [requestsEmail, setRequestsEmail] = useState("demandes@reno360.ch");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isTestingEmail, setIsTestingEmail] = useState(false);
   const [testEmail, setTestEmail] = useState("");
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [emailErrors, setEmailErrors] = useState<Record<string, string>>({});
-  const [secretsStatus, setSecretsStatus] = useState<Record<string, boolean> | null>(null);
   const { toast } = useToast();
 
+  // AU CHARGEMENT: Lire la configuration depuis la table Supabase
   useEffect(() => {
-    // Charger les paramètres depuis localStorage
-    const savedTemplates = localStorage.getItem("emailTemplates");
-    const savedReplyToEmail = localStorage.getItem("replyToEmail");
-    const savedRequestsEmail = localStorage.getItem("requestsEmail");
-    const savedConfig = localStorage.getItem("emailConfig");
+    const fetchConfig = async () => {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('smtp_config')
+        .select('*')
+        .eq('id', 1)
+        .single();
 
+      if (error && error.code !== 'PGRST116') {
+        console.error("Erreur de chargement de la config SMTP:", error);
+        toast({
+          title: "Erreur de chargement",
+          description: "Impossible de charger la configuration SMTP depuis la base de données.",
+          variant: "destructive",
+        });
+      } else if (data) {
+        setConfig({
+          smtp_host: data.host || "",
+          smtp_port: data.port?.toString() || "587",
+          smtp_user: data.username || "",
+          smtp_pass: data.password || "",
+          smtp_from: data.from_address || "",
+          smtp_tls: data.use_tls ?? true,
+        });
+      }
+      setIsLoading(false);
+    };
+
+    fetchConfig();
+    
+    const savedTemplates = localStorage.getItem("emailTemplates");
     if (savedTemplates) {
       setTemplates(JSON.parse(savedTemplates));
     }
-    if (savedReplyToEmail) {
-      setReplyToEmail(savedReplyToEmail);
-    }
-    if (savedRequestsEmail) {
-      setRequestsEmail(savedRequestsEmail);
-    }
-    if (savedConfig) {
-      setConfig(JSON.parse(savedConfig));
-    }
-  }, []);
-
-  useEffect(() => {
-    // Vérifier la présence des secrets côté Edge Functions
-    (async () => {
-      try {
-        const { data } = await supabase.functions.invoke('email-secrets-status');
-        if (data?.status) {
-          setSecretsStatus(data.status as Record<string, boolean>);
-        }
-      } catch (e) {
-        console.warn('Impossible de lire le statut des secrets');
-      }
-    })();
-  }, []);
+  }, [toast]);
 
   const handleTemplateChange = (type: keyof EmailTemplates, field: 'subject' | 'body', value: string) => {
     setTemplates(prev => ({
@@ -111,125 +113,70 @@ const EmailSettings = () => {
     }));
   };
 
-  const configureSecret = async (secretName: string, value: string) => {
-    return new Promise((resolve) => {
-      // Simuler la configuration du secret
-      // En réalité, cela déclencherait l'outil de configuration des secrets
-      console.log(`Configuring secret ${secretName} with value:`, value);
-      setTimeout(() => {
-        resolve(true);
-      }, 500);
-    });
-  };
-
+  // MODIFIÉ: La sauvegarde se fait dans la table 'smtp_config'
   const saveConfig = async () => {
     setIsLoading(true);
-    try {
-      // Valider les emails
-      const errors: Record<string, string> = {};
-      
-      if (!validateEmail(config.smtp_from)) {
-        errors.smtp_from = "Format d'email invalide";
-      }
-      if (!validateEmail(replyToEmail)) {
+    const errors: Record<string, string> = {};
+    if (!validateEmail(config.smtp_from)) {
+      errors.smtp_from = "Format d'email invalide";
+    }
+    if (!validateEmail(replyToEmail)) {
         errors.replyToEmail = "Format d'email invalide";
-      }
-      if (!validateEmail(requestsEmail)) {
+    }
+    if (!validateEmail(requestsEmail)) {
         errors.requestsEmail = "Format d'email invalide";
-      }
-      
-      if (Object.keys(errors).length > 0) {
-        setEmailErrors(errors);
-        toast({
-          title: "Erreur de validation",
-          description: "Veuillez corriger les erreurs dans les adresses email.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      setEmailErrors({});
-      
-      // Sauvegarder localement pour l'interface
+    }
+    
+    if (Object.keys(errors).length > 0) {
+      setEmailErrors(errors);
+      toast({
+        title: "Erreur de validation",
+        description: "Veuillez corriger les erreurs.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    setEmailErrors({});
+
+    const updates = {
+      id: 1,
+      host: config.smtp_host,
+      port: parseInt(config.smtp_port, 10),
+      username: config.smtp_user,
+      password: config.smtp_pass,
+      from_address: config.smtp_from,
+      use_tls: config.smtp_tls,
+    };
+
+    const { error } = await supabase.from('smtp_config').upsert(updates);
+
+    if (error) {
+      console.error("Erreur de sauvegarde:", error);
+      toast({
+        title: "Erreur de sauvegarde",
+        description: `Impossible de sauvegarder la configuration: ${error.message}`,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "✅ Configuration sauvegardée",
+        description: "Votre configuration SMTP a été mise à jour.",
+      });
       localStorage.setItem("emailTemplates", JSON.stringify(templates));
       localStorage.setItem("replyToEmail", replyToEmail);
       localStorage.setItem("requestsEmail", requestsEmail);
-      localStorage.setItem("emailConfig", JSON.stringify(config));
-      
-      toast({
-        title: "Configuration en cours...",
-        description: "Configuration automatique des secrets Supabase...",
-      });
-
-      // Configurer tous les secrets automatiquement
-      const secrets = [
-        { name: 'SMTP_HOST', value: config.smtp_host },
-        { name: 'SMTP_PORT', value: config.smtp_port },
-        { name: 'SMTP_USER', value: config.smtp_user },
-        { name: 'SMTP_PASS', value: config.smtp_pass },
-        { name: 'SMTP_FROM', value: config.smtp_from },
-        { name: 'SMTP_TLS', value: config.smtp_tls.toString() }
-      ];
-
-      let configuredCount = 0;
-      for (const secret of secrets) {
-        if (secret.value) {
-          try {
-            await configureSecret(secret.name, secret.value);
-            configuredCount++;
-            toast({
-              title: `Configuration ${secret.name}`,
-              description: `Secret ${secret.name} configuré avec succès.`,
-            });
-          } catch (error) {
-            console.error(`Error configuring ${secret.name}:`, error);
-            toast({
-              title: `Erreur ${secret.name}`,
-              description: `Impossible de configurer le secret ${secret.name}.`,
-              variant: "destructive",
-            });
-          }
-          // Petite pause entre chaque configuration
-          await new Promise(resolve => setTimeout(resolve, 300));
-        }
-      }
-
-      if (configuredCount > 0) {
-        toast({
-          title: "✅ Configuration terminée",
-          description: `${configuredCount} secrets ont été configurés avec succès dans Supabase.`,
-        });
-        
-        // Recharger le statut des secrets après un délai
-        setTimeout(async () => {
-          try {
-            const { data } = await supabase.functions.invoke('email-secrets-status');
-            if (data?.status) {
-              setSecretsStatus(data.status as Record<string, boolean>);
-            }
-          } catch (e) {
-            console.warn('Impossible de recharger le statut des secrets');
-          }
-        }, 1500);
-      }
-      
-    } catch (error) {
-      console.error("Erreur:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de sauvegarder la configuration.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
     }
+
+    setIsLoading(false);
   };
 
   const testEmailConfig = async () => {
-    if (!testEmail) {
+    if (!validateEmail(testEmail)) {
       toast({
-        title: "Email manquant",
-        description: "Veuillez saisir un email de test.",
+        title: "Email de test invalide",
+        description: "Veuillez saisir une adresse email valide.",
         variant: "destructive",
       });
       return;
@@ -239,61 +186,24 @@ const EmailSettings = () => {
     setTestResult(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke('send-email', {
+      const { error } = await supabase.functions.invoke('send-email', {
         body: {
           to: testEmail,
           subject: "Test de configuration email - Reno360",
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-              <h2 style="color: #333;">Test de configuration email</h2>
-              <p>Cet email confirme que la configuration SMTP de Reno360 fonctionne correctement.</p>
-              <p><strong>Configuré le:</strong> ${new Date().toLocaleString('fr-CH')}</p>
-              <hr style="margin: 20px 0;">
-              <div style="background: #f5f5f5; padding: 15px; border-radius: 5px;">
-                <p style="margin: 0; color: #666; font-size: 12px;">
-                  <strong>Configuration testée:</strong><br>
-                  • Serveur: ${config.smtp_host}<br>
-                  • Port: ${config.smtp_port}<br>
-                  • TLS: ${config.smtp_tls ? 'Activé' : 'Désactivé'}<br>
-                  • Expéditeur: ${config.smtp_from}
-                </p>
-              </div>
-            </div>
-          `,
-          from: config.smtp_from
+          html: `<p>Si vous recevez cet email, votre configuration SMTP fonctionne !</p>`,
         }
       });
 
       if (error) {
-        setTestResult({
-          success: false,
-          message: `Erreur: ${error.message}`
-        });
-        toast({
-          title: "Test échoué",
-          description: `Erreur lors de l'envoi: ${error.message}`,
-          variant: "destructive",
-        });
+        setTestResult({ success: false, message: `Erreur: ${error.message}` });
+        toast({ title: "Test échoué", description: `La fonction a retourné une erreur: ${error.message}`, variant: "destructive" });
       } else {
-        setTestResult({
-          success: true,
-          message: "Email de test envoyé avec succès !"
-        });
-        toast({
-          title: "Test réussi",
-          description: "L'email de test a été envoyé avec succès.",
-        });
+        setTestResult({ success: true, message: "Email de test envoyé avec succès !" });
+        toast({ title: "Test réussi", description: "Vérifiez votre boîte de réception." });
       }
-    } catch (error: any) {
-      setTestResult({
-        success: false,
-        message: `Erreur réseau: ${error.message}`
-      });
-      toast({
-        title: "Erreur de test",
-        description: "Impossible de tester la configuration email.",
-        variant: "destructive",
-      });
+    } catch (e: any) {
+      setTestResult({ success: false, message: `Erreur: ${e.message}` });
+      toast({ title: "Erreur de test", description: `Impossible d'invoquer la fonction: ${e.message}`, variant: "destructive" });
     } finally {
       setIsTestingEmail(false);
     }
@@ -331,68 +241,32 @@ const EmailSettings = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="smtp_host">Serveur SMTP</Label>
-                  <Input
-                    id="smtp_host"
-                    value={config.smtp_host}
-                    onChange={(e) => setConfig({ ...config, smtp_host: e.target.value })}
-                    placeholder="smtp.gmail.com"
-                  />
+                  <Input id="smtp_host" value={config.smtp_host} onChange={(e) => setConfig({ ...config, smtp_host: e.target.value })} placeholder="smtp.gmail.com" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="smtp_port">Port</Label>
-                  <Input
-                    id="smtp_port"
-                    value={config.smtp_port}
-                    onChange={(e) => setConfig({ ...config, smtp_port: e.target.value })}
-                    placeholder="587"
-                    type="number"
-                  />
+                  <Input id="smtp_port" value={config.smtp_port} onChange={(e) => setConfig({ ...config, smtp_port: e.target.value })} placeholder="587" type="number" />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="smtp_user">Nom d'utilisateur</Label>
-                <Input
-                  id="smtp_user"
-                  value={config.smtp_user}
-                  onChange={(e) => setConfig({ ...config, smtp_user: e.target.value })}
-                  placeholder="votre-email@gmail.com"
-                  type="email"
-                />
+                <Input id="smtp_user" value={config.smtp_user} onChange={(e) => setConfig({ ...config, smtp_user: e.target.value })} placeholder="votre-email@gmail.com" type="email" />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="smtp_pass">Mot de passe</Label>
-                <Input
-                  id="smtp_pass"
-                  value={config.smtp_pass}
-                  onChange={(e) => setConfig({ ...config, smtp_pass: e.target.value })}
-                  placeholder="Mot de passe d'application"
-                  type="password"
-                />
+                <Input id="smtp_pass" value={config.smtp_pass} onChange={(e) => setConfig({ ...config, smtp_pass: e.target.value })} placeholder="Mot de passe d'application" type="password" />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="smtp_from">Email expéditeur</Label>
-                <Input
-                  id="smtp_from"
-                  value={config.smtp_from}
-                  onChange={(e) => setConfig({ ...config, smtp_from: e.target.value })}
-                  placeholder="noreply@reno360.ch"
-                  type="email"
-                  className={emailErrors.smtp_from ? "border-destructive" : ""}
-                />
-                {emailErrors.smtp_from && (
-                  <p className="text-sm text-destructive">{emailErrors.smtp_from}</p>
-                )}
+                <Input id="smtp_from" value={config.smtp_from} onChange={(e) => setConfig({ ...config, smtp_from: e.target.value })} placeholder="noreply@reno360.ch" type="email" className={emailErrors.smtp_from ? "border-destructive" : ""} />
+                {emailErrors.smtp_from && (<p className="text-sm text-destructive">{emailErrors.smtp_from}</p>)}
               </div>
 
               <div className="flex items-center space-x-2">
-                <Switch
-                  id="smtp_tls"
-                  checked={config.smtp_tls}
-                  onCheckedChange={(checked) => setConfig({ ...config, smtp_tls: checked })}
-                />
+                <Switch id="smtp_tls" checked={config.smtp_tls} onCheckedChange={(checked) => setConfig({ ...config, smtp_tls: checked })} />
                 <Label htmlFor="smtp_tls">Utiliser TLS/SSL</Label>
               </div>
 
@@ -401,170 +275,20 @@ const EmailSettings = () => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="replyToEmail">Adresse de réponse</Label>
-                  <Input
-                    id="replyToEmail"
-                    value={replyToEmail}
-                    onChange={(e) => setReplyToEmail(e.target.value)}
-                    placeholder="contact@reno360.ch"
-                    className={emailErrors.replyToEmail ? "border-destructive" : ""}
-                  />
-                  {emailErrors.replyToEmail && (
-                    <p className="text-sm text-destructive">{emailErrors.replyToEmail}</p>
-                  )}
+                  <Input id="replyToEmail" value={replyToEmail} onChange={(e) => setReplyToEmail(e.target.value)} placeholder="contact@reno360.ch" className={emailErrors.replyToEmail ? "border-destructive" : ""} />
+                   {emailErrors.replyToEmail && (<p className="text-sm text-destructive">{emailErrors.replyToEmail}</p>)}
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="requestsEmail">Email de réception des demandes</Label>
-                  <Input
-                    id="requestsEmail"
-                    value={requestsEmail}
-                    onChange={(e) => setRequestsEmail(e.target.value)}
-                    placeholder="demandes@reno360.ch"
-                    className={emailErrors.requestsEmail ? "border-destructive" : ""}
-                  />
-                  {emailErrors.requestsEmail && (
-                    <p className="text-sm text-destructive">{emailErrors.requestsEmail}</p>
-                  )}
+                  <Input id="requestsEmail" value={requestsEmail} onChange={(e) => setRequestsEmail(e.target.value)} placeholder="demandes@reno360.ch" className={emailErrors.requestsEmail ? "border-destructive" : ""} />
+                  {emailErrors.requestsEmail && (<p className="text-sm text-destructive">{emailErrors.requestsEmail}</p>)}
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3">
-                <Button onClick={saveConfig} disabled={isLoading} className="w-full">
-                  {isLoading ? "Configuration en cours..." : "💾 Sauvegarder et configurer automatiquement"}
-                </Button>
-                
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={async () => {
-                      toast({
-                        title: "Actualisation...",
-                        description: "Vérification du statut des secrets.",
-                      });
-                      try {
-                        const { data } = await supabase.functions.invoke('email-secrets-status');
-                        if (data?.status) {
-                          setSecretsStatus(data.status as Record<string, boolean>);
-                          toast({
-                            title: "Statut actualisé",
-                            description: "Le statut des secrets a été mis à jour.",
-                          });
-                        }
-                      } catch (e) {
-                        toast({
-                          title: "Erreur",
-                          description: "Impossible de vérifier le statut des secrets.",
-                          variant: "destructive",
-                        });
-                      }
-                    }}
-                  >
-                    🔄 Actualiser le statut
-                  </Button>
-                  
-                  <a
-                    href={`https://supabase.com/dashboard/project/fbkprtfdoeoazfgmsecm/settings/functions`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 text-xs"
-                  >
-                    🔗 Voir dans Supabase
-                  </a>
-                </div>
-                
-                <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded p-3">
-                  <p className="font-medium text-blue-800 dark:text-blue-200 mb-1">🚀 Configuration automatique</p>
-                  <p>Cette interface configure automatiquement tous les secrets Supabase en un clic. Aucune manipulation manuelle requise !</p>
-                  <div className="mt-2 text-blue-700 dark:text-blue-300">
-                    <strong>Secrets configurés automatiquement :</strong>
-                    <div className="grid grid-cols-2 gap-1 mt-1 text-xs">
-                      <span>• SMTP_HOST</span>
-                      <span>• SMTP_PORT</span>
-                      <span>• SMTP_USER</span>
-                      <span>• SMTP_PASS</span>
-                      <span>• SMTP_FROM</span>
-                      <span>• SMTP_TLS</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Database className="h-5 w-5" />
-                Configuration actuelle dans Supabase
-              </CardTitle>
-              <CardDescription>
-                Valeurs actuellement stockées dans les secrets Supabase Edge Functions.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {[
-                  { key: 'SMTP_HOST', label: 'Serveur SMTP', value: config.smtp_host },
-                  { key: 'SMTP_PORT', label: 'Port SMTP', value: config.smtp_port },
-                  { key: 'SMTP_USER', label: 'Utilisateur SMTP', value: config.smtp_user },
-                  { key: 'SMTP_PASS', label: 'Mot de passe SMTP', value: '***masqué***', isPassword: true },
-                  { key: 'SMTP_FROM', label: 'Email expéditeur', value: config.smtp_from },
-                  { key: 'SMTP_TLS', label: 'TLS/SSL', value: config.smtp_tls ? 'Activé' : 'Désactivé' },
-                ].map((item) => (
-                  <div key={item.key} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-sm">{item.label}</span>
-                        {secretsStatus ? (
-                          secretsStatus[item.key] ? (
-                            <span className="text-green-600 text-xs flex items-center gap-1">
-                              <CheckCircle className="h-3 w-3" /> Configuré
-                            </span>
-                          ) : (
-                            <span className="text-red-600 text-xs flex items-center gap-1">
-                              <AlertCircle className="h-3 w-3" /> Non configuré
-                            </span>
-                          )
-                        ) : (
-                          <span className="text-xs text-muted-foreground">Vérification...</span>
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        <code className="bg-muted px-2 py-1 rounded text-xs">
-                          {item.value || 'Non défini'}
-                        </code>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <div className="pt-3 border-t">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Statut global de la configuration :</span>
-                    {secretsStatus && Object.values(secretsStatus).every(Boolean) ? (
-                      <span className="text-green-600 flex items-center gap-1">
-                        <CheckCircle className="h-4 w-4" />
-                        Tous les secrets sont configurés
-                      </span>
-                    ) : (
-                      <span className="text-orange-600 flex items-center gap-1">
-                        <AlertCircle className="h-4 w-4" />
-                        Configuration incomplète
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-2">
-                    <a
-                      href={`https://supabase.com/dashboard/project/fbkprtfdoeoazfgmsecm/settings/functions`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center text-xs text-muted-foreground hover:text-foreground"
-                    >
-                      Gérer manuellement dans Supabase →
-                    </a>
-                  </div>
-                </div>
-              </div>
+              <Button onClick={saveConfig} disabled={isLoading} className="w-full">
+                {isLoading ? "Chargement..." : "💾 Sauvegarder la configuration"}
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -581,19 +305,19 @@ const EmailSettings = () => {
               <Tabs defaultValue="account_creation">
                 <div className="w-full overflow-x-auto mb-4">
                   <TabsList className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-1 h-auto p-1 bg-muted">
-                  {Object.keys(templateLabels).map((key) => (
-                      <TabsTrigger 
-                        key={key} 
-                        value={key} 
+                    {Object.keys(templateLabels).map((key) => (
+                      <TabsTrigger
+                        key={key}
+                        value={key}
                         className="text-xs sm:text-sm px-2 py-2 h-auto text-center whitespace-normal break-words data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
                       >
-                      {templateLabels[key as keyof typeof templateLabels]}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
+                        {templateLabels[key as keyof typeof templateLabels]}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
                 </div>
                 
-                {Object.entries(templateLabels).map(([key, label]) => (
+                {Object.entries(templateLabels).map(([key]) => (
                   <TabsContent key={key} value={key} className="space-y-4">
                     <div>
                       <Label htmlFor={`${key}-subject`}>Sujet</Label>
@@ -649,8 +373,8 @@ const EmailSettings = () => {
                 />
               </div>
 
-              <Button 
-                onClick={testEmailConfig} 
+              <Button
+                onClick={testEmailConfig}
                 disabled={isTestingEmail || !testEmail}
                 variant="outline"
                 className="w-full"
@@ -682,3 +406,4 @@ const EmailSettings = () => {
 };
 
 export default EmailSettings;
+
