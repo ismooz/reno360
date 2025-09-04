@@ -1,23 +1,21 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { Buffer } from "https://deno.land/std@0.190.0/io/buffer.ts";
 
-// Les en-têtes CORS restent importants pour permettre à votre interface d'appeler la fonction
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
 
-// Interface pour la requête d'envoi d'email
 interface EmailRequest {
   to: string;
   subject: string;
   html: string;
-  from?: string; // Optionnel, pour le "Reply-To"
+  from?: string;
 }
 
 serve(async (req: Request) => {
-  // Gérer la requête préliminaire (preflight) CORS
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -25,16 +23,11 @@ serve(async (req: Request) => {
   try {
     const { to, subject, html, from } = (await req.json()) as EmailRequest;
 
-    // Étape 1: Créer un client Supabase pour accéder à la base de données.
-    // Il utilise les secrets SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY
-    // que vous devez configurer pour cette fonction.
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Étape 2: Récupérer la configuration SMTP depuis la table 'smtp_config'.
-    // On sélectionne l'unique ligne de configuration avec id = 1.
     const { data: config, error: configError } = await supabaseClient
       .from("smtp_config")
       .select("*")
@@ -50,24 +43,21 @@ serve(async (req: Request) => {
         throw new Error("Aucune configuration SMTP n'a été trouvée dans la table 'smtp_config'.");
     }
 
-    // Étape 3: Utiliser la configuration de la base de données.
     const smtpConfig = {
       host: config.host,
       port: config.port,
       username: config.username,
       password: config.password,
-      from: config.from_address, // Attention au nom de la colonne
-      useTLS: config.use_tls      // Attention au nom de la colonne
+      from: config.from_address,
+      useTLS: config.use_tls
     };
     
-    // Vérification que les champs essentiels sont remplis
     if (!smtpConfig.host || !smtpConfig.port || !smtpConfig.username || !smtpConfig.password || !smtpConfig.from) {
         throw new Error("La configuration SMTP est incomplète. Veuillez vérifier les données dans la table 'smtp_config'.");
     }
 
-    console.log("Configuration SMTP chargée avec succès depuis la base de données.");
+    console.log("Configuration SMTP chargée. Tentative de connexion...");
 
-    // Le reste du code pour la connexion et l'envoi SMTP reste inchangé
     let conn;
     try {
       conn = await Deno.connect({
@@ -85,16 +75,21 @@ serve(async (req: Request) => {
     const readResponse = async (): Promise<string> => {
       const buffer = new Uint8Array(1024);
       const n = await conn.read(buffer);
-      return decoder.decode(buffer.subarray(0, n || 0));
+      const responseText = decoder.decode(buffer.subarray(0, n || 0));
+      console.log(`S: ${responseText.trim()}`);
+      return responseText;
     };
 
     const sendCommand = async (command: string): Promise<string> => {
+      // Ne pas logger le mot de passe en clair
+      const logCommand = command.includes("AUTH LOGIN") || command.length > 50 ? command.substring(0, 50) + "..." : command;
+      console.log(`C: ${logCommand}`);
       await conn.write(encoder.encode(command + "\r\n"));
       return await readResponse();
     };
 
     try {
-      await readResponse(); // Attendre le message de bienvenue du serveur
+      await readResponse(); 
       await sendCommand(`EHLO ${smtpConfig.host}`);
 
       if (smtpConfig.useTLS) {
@@ -107,32 +102,53 @@ serve(async (req: Request) => {
       }
 
       await sendCommand("AUTH LOGIN");
-      await sendCommand(btoa(smtpConfig.username));
-      const authResponse = await sendCommand(btoa(smtpConfig.password));
+      // Utiliser Buffer pour un encodage base64 plus robuste
+      await sendCommand(Buffer.from(smtpConfig.username).toString("base64"));
+      const authResponse = await sendCommand(Buffer.from(smtpConfig.password).toString("base64"));
       if (!authResponse.startsWith("235")) {
         throw new Error(`Authentification SMTP échouée: ${authResponse}`);
       }
       
-      const envelopeFrom = smtpConfig.from;
-      await sendCommand(`MAIL FROM:<${envelopeFrom}>`);
-      await sendCommand(`RCPT TO:<${to}>`);
-      await sendCommand("DATA");
+      // *** CORRECTIF APPLIQUÉ ICI ***
+      // L'expéditeur de l'enveloppe SMTP (MAIL FROM) doit être l'utilisateur authentifié (username).
+      // C'est ce qui résout l'erreur "550 Sender denied".
+      const envelopeSender = smtpConfig.username;
+      
+      // L'adresse "From" visible par le destinataire reste celle configurée (from_address).
+      const displayFrom = smtpConfig.from;
+
+      const mailFromResponse = await sendCommand(`MAIL FROM:<${envelopeSender}>`);
+      if (!mailFromResponse.startsWith("250")) {
+        throw new Error(`MAIL FROM a été rejeté: ${mailFromResponse}`);
+      }
+
+      const rcptToResponse = await sendCommand(`RCPT TO:<${to}>`);
+      if (!rcptToResponse.startsWith("250")) {
+        throw new Error(`RCPT TO a été rejeté: ${rcptToResponse}`);
+      }
+
+      const dataResponse = await sendCommand("DATA");
+      if (!dataResponse.startsWith("354")) {
+          throw new Error(`La commande DATA a été rejetée: ${dataResponse}`);
+      }
       
       const headers = [
-        `From: Reno360 <${envelopeFrom}>`,
+        `From: Reno360 <${displayFrom}>`, // On utilise l'adresse d'affichage ici
         `To: ${to}`,
         `Subject: ${subject}`,
         `MIME-Version: 1.0`,
         `Content-Type: text/html; charset=utf-8`,
         `Date: ${new Date().toUTCString()}`,
       ];
-      if (from && from !== envelopeFrom) {
+      if (from && from !== displayFrom) {
         headers.push(`Reply-To: ${from}`);
       }
       headers.push("", html, ".");
       
       const emailContent = headers.join("\r\n");
-      const finalResponse = await sendCommand(emailContent);
+      // La dernière commande envoyée est le contenu de l'email, sa réponse est lue ensuite
+      await conn.write(encoder.encode(emailContent + "\r\n"));
+      const finalResponse = await readResponse();
 
       if (!finalResponse.startsWith("250")) {
         throw new Error(`Le message a été rejeté par le serveur: ${finalResponse}`);
@@ -152,7 +168,7 @@ serve(async (req: Request) => {
     }
 
   } catch (error: any) {
-    console.error("Erreur générale dans la fonction :", error);
+    console.error("Erreur générale dans la fonction :", error.stack);
     return new Response(
       JSON.stringify({ error: error.message }),
       {
