@@ -8,14 +8,14 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-// CORRECTION: L'importation de Supabase est maintenant gérée par le client Supabase global.
-// Si ce chemin n'est pas bon pour votre projet, vous devrez l'ajuster.
-import { supabase } from "../integrations/supabase/client"; 
+// CORRECTION: Le chemin d'importation a été restauré. Assurez-vous que ce chemin d'alias '@'
+// est correctement configuré dans votre projet pour pointer vers votre répertoire source.
+import { supabase } from "@/integrations/supabase/client";
 import { AlertCircle, CheckCircle, Mail, Send, Settings, Database } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { EmailTemplates } from "@/types";
 
-// CORRECTION: La fonction de validation d'email est maintenant incluse directement ici
+// La fonction de validation d'email est maintenant incluse directement ici
 // pour supprimer la dépendance externe.
 const validateEmail = (email: string): boolean => {
     if (!email) return false;
@@ -297,7 +297,7 @@ const EmailSettings = () => {
                     <CardTitle className="flex items-center gap-2"><Send className="h-5 w-5" /> Test de configuration</CardTitle>
                     <CardDescription>
                         Testez votre configuration en envoyant un email de test.
-                    </Description>
+                    </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
