@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,11 +9,23 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { AlertCircle, CheckCircle, Mail, Send, Settings } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { EmailTemplates } from "@/types";
-import { validateEmail } from "@/utils/security";
+
+// NOTE: Initialisation du client Supabase.
+// Remplacez les valeurs ci-dessous par vos variables d'environnement.
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "VOTRE_URL_SUPABASE";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "VOTRE_CLE_ANON_SUPABASE";
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// NOTE: La fonction de validation a été intégrée directement ici pour résoudre le problème d'importation.
+const validateEmail = (email: string): boolean => {
+  if (!email) return false;
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+};
+
 
 interface EmailConfig {
   smtp_host: string;
@@ -195,15 +208,18 @@ const EmailSettings = () => {
       });
 
       if (error) {
-        setTestResult({ success: false, message: `Erreur: ${error.message}` });
-        toast({ title: "Test échoué", description: `La fonction a retourné une erreur: ${error.message}`, variant: "destructive" });
+        // AMÉLIORATION: Essayer d'extraire un message d'erreur plus détaillé de la réponse de la fonction
+        const detailedMessage = (error as any).context?.error?.message || error.message;
+        setTestResult({ success: false, message: `Erreur: ${detailedMessage}` });
+        toast({ title: "Test échoué", description: `Détail: ${detailedMessage}`, variant: "destructive" });
       } else {
         setTestResult({ success: true, message: "Email de test envoyé avec succès !" });
         toast({ title: "Test réussi", description: "Vérifiez votre boîte de réception." });
       }
     } catch (e: any) {
-      setTestResult({ success: false, message: `Erreur: ${e.message}` });
-      toast({ title: "Erreur de test", description: `Impossible d'invoquer la fonction: ${e.message}`, variant: "destructive" });
+      const errorMessage = e.message || "Une erreur inconnue est survenue.";
+      setTestResult({ success: false, message: `Erreur: ${errorMessage}` });
+      toast({ title: "Erreur de test", description: `Impossible d'invoquer la fonction: ${errorMessage}`, variant: "destructive" });
     } finally {
       setIsTestingEmail(false);
     }
@@ -358,7 +374,8 @@ const EmailSettings = () => {
                 Test de configuration
               </CardTitle>
               <CardDescription>
-                Testez votre configuration en envoyant un email de test.
+                Testez votre configuration en envoyant un email de test. 
+                En cas d'erreur, pensez à consulter les logs de votre fonction sur le tableau de bord Supabase.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
