@@ -5,6 +5,7 @@ import { X, Download, FileText, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from '@/components/ui/image';
 import { cn } from '@/lib/utils';
+import { useRenovationRequests } from '@/hooks/useRenovationRequests';
 
 interface ImageGalleryProps {
   attachments?: string[];
@@ -13,6 +14,7 @@ interface ImageGalleryProps {
 
 const ImageGallery = ({ attachments = [], className }: ImageGalleryProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const { getFileUrl } = useRenovationRequests();
 
   if (!attachments || attachments.length === 0) {
     return (
@@ -50,6 +52,7 @@ const ImageGallery = ({ attachments = [], className }: ImageGalleryProps) => {
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {attachments.map((attachment, index) => {
+          const fileUrl = getFileUrl(attachment);
           const fileName = getFileName(attachment);
           const isImg = isImage(attachment);
           
@@ -59,7 +62,7 @@ const ImageGallery = ({ attachments = [], className }: ImageGalleryProps) => {
                 <DialogTrigger asChild>
                   <div className="relative group cursor-pointer rounded-md overflow-hidden border border-input">
                     <Image
-                      src={attachment}
+                      src={fileUrl}
                       alt={`Pièce jointe ${index + 1}`}
                       className="w-full h-20 object-cover group-hover:scale-105 transition-transform"
                       withSkeleton
@@ -75,12 +78,12 @@ const ImageGallery = ({ attachments = [], className }: ImageGalleryProps) => {
                       variant="ghost"
                       size="sm"
                       className="absolute top-2 right-2 z-10 bg-black/50 text-white hover:bg-black/70"
-                      onClick={() => downloadFile(attachment)}
+                      onClick={() => downloadFile(fileUrl)}
                     >
                       <Download className="h-4 w-4" />
                     </Button>
                     <Image
-                      src={attachment}
+                      src={fileUrl}
                       alt={`Pièce jointe ${index + 1}`}
                       className="w-full max-h-[80vh] object-contain"
                     />
@@ -93,7 +96,7 @@ const ImageGallery = ({ attachments = [], className }: ImageGalleryProps) => {
               <div
                 key={index}
                 className="relative group cursor-pointer rounded-md overflow-hidden border border-input p-3 h-20 flex flex-col items-center justify-center bg-muted hover:bg-muted/80 transition-colors"
-                onClick={() => downloadFile(attachment)}
+                onClick={() => downloadFile(fileUrl)}
               >
                 <FileText className="h-6 w-6 text-muted-foreground mb-1" />
                 <span className="text-xs text-center truncate w-full" title={fileName}>

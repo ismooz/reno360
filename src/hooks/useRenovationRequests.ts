@@ -169,7 +169,7 @@ export const useRenovationRequests = () => {
     for (const file of files) {
       try {
         const fileExt = file.name.split('.').pop();
-        const fileName = `${user?.id}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const fileName = `${user?.id || 'anonymous'}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
 
         const { data, error } = await supabase.storage
           .from('request-attachments')
@@ -180,6 +180,7 @@ export const useRenovationRequests = () => {
           // Fallback: créer une URL locale
           uploadedUrls.push(URL.createObjectURL(file));
         } else {
+          // Obtenir l'URL publique signée pour accéder au fichier
           const { data: { publicUrl } } = supabase.storage
             .from('request-attachments')
             .getPublicUrl(fileName);
@@ -195,6 +196,20 @@ export const useRenovationRequests = () => {
     return uploadedUrls;
   };
 
+  const getFileUrl = (attachment: string): string => {
+    // Si l'URL commence par blob: ou http, on la retourne telle quelle
+    if (attachment.startsWith('blob:') || attachment.startsWith('http')) {
+      return attachment;
+    }
+    
+    // Sinon, on génère l'URL publique via Supabase
+    const { data: { publicUrl } } = supabase.storage
+      .from('request-attachments')
+      .getPublicUrl(attachment);
+    
+    return publicUrl;
+  };
+
   useEffect(() => {
     if (user !== undefined) {
       fetchRequests();
@@ -207,6 +222,7 @@ export const useRenovationRequests = () => {
     fetchRequests,
     createRequest,
     updateRequestStatus,
-    uploadFiles
+    uploadFiles,
+    getFileUrl
   };
 };
