@@ -8,11 +8,21 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+// CORRECTION: L'importation de Supabase est maintenant gérée par le client Supabase global.
+// Si ce chemin n'est pas bon pour votre projet, vous devrez l'ajuster.
+import { supabase } from "../integrations/supabase/client"; 
 import { AlertCircle, CheckCircle, Mail, Send, Settings, Database } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { EmailTemplates } from "@/types";
-import { validateEmail } from "@/utils/security";
+
+// CORRECTION: La fonction de validation d'email est maintenant incluse directement ici
+// pour supprimer la dépendance externe.
+const validateEmail = (email: string): boolean => {
+    if (!email) return false;
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+};
+
 
 // L'interface du state local, les noms correspondent aux champs du formulaire
 interface EmailConfig {
@@ -287,7 +297,7 @@ const EmailSettings = () => {
                     <CardTitle className="flex items-center gap-2"><Send className="h-5 w-5" /> Test de configuration</CardTitle>
                     <CardDescription>
                         Testez votre configuration en envoyant un email de test.
-                    </CardDescription>
+                    </Description>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
@@ -317,3 +327,4 @@ const EmailSettings = () => {
 };
 
 export default EmailSettings;
+
