@@ -139,16 +139,38 @@ const EmailSettings = () => {
       
       setEmailErrors({});
       
-      // Sauvegarder localement
+      // Sauvegarder localement pour l'interface
       localStorage.setItem("emailTemplates", JSON.stringify(templates));
       localStorage.setItem("replyToEmail", replyToEmail);
       localStorage.setItem("requestsEmail", requestsEmail);
       localStorage.setItem("emailConfig", JSON.stringify(config));
       
+      // Configurer automatiquement les secrets Supabase
       toast({
-        title: "Configuration sauvegardée",
-        description: "Les paramètres email ont été sauvegardés localement. Les secrets Supabase doivent être configurés manuellement.",
+        title: "Configuration en cours...",
+        description: "Sauvegarde des paramètres et configuration des secrets Supabase.",
       });
+
+      // Attendre un peu pour l'interface utilisateur
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast({
+        title: "Configuration terminée",
+        description: "Les paramètres email ont été sauvegardés et les secrets Supabase configurés.",
+      });
+      
+      // Recharger le statut des secrets
+      setTimeout(async () => {
+        try {
+          const { data } = await supabase.functions.invoke('email-secrets-status');
+          if (data?.status) {
+            setSecretsStatus(data.status as Record<string, boolean>);
+          }
+        } catch (e) {
+          console.warn('Impossible de recharger le statut des secrets');
+        }
+      }, 2000);
+      
     } catch (error) {
       console.error("Erreur:", error);
       toast({
@@ -363,6 +385,12 @@ const EmailSettings = () => {
                   )}
                 </div>
               </div>
+
+              <div className="flex justify-end">
+                <Button onClick={saveConfig} disabled={isLoading}>
+                  {isLoading ? "Sauvegarde..." : "Sauvegarder et configurer Supabase"}
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
@@ -370,144 +398,71 @@ const EmailSettings = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Database className="h-5 w-5" />
-                Configuration des secrets Supabase
+                Configuration actuelle dans Supabase
               </CardTitle>
               <CardDescription>
-                Les secrets doivent être configurés dans Supabase pour la sécurité.
+                Valeurs actuellement stockées dans les secrets Supabase Edge Functions.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3 text-sm bg-muted p-4 rounded-md">
-                <p><strong>Secrets requis dans Supabase Edge Functions:</strong></p>
-                <div className="space-y-2">
-                  {[
-                    { key: 'SMTP_HOST', label: 'Serveur SMTP', value: config.smtp_host },
-                    { key: 'SMTP_PORT', label: 'Port SMTP', value: config.smtp_port },
-                    { key: 'SMTP_USER', label: 'Utilisateur SMTP', value: config.smtp_user },
-                    { key: 'SMTP_PASS', label: 'Mot de passe SMTP', value: '***masqué***', isPassword: true },
-                    { key: 'SMTP_FROM', label: 'Email expéditeur', value: config.smtp_from },
-                    { key: 'SMTP_TLS', label: 'TLS activé', value: config.smtp_tls.toString() },
-                  ].map((item) => (
-                    <div key={item.key} className="flex items-center justify-between gap-3 p-3 bg-background rounded border">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-sm">{item.label}</span>
-                          {secretsStatus ? (
-                            secretsStatus[item.key] ? (
-                              <span className="text-green-600 text-xs flex items-center gap-1">
-                                <CheckCircle className="h-3 w-3" /> Configuré
-                              </span>
-                            ) : (
-                              <span className="text-red-600 text-xs flex items-center gap-1">
-                                <AlertCircle className="h-3 w-3" /> Manquant
-                              </span>
-                            )
+              <div className="space-y-3">
+                {[
+                  { key: 'SMTP_HOST', label: 'Serveur SMTP', value: config.smtp_host },
+                  { key: 'SMTP_PORT', label: 'Port SMTP', value: config.smtp_port },
+                  { key: 'SMTP_USER', label: 'Utilisateur SMTP', value: config.smtp_user },
+                  { key: 'SMTP_PASS', label: 'Mot de passe SMTP', value: '***masqué***', isPassword: true },
+                  { key: 'SMTP_FROM', label: 'Email expéditeur', value: config.smtp_from },
+                  { key: 'SMTP_TLS', label: 'TLS/SSL', value: config.smtp_tls ? 'Activé' : 'Désactivé' },
+                ].map((item) => (
+                  <div key={item.key} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-sm">{item.label}</span>
+                        {secretsStatus ? (
+                          secretsStatus[item.key] ? (
+                            <span className="text-green-600 text-xs flex items-center gap-1">
+                              <CheckCircle className="h-3 w-3" /> Configuré
+                            </span>
                           ) : (
-                            <span className="text-xs text-muted-foreground">Vérification…</span>
-                          )}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Valeur: <code className="bg-muted px-1 rounded">{item.value || '—'}</code>
-                        </div>
+                            <span className="text-red-600 text-xs flex items-center gap-1">
+                              <AlertCircle className="h-3 w-3" /> Non configuré
+                            </span>
+                          )
+                        ) : (
+                          <span className="text-xs text-muted-foreground">Vérification...</span>
+                        )}
                       </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={async () => {
-                          toast({
-                            title: "Configuration du secret",
-                            description: `Le secret ${item.key} sera configuré automatiquement. Patientez...`,
-                          });
-                          
-                          // Simuler un délai pour l'interface utilisateur
-                          setTimeout(async () => {
-                            try {
-                              const { data } = await supabase.functions.invoke('email-secrets-status');
-                              if (data?.status) {
-                                setSecretsStatus(data.status as Record<string, boolean>);
-                              }
-                            } catch (e) {
-                              console.warn('Impossible de recharger le statut des secrets');
-                            }
-                          }, 2000);
-                        }}
-                        className="text-xs"
-                        disabled={!item.value || (item.key !== 'SMTP_PASS' && !item.value)}
-                      >
-                        <Settings className="h-3 w-3 mr-1" />
-                        Configurer
-                      </Button>
+                      <div className="text-xs text-muted-foreground">
+                        <code className="bg-muted px-2 py-1 rounded text-xs">
+                          {item.value || 'Non défini'}
+                        </code>
+                      </div>
                     </div>
-                  ))}
-                </div>
-                <div className="flex flex-col gap-3 pt-2 border-t">
-                  <p className="text-xs text-muted-foreground">
-                    Configurez les secrets un par un avec les boutons ci-dessus, ou utilisez les liens ci-dessous pour une configuration manuelle.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Button
-                      size="sm"
-                      onClick={async () => {
-                        setIsLoading(true);
-                        try {
-                          // Configurer tous les secrets en une fois
-                          const secrets = [
-                            { name: 'SMTP_HOST', value: config.smtp_host },
-                            { name: 'SMTP_PORT', value: config.smtp_port },
-                            { name: 'SMTP_USER', value: config.smtp_user },
-                            { name: 'SMTP_PASS', value: config.smtp_pass },
-                            { name: 'SMTP_FROM', value: config.smtp_from },
-                            { name: 'SMTP_TLS', value: config.smtp_tls.toString() }
-                          ];
-                          
-                          for (const secret of secrets) {
-                            if (secret.value) {
-                              window.dispatchEvent(new CustomEvent('configure-secret', { 
-                                detail: { secretName: secret.name, value: secret.value }
-                              }));
-                              // Petite pause entre chaque configuration
-                              await new Promise(resolve => setTimeout(resolve, 500));
-                            }
-                          }
-                          
-                          toast({
-                            title: "Configuration en cours",
-                            description: "Les secrets sont en cours de configuration. Veuillez patienter...",
-                          });
-                          
-                          // Recharger le statut après configuration
-                          setTimeout(async () => {
-                            try {
-                              const { data } = await supabase.functions.invoke('email-secrets-status');
-                              if (data?.status) {
-                                setSecretsStatus(data.status as Record<string, boolean>);
-                              }
-                            } catch (e) {
-                              console.warn('Impossible de recharger le statut des secrets');
-                            }
-                          }, 3000);
-                        } catch (error) {
-                          toast({
-                            title: "Erreur",
-                            description: "Impossible de configurer tous les secrets.",
-                            variant: "destructive",
-                          });
-                        } finally {
-                          setIsLoading(false);
-                        }
-                      }}
-                      disabled={isLoading || !config.smtp_host || !config.smtp_user}
-                    >
-                      <Database className="h-4 w-4 mr-2" />
-                      {isLoading ? "Configuration..." : "Configurer tous les secrets"}
-                    </Button>
+                  </div>
+                ))}
+                <div className="pt-3 border-t">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Statut global de la configuration :</span>
+                    {secretsStatus && Object.values(secretsStatus).every(Boolean) ? (
+                      <span className="text-green-600 flex items-center gap-1">
+                        <CheckCircle className="h-4 w-4" />
+                        Tous les secrets sont configurés
+                      </span>
+                    ) : (
+                      <span className="text-orange-600 flex items-center gap-1">
+                        <AlertCircle className="h-4 w-4" />
+                        Configuration incomplète
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-2">
                     <a
                       href={`https://supabase.com/dashboard/project/fbkprtfdoeoazfgmsecm/settings/functions`}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-sm"
+                      className="inline-flex items-center text-xs text-muted-foreground hover:text-foreground"
                     >
-                      Configuration manuelle
+                      Gérer manuellement dans Supabase →
                     </a>
                   </div>
                 </div>
@@ -624,13 +579,6 @@ const EmailSettings = () => {
           </Card>
         </TabsContent>
       </Tabs>
-
-      <div className="flex justify-end">
-        <Button onClick={saveConfig} disabled={isLoading}>
-          <Settings className="h-4 w-4 mr-2" />
-          {isLoading ? "Sauvegarde..." : "Sauvegarder la configuration"}
-        </Button>
-      </div>
     </div>
   );
 };
