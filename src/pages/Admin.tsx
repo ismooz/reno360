@@ -240,23 +240,27 @@ const Admin = () => {
                                 </div>
                               </div>
                               
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                <div>
-                                  <p className="text-sm font-medium">Client:</p>
-                                  <p className="text-sm">{request.name}</p>
-                                  <p className="text-sm">{request.email}</p>
-                                  <p className="text-sm">{request.phone}</p>
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+                                <div className="space-y-3">
+                                  <h5 className="text-sm font-semibold text-primary border-b border-border pb-1">Client</h5>
+                                  <div className="space-y-1">
+                                    <p className="text-sm"><span className="text-muted-foreground">Nom:</span> <span className="font-medium">{request.name}</span></p>
+                                    <p className="text-sm"><span className="text-muted-foreground">Email:</span> <span className="font-medium">{request.email}</span></p>
+                                    <p className="text-sm"><span className="text-muted-foreground">Téléphone:</span> <span className="font-medium">{request.phone}</span></p>
+                                  </div>
                                 </div>
-                                <div>
-                                  <p className="text-sm font-medium">Détails du projet:</p>
-                                  <p className="text-sm">Type: {request.buildingType}</p>
-                                  <p className="text-sm">Surface: {request.surfaceType}</p>
-                                  <p className="text-sm">Code postal: {request.postalCode}</p>
-                                  <p className="text-sm">Délai: {request.deadline}</p>
+                                <div className="space-y-3">
+                                  <h5 className="text-sm font-semibold text-primary border-b border-border pb-1">Détails du projet</h5>
+                                  <div className="space-y-1">
+                                    <p className="text-sm"><span className="text-muted-foreground">Type:</span> <span className="font-medium">{request.buildingType}</span></p>
+                                    <p className="text-sm"><span className="text-muted-foreground">Surface:</span> <span className="font-medium">{request.surfaceType}</span></p>
+                                    <p className="text-sm"><span className="text-muted-foreground">Code postal:</span> <span className="font-medium">{request.postalCode}</span></p>
+                                    <p className="text-sm"><span className="text-muted-foreground">Délai:</span> <span className="font-medium">{request.deadline}</span></p>
+                                  </div>
                                 </div>
-                                <div>
-                                  <p className="text-sm font-medium">Description:</p>
-                                  <p className="text-sm line-clamp-4">{request.description}</p>
+                                <div className="space-y-3">
+                                  <h5 className="text-sm font-semibold text-primary border-b border-border pb-1">Description</h5>
+                                  <p className="text-sm text-foreground line-clamp-4">{request.description}</p>
                                 </div>
                               </div>
                               
