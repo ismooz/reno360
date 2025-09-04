@@ -14,9 +14,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { EmailTemplates } from "@/types";
 
 // NOTE: Initialisation du client Supabase.
-// Remplacez les valeurs ci-dessous par vos variables d'environnement.
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "VOTRE_URL_SUPABASE";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "VOTRE_CLE_ANON_SUPABASE";
+const supabaseUrl = "https://fbkprtfdoeoazfgmsecm.supabase.co";
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZia3BydGZkb2VvYXpmZ21zZWNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NjkzOTgsImV4cCI6MjA3MjI0NTM5OH0.cKfliAwLAH8eId-7mM9y3J6yi3ACmFPa9U4SQA87AHw";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // NOTE: La fonction de validation a été intégrée directement ici pour résoudre le problème d'importation.
