@@ -11,6 +11,7 @@ import { RenovationRequest, User } from "@/types";
 import { FileText, Users, TrendingUp, Calendar, Shield, Settings } from "lucide-react";
 import ProfileEditDialog from "@/components/profile/ProfileEditDialog";
 import DeleteAccountDialog from "@/components/profile/DeleteAccountDialog";
+import ImageGallery from "@/components/ui/image-gallery";
 
 const statusLabels: Record<string, { label: string; variant: "default" | "outline" | "secondary" | "destructive" }> = {
   pending: { label: "En attente", variant: "outline" },
@@ -209,7 +210,12 @@ const Dashboard = () => {
                                 {statusLabels[request.status].label}
                               </Badge>
                             </div>
-                            <p className="text-sm">{request.postalCode} • {formatDate(request.createdAt)}</p>
+                             <p className="text-sm">{request.postalCode} • {formatDate(request.createdAt)}</p>
+                             {request.attachments && request.attachments.length > 0 && (
+                               <div className="mt-2">
+                                 <ImageGallery attachments={request.attachments} />
+                               </div>
+                             )}
                           </CardContent>
                         </Card>
                       ))}

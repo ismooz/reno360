@@ -18,6 +18,7 @@ import EmailSettings from "@/components/admin/EmailSettings";
 import SecuritySettings from "@/components/admin/SecuritySettings";
 import ServiceManagement from "@/components/admin/ServiceManagement";
 import ProjectManagement from "@/components/admin/ProjectManagement";
+import ImageGallery from "@/components/ui/image-gallery";
 
 const statusLabels: Record<string, { label: string; variant: "default" | "outline" | "secondary" | "destructive" }> = {
   pending: { label: "En attente", variant: "outline" },
@@ -322,11 +323,7 @@ const Admin = () => {
                                       {request.attachments && request.attachments.length > 0 && (
                                         <div>
                                           <h4 className="font-semibold mb-2">Pièces jointes</h4>
-                                          <div className="space-y-1">
-                                            {request.attachments.map((attachment, index) => (
-                                              <p key={index} className="text-sm text-blue-600">{attachment}</p>
-                                            ))}
-                                          </div>
+                                          <ImageGallery attachments={request.attachments} />
                                         </div>
                                       )}
                                       
