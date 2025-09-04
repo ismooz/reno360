@@ -8,15 +8,24 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-// CORRECTION: Le chemin d'importation a été restauré. Assurez-vous que ce chemin d'alias '@'
-// est correctement configuré dans votre projet pour pointer vers votre répertoire source.
-import { supabase } from "@/integrations/supabase/client";
 import { AlertCircle, CheckCircle, Mail, Send, Settings, Database } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { EmailTemplates } from "@/types";
+import { createClient } from "@supabase/supabase-js";
+
+// CORRECTION: Pour résoudre le problème d'importation, le client Supabase est initialisé ici.
+// Assurez-vous que vos variables d'environnement (ex: VITE_SUPABASE_URL) sont
+// correctement configurées dans votre projet.
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error("Supabase URL or Anon Key is missing. Check your .env file.");
+}
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // La fonction de validation d'email est maintenant incluse directement ici
-// pour supprimer la dépendance externe.
 const validateEmail = (email: string): boolean => {
     if (!email) return false;
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
