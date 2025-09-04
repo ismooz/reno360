@@ -217,12 +217,18 @@ export const useRenovationRequests = () => {
       return attachment;
     }
     
-    // Sinon, on génère l'URL publique via Supabase
-    const { data: { publicUrl } } = supabase.storage
-      .from('request-attachments')
-      .getPublicUrl(attachment);
-    
-    return publicUrl;
+    // Si c'est un chemin de fichier local/upload, essayer de générer l'URL Supabase
+    try {
+      const { data: { publicUrl } } = supabase.storage
+        .from('request-attachments')
+        .getPublicUrl(attachment);
+      
+      console.log('Generated public URL for', attachment, ':', publicUrl);
+      return publicUrl;
+    } catch (error) {
+      console.error('Error generating public URL for', attachment, error);
+      return attachment;
+    }
   };
 
   useEffect(() => {
