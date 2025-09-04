@@ -8,6 +8,7 @@ import ProjectCarousel from "@/components/projects/ProjectCarousel";
 import BeforeAfterSlider from "@/components/projects/BeforeAfterSlider";
 import { Project } from "@/types";
 import { ArrowLeft } from "lucide-react";
+import { sampleProjects } from "@/data/sampleProjects";
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,13 +16,16 @@ const ProjectDetail = () => {
   const [project, setProject] = useState<Project | null>(null);
 
   useEffect(() => {
-    // Charger le projet depuis localStorage
+    if (!id) return;
+    
+    // Charger les projets depuis localStorage et combiner avec les exemples
     const storedProjects = localStorage.getItem("projects");
-    if (storedProjects && id) {
-      const projects: Project[] = JSON.parse(storedProjects);
-      const foundProject = projects.find(p => p.id === id);
-      setProject(foundProject || null);
-    }
+    const userProjects = storedProjects ? JSON.parse(storedProjects) : [];
+    
+    // Combiner les projets d'exemple avec ceux créés par l'admin
+    const allProjects = [...sampleProjects, ...userProjects];
+    const foundProject = allProjects.find(p => p.id === id);
+    setProject(foundProject || null);
   }, [id]);
 
   if (!project) {

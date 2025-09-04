@@ -137,11 +137,11 @@ const RenovationForm = () => {
         return;
       }
       
-      const oversizedFiles = newFiles.filter(file => file.size > 5 * 1024 * 1024);
+      const oversizedFiles = newFiles.filter(file => file.size > 15 * 1024 * 1024);
       if (oversizedFiles.length > 0) {
         toast({
           title: "Fichier(s) trop volumineux",
-          description: "Chaque fichier doit être inférieur à 5 Mo.",
+          description: "Chaque fichier doit être inférieur à 15 Mo.",
           variant: "destructive",
         });
         return;
