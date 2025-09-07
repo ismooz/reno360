@@ -117,81 +117,104 @@ const Admin = () => {
   
   return (
     <Layout>
-      <div className="container py-10">
-        <div className="max-w-6xl mx-auto">
+      <div className="container py-6 px-3 max-w-full">
+        <div className="max-w-7xl mx-auto min-w-0">
           <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold">Administration</CardTitle>
+            <CardHeader className="px-4 sm:px-6">
+              <CardTitle className="text-xl sm:text-2xl font-bold">Administration</CardTitle>
               <CardDescription>
                 Gérez les demandes de devis, les clients et les paramètres du système
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-2 sm:px-6">
               <Tabs defaultValue="requests">
-                <TabsList className="mb-6 grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-7 h-auto">
-                  <TabsTrigger value="requests" className="text-xs">Demandes</TabsTrigger>
-                  <TabsTrigger value="projects" className="text-xs">Projets</TabsTrigger>
-                  <TabsTrigger value="services" className="text-xs">Services</TabsTrigger>
-                  <TabsTrigger value="clients" className="text-xs">Clients</TabsTrigger>
-                  <TabsTrigger value="emails" className="text-xs">Emails</TabsTrigger>
-                  <TabsTrigger value="security" className="text-xs">Sécurité</TabsTrigger>
-                  <TabsTrigger value="settings" className="text-xs">Paramètres</TabsTrigger>
+                <TabsList className="mb-6 grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 h-auto p-1 gap-1">
+                  <TabsTrigger value="requests" className="text-xs sm:text-sm px-2 py-2 h-auto">
+                    <span className="hidden sm:inline">Demandes</span>
+                    <span className="sm:hidden">Dem.</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="projects" className="text-xs sm:text-sm px-2 py-2 h-auto">
+                    <span className="hidden sm:inline">Projets</span>
+                    <span className="sm:hidden">Proj.</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="services" className="text-xs sm:text-sm px-2 py-2 h-auto">
+                    <span className="hidden sm:inline">Services</span>
+                    <span className="sm:hidden">Serv.</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="clients" className="text-xs sm:text-sm px-2 py-2 h-auto">
+                    <span className="hidden sm:inline">Clients</span>
+                    <span className="sm:hidden">Cli.</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="emails" className="text-xs sm:text-sm px-2 py-2 h-auto">
+                    <span className="hidden sm:inline">Emails</span>
+                    <span className="sm:hidden">Mail</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="security" className="text-xs sm:text-sm px-2 py-2 h-auto">
+                    <span className="hidden sm:inline">Sécurité</span>
+                    <span className="sm:hidden">Séc.</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="settings" className="text-xs sm:text-sm px-2 py-2 h-auto">
+                    <span className="hidden sm:inline">Paramètres</span>
+                    <span className="sm:hidden">Param.</span>
+                  </TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="requests">
-                  <div className="space-y-6">
+                <TabsContent value="requests" className="mt-6">
+                  <div className="space-y-6 max-w-full min-w-0">
                     <div className="flex flex-col gap-4">
-                      <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="w-full sm:w-48">
-                          <Select
-                            value={filter.status}
-                            onValueChange={(value) => setFilter({ ...filter, status: value })}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Statut" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="all">Tous les statuts</SelectItem>
-                              <SelectItem value="pending">En attente</SelectItem>
-                              <SelectItem value="approved">Approuvé</SelectItem>
-                              <SelectItem value="in-progress">En cours</SelectItem>
-                              <SelectItem value="completed">Terminé</SelectItem>
-                              <SelectItem value="rejected">Rejeté</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="relative flex-1">
-                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            value={filter.search}
-                            onChange={(e) => setFilter({ ...filter, search: e.target.value })}
-                            placeholder="Rechercher..."
-                            className="pl-10"
-                          />
-                        </div>
-                        <div className="w-full sm:w-auto">
-                          <Select onValueChange={(value) => {
-                            if (value === "csv") exportRequestsToCSV(filteredRequests);
-                            if (value === "excel") exportRequestsToExcel(filteredRequests);
-                          }}>
-                            <SelectTrigger className="w-full sm:w-32">
-                              <SelectValue placeholder="Exporter" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="csv">
-                                <div className="flex items-center gap-2">
-                                  <FileSpreadsheet className="h-4 w-4" />
-                                  CSV
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="excel">
-                                <div className="flex items-center gap-2">
-                                  <Download className="h-4 w-4" />
-                                  Excel
-                                </div>
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
+                      <div className="flex flex-col gap-3">
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <div className="w-full sm:w-48">
+                            <Select
+                              value={filter.status}
+                              onValueChange={(value) => setFilter({ ...filter, status: value })}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Statut" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all">Tous les statuts</SelectItem>
+                                <SelectItem value="pending">En attente</SelectItem>
+                                <SelectItem value="approved">Approuvé</SelectItem>
+                                <SelectItem value="in-progress">En cours</SelectItem>
+                                <SelectItem value="completed">Terminé</SelectItem>
+                                <SelectItem value="rejected">Rejeté</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              value={filter.search}
+                              onChange={(e) => setFilter({ ...filter, search: e.target.value })}
+                              placeholder="Rechercher..."
+                              className="pl-10"
+                            />
+                          </div>
+                          <div className="w-full sm:w-auto">
+                            <Select onValueChange={(value) => {
+                              if (value === "csv") exportRequestsToCSV(filteredRequests);
+                              if (value === "excel") exportRequestsToExcel(filteredRequests);
+                            }}>
+                              <SelectTrigger className="w-full sm:w-40">
+                                <SelectValue placeholder="Exporter" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="csv">
+                                  <div className="flex items-center gap-2">
+                                    <FileSpreadsheet className="h-4 w-4" />
+                                    CSV
+                                  </div>
+                                </SelectItem>
+                                <SelectItem value="excel">
+                                  <div className="flex items-center gap-2">
+                                    <Download className="h-4 w-4" />
+                                    Excel
+                                  </div>
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -207,77 +230,77 @@ const Admin = () => {
                       <div className="space-y-4">
                         {filteredRequests.map((request) => (
                           <Card key={request.id}>
-                            <CardContent className="p-6">
-                               <div className="flex flex-col gap-4 mb-4">
-                                 <div>
-                                   <h4 className="text-lg font-semibold">{request.renovationType || request.renovation_type}</h4>
-                                   <p className="text-sm text-muted-foreground">
-                                     Demande #{request.id.slice(-6)} • {formatDate(request.createdAt || request.created_at)}
-                                   </p>
-                                 </div>
+                            <CardContent className="p-4 sm:p-6">
+                              <div className="flex flex-col gap-4 mb-4">
+                                <div className="min-w-0">
+                                  <h4 className="text-base sm:text-lg font-semibold break-words">{request.renovationType || request.renovation_type}</h4>
+                                  <p className="text-xs sm:text-sm text-muted-foreground">
+                                    Demande #{request.id.slice(-6)} • {formatDate(request.createdAt || request.created_at)}
+                                  </p>
+                                </div>
                                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                                   <Badge variant={statusLabels[request.status].variant}>
                                     {statusLabels[request.status].label}
                                   </Badge>
-                                   <Select
-                                     value={request.status}
-                                     onValueChange={(value) => updateRequestStatus(request.id, value)}
-                                   >
-                                     <SelectTrigger className="w-full sm:w-40">
-                                       <SelectValue placeholder="Changer le statut" />
-                                     </SelectTrigger>
-                                     <SelectContent>
-                                       <SelectItem value="pending">En attente</SelectItem>
-                                       <SelectItem value="approved">Approuvé</SelectItem>
-                                       <SelectItem value="in-progress">En cours</SelectItem>
-                                       <SelectItem value="completed">Terminé</SelectItem>
-                                       <SelectItem value="rejected">Rejeté</SelectItem>
-                                     </SelectContent>
-                                   </Select>
+                                  <Select
+                                    value={request.status}
+                                    onValueChange={(value) => updateRequestStatus(request.id, value)}
+                                  >
+                                    <SelectTrigger className="w-full sm:w-40">
+                                      <SelectValue placeholder="Changer le statut" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="pending">En attente</SelectItem>
+                                      <SelectItem value="approved">Approuvé</SelectItem>
+                                      <SelectItem value="in-progress">En cours</SelectItem>
+                                      <SelectItem value="completed">Terminé</SelectItem>
+                                      <SelectItem value="rejected">Rejeté</SelectItem>
+                                    </SelectContent>
+                                  </Select>
                                 </div>
                               </div>
                               
                               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
                                 <div className="space-y-3">
-                                  <h5 className="text-sm font-semibold text-primary border-b border-border pb-1">Client</h5>
+                                  <h5 className="text-xs sm:text-sm font-semibold text-primary border-b border-border pb-1">Client</h5>
                                   <div className="space-y-1">
-                                    <p className="text-sm"><span className="text-muted-foreground">Nom:</span> <span className="font-medium">{request.name}</span></p>
-                                    <p className="text-sm"><span className="text-muted-foreground">Email:</span> <span className="font-medium">{request.email}</span></p>
-                                    <p className="text-sm"><span className="text-muted-foreground">Téléphone:</span> <span className="font-medium">{request.phone}</span></p>
+                                    <p className="text-xs sm:text-sm break-words"><span className="text-muted-foreground">Nom:</span> <span className="font-medium">{request.name}</span></p>
+                                    <p className="text-xs sm:text-sm break-all"><span className="text-muted-foreground">Email:</span> <span className="font-medium">{request.email}</span></p>
+                                    <p className="text-xs sm:text-sm"><span className="text-muted-foreground">Téléphone:</span> <span className="font-medium">{request.phone}</span></p>
                                   </div>
                                 </div>
                                 <div className="space-y-3">
-                                  <h5 className="text-sm font-semibold text-primary border-b border-border pb-1">Détails du projet</h5>
-                                     <div className="space-y-1">
-                                       <p className="text-sm"><span className="text-muted-foreground">Type:</span> <span className="font-medium">{request.buildingType || request.building_type}</span></p>
-                                       <p className="text-sm"><span className="text-muted-foreground">Surface:</span> <span className="font-medium">{request.surfaceType || request.surface_type}</span></p>
-                                       <p className="text-sm"><span className="text-muted-foreground">Code postal:</span> <span className="font-medium">{request.postalCode || request.postal_code}</span></p>
-                                       <p className="text-sm"><span className="text-muted-foreground">Délai:</span> <span className="font-medium">{request.deadline}</span></p>
-                                     </div>
-                                   </div>
-                                   <div className="space-y-3">
-                                     <h5 className="text-sm font-semibold text-primary border-b border-border pb-1">Description</h5>
-                                     <p className="text-sm text-foreground line-clamp-4">{request.description}</p>
+                                  <h5 className="text-xs sm:text-sm font-semibold text-primary border-b border-border pb-1">Détails du projet</h5>
+                                  <div className="space-y-1">
+                                    <p className="text-xs sm:text-sm"><span className="text-muted-foreground">Type:</span> <span className="font-medium">{request.buildingType || request.building_type}</span></p>
+                                    <p className="text-xs sm:text-sm"><span className="text-muted-foreground">Surface:</span> <span className="font-medium">{request.surfaceType || request.surface_type}</span></p>
+                                    <p className="text-xs sm:text-sm"><span className="text-muted-foreground">Code postal:</span> <span className="font-medium">{request.postalCode || request.postal_code}</span></p>
+                                    <p className="text-xs sm:text-sm"><span className="text-muted-foreground">Délai:</span> <span className="font-medium">{request.deadline}</span></p>
+                                  </div>
                                 </div>
-                               </div>
-                               
-                               {request.attachments && request.attachments.length > 0 && (
-                                 <div className="mb-4">
-                                   <ImageGallery attachments={request.attachments} />
-                                 </div>
-                               )}
-                               
-                                 <div className="flex flex-col sm:flex-row gap-2">
-                                   <Button variant="outline" size="sm" onClick={() => handleViewDetails(request)} className="w-full sm:w-auto">
-                                     <Eye className="h-4 w-4 mr-2" />
-                                     Voir les détails
-                                   </Button>
-                                   
-                                   <Button size="sm" onClick={() => handleContactClient(request)} className="w-full sm:w-auto">
-                                     <Phone className="h-4 w-4 mr-2" />
-                                     Contacter le client
-                                   </Button>
-                                 </div>
+                                <div className="space-y-3">
+                                  <h5 className="text-xs sm:text-sm font-semibold text-primary border-b border-border pb-1">Description</h5>
+                                  <p className="text-xs sm:text-sm text-foreground line-clamp-4 break-words">{request.description}</p>
+                                </div>
+                              </div>
+                              
+                              {request.attachments && request.attachments.length > 0 && (
+                                <div className="mb-4">
+                                  <ImageGallery attachments={request.attachments} />
+                                </div>
+                              )}
+                              
+                              <div className="flex flex-col sm:flex-row gap-2">
+                                <Button variant="outline" size="sm" onClick={() => handleViewDetails(request)} className="w-full sm:w-auto">
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  Voir les détails
+                                </Button>
+                                
+                                <Button size="sm" onClick={() => handleContactClient(request)} className="w-full sm:w-auto">
+                                  <Phone className="h-4 w-4 mr-2" />
+                                  Contacter le client
+                                </Button>
+                              </div>
                             </CardContent>
                           </Card>
                         ))}
