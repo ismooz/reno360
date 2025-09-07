@@ -263,15 +263,15 @@ const EmailSettings = () => {
     <div className="space-y-6 max-w-4xl mx-auto px-3 min-w-0">
       <Tabs defaultValue="smtp-config">
         {/* Onglets principaux */}
-        <TabsList className="flex w-full gap-2 overflow-x-auto no-scrollbar rounded-md p-1 bg-muted/40 min-w-0">
-          <TabsTrigger value="smtp-config" className={triggerBase}>
-            Configuration SMTP
+        <TabsList className="grid w-full grid-cols-3 gap-1 h-auto p-1 bg-muted/40">
+          <TabsTrigger value="smtp-config" className="text-xs sm:text-sm px-2 py-2 h-auto text-center data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">
+            SMTP
           </TabsTrigger>
-          <TabsTrigger value="templates" className={triggerBase}>
+          <TabsTrigger value="templates" className="text-xs sm:text-sm px-2 py-2 h-auto text-center data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">
             Templates
           </TabsTrigger>
-          <TabsTrigger value="test" className={triggerBase}>
-            Test Email
+          <TabsTrigger value="test" className="text-xs sm:text-sm px-2 py-2 h-auto text-center data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">
+            Test
           </TabsTrigger>
         </TabsList>
 
