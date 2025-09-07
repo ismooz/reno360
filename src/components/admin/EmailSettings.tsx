@@ -84,6 +84,8 @@ const EmailSettings = () => {
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [emailErrors, setEmailErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
+  const [secretsStatus, setSecretsStatus] = useState<Record<string, boolean> | null>(null);
+  const [checkingSecrets, setCheckingSecrets] = useState(false);
 
   // AU CHARGEMENT: Lire la configuration depuis la table Supabase
   useEffect(() => {
@@ -165,7 +167,6 @@ const EmailSettings = () => {
       host: config.smtp_host,
       port: parseInt(config.smtp_port, 10),
       username: config.smtp_user,
-      password: config.smtp_pass,
       from_address: config.smtp_from,
       use_tls: config.smtp_tls,
     };
@@ -228,6 +229,21 @@ const EmailSettings = () => {
       toast({ title: "Erreur de test", description: `Impossible d'invoquer la fonction: ${errorMessage}`, variant: "destructive" });
     } finally {
       setIsTestingEmail(false);
+    }
+  };
+
+  const checkSecrets = async () => {
+    setCheckingSecrets(true);
+    setSecretsStatus(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("email-secrets-status");
+      if (error) throw error;
+      setSecretsStatus((data as any)?.status ?? null);
+      toast({ title: "Secrets vérifiés", description: "Statut mis à jour." });
+    } catch (e: any) {
+      toast({ title: "Erreur", description: e.message || "Impossible de vérifier les secrets", variant: "destructive" });
+    } finally {
+      setCheckingSecrets(false);
     }
   };
 
@@ -305,16 +321,30 @@ const EmailSettings = () => {
                 />
               </div>
 
-              <div className="space-y-2 min-w-0">
-                <Label htmlFor="smtp_pass">Mot de passe</Label>
-                <Input
-                  id="smtp_pass"
-                  value={config.smtp_pass}
-                  onChange={(e) => setConfig({ ...config, smtp_pass: e.target.value })}
-                  placeholder="Mot de passe d'application"
-                  type="password"
-                />
-              </div>
+               <Alert>
+                 <AlertDescription>
+                   Les identifiants SMTP (hôte, utilisateur, mot de passe) sont désormais gérés via des Secrets Supabase et ne sont jamais stockés en base.
+                 </AlertDescription>
+               </Alert>
+               <div className="flex items-center gap-2">
+                 <Button onClick={checkSecrets} variant="outline" disabled={checkingSecrets}>
+                   {checkingSecrets ? "Vérification..." : "Vérifier les secrets"}
+                 </Button>
+               </div>
+               {secretsStatus && (
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                   {Object.entries(secretsStatus).map(([key, ok]) => (
+                     <div key={key} className="flex items-center gap-2 text-sm">
+                       {ok ? (
+                         <CheckCircle className="h-4 w-4 text-green-600" />
+                       ) : (
+                         <AlertCircle className="h-4 w-4 text-red-600" />
+                       )}
+                       <span>{key}: {ok ? 'OK' : 'Manquant'}</span>
+                     </div>
+                   ))}
+                 </div>
+               )}
 
               <div className="space-y-2 min-w-0">
                 <Label htmlFor="smtp_from">Email expéditeur</Label>
