@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Buffer } from "https://deno.land/std@0.190.0/io/buffer.ts";
+import { encode as base64Encode } from "https://deno.land/std@0.190.0/encoding/base64.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -81,7 +81,6 @@ serve(async (req: Request) => {
     };
 
     const sendCommand = async (command: string): Promise<string> => {
-      // Ne pas logger le mot de passe en clair
       const logCommand = command.includes("AUTH LOGIN") || command.length > 50 ? command.substring(0, 50) + "..." : command;
       console.log(`C: ${logCommand}`);
       await conn.write(encoder.encode(command + "\r\n"));
@@ -102,9 +101,9 @@ serve(async (req: Request) => {
       }
 
       await sendCommand("AUTH LOGIN");
-      // Utiliser Buffer pour un encodage base64 plus robuste
-      await sendCommand(Buffer.from(smtpConfig.username).toString("base64"));
-      const authResponse = await sendCommand(Buffer.from(smtpConfig.password).toString("base64"));
+      // Encodage base64 via Deno std
+      await sendCommand(base64Encode(encoder.encode(smtpConfig.username)));
+      const authResponse = await sendCommand(base64Encode(encoder.encode(smtpConfig.password)));
       if (!authResponse.startsWith("235")) {
         throw new Error(`Authentification SMTP échouée: ${authResponse}`);
       }
