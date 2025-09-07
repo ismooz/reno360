@@ -235,7 +235,7 @@ const EmailSettings = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="smtp-config">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3">
           <TabsTrigger value="smtp-config">Configuration SMTP</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="test">Test Email</TabsTrigger>
