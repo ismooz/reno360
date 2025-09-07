@@ -243,10 +243,10 @@ const UserManagement = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row gap-4 justify-between">
-        <div className="flex-1 flex gap-4">
-          <div className="w-full md:w-48">
+    <div className="space-y-6 max-w-full mx-auto px-3 min-w-0">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="w-full sm:w-48">
             <Select
               value={filter.status}
               onValueChange={(value) => setFilter({ ...filter, status: value })}
@@ -262,7 +262,7 @@ const UserManagement = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="relative flex-1">
+          <div className="relative flex-1 min-w-0">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               value={filter.search}
@@ -272,20 +272,23 @@ const UserManagement = () => {
             />
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <Button 
             variant="outline" 
             onClick={loadUsers} 
             disabled={isLoading}
+            className="w-full sm:w-auto"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Actualiser
+            <span className="hidden sm:inline">Actualiser</span>
+            <span className="sm:hidden">Actualiser</span>
           </Button>
           <Button onClick={() => {
             setSelectedUser(null);
             setIsUserFormOpen(true);
-          }}>
-            Ajouter un utilisateur
+          }} className="w-full sm:w-auto">
+            <span className="hidden sm:inline">Ajouter un utilisateur</span>
+            <span className="sm:hidden">Ajouter</span>
           </Button>
         </div>
       </div>
@@ -298,98 +301,104 @@ const UserManagement = () => {
           </p>
         </div>
       ) : (
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Rôle</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Inscription</TableHead>
-                <TableHead>Dernière connexion</TableHead>
-                <TableHead>Demandes</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name || "-"}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Badge variant={user.role === "admin" ? "default" : "outline"}>
-                      {user.role === "admin" ? "Admin" : "Client"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        user.status === "active"
-                          ? "default"
-                          : user.status === "inactive"
-                          ? "secondary"
-                          : "destructive"
-                      }
-                    >
-                      {user.status === "active"
-                        ? "Actif"
-                        : user.status === "inactive"
-                        ? "Inactif"
-                        : "Supprimé"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{formatDate(user.createdAt)}</TableCell>
-                  <TableCell>{formatDate(user.lastLogin)}</TableCell>
-                  <TableCell>
-                    {user.requestCount || 0}
-                    {user.lastRequestDate && (
-                      <span className="text-xs text-muted-foreground block">
-                        Dernière: {formatDate(user.lastRequestDate)}
-                      </span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleViewUser(user)}
-                        title="Voir"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleEditUser(user)}
-                        title="Modifier"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleChangePassword(user)}
-                        title="Changer le mot de passe"
-                      >
-                        <UserCog className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleDeleteUser(user)}
-                        disabled={user.id === currentUser?.id}
-                        title="Supprimer"
-                      >
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
+        <div className="overflow-x-auto">
+          <div className="rounded-md border min-w-[800px]">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-[120px]">Nom</TableHead>
+                  <TableHead className="min-w-[200px]">Email</TableHead>
+                  <TableHead className="min-w-[80px]">Rôle</TableHead>
+                  <TableHead className="min-w-[80px]">Statut</TableHead>
+                  <TableHead className="min-w-[120px] hidden md:table-cell">Inscription</TableHead>
+                  <TableHead className="min-w-[120px] hidden lg:table-cell">Dernière connexion</TableHead>
+                  <TableHead className="min-w-[100px] hidden sm:table-cell">Demandes</TableHead>
+                  <TableHead className="text-right min-w-[140px]">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredUsers.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">{user.name || "-"}</TableCell>
+                    <TableCell className="break-all">{user.email}</TableCell>
+                    <TableCell>
+                      <Badge variant={user.role === "admin" ? "default" : "outline"}>
+                        {user.role === "admin" ? "Admin" : "Client"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          user.status === "active"
+                            ? "default"
+                            : user.status === "inactive"
+                            ? "secondary"
+                            : "destructive"
+                        }
+                      >
+                        {user.status === "active"
+                          ? "Actif"
+                          : user.status === "inactive"
+                          ? "Inactif"
+                          : "Supprimé"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">{formatDate(user.createdAt)}</TableCell>
+                    <TableCell className="hidden lg:table-cell">{formatDate(user.lastLogin)}</TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      {user.requestCount || 0}
+                      {user.lastRequestDate && (
+                        <span className="text-xs text-muted-foreground block">
+                          Dernière: {formatDate(user.lastRequestDate)}
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleViewUser(user)}
+                          title="Voir"
+                        >
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleEditUser(user)}
+                          title="Modifier"
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8 hidden sm:inline-flex"
+                          onClick={() => handleChangePassword(user)}
+                          title="Changer le mot de passe"
+                        >
+                          <UserCog className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleDeleteUser(user)}
+                          disabled={user.id === currentUser?.id}
+                          title="Supprimer"
+                        >
+                          <Trash className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       )}
 
