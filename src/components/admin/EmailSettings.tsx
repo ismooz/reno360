@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
+// CORRECTIF: Importation de Supabase via une URL CDN pour résoudre le problème de compilation.
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2"; 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -235,7 +236,8 @@ const EmailSettings = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="smtp-config">
-        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3">
+        {/* CORRECTIF RESPONSIVE: Les onglets principaux passent en colonne sur mobile */}
+        <TabsList className="grid w-full grid-cols-1 gap-1 sm:grid-cols-3">
           <TabsTrigger value="smtp-config">Configuration SMTP</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="test">Test Email</TabsTrigger>
@@ -291,7 +293,7 @@ const EmailSettings = () => {
                 <div className="space-y-2">
                   <Label htmlFor="replyToEmail">Adresse de réponse</Label>
                   <Input id="replyToEmail" value={replyToEmail} onChange={(e) => setReplyToEmail(e.target.value)} placeholder="contact@reno360.ch" className={emailErrors.replyToEmail ? "border-destructive" : ""} />
-                   {emailErrors.replyToEmail && (<p className="text-sm text-destructive">{emailErrors.replyToEmail}</p>)}
+                  {emailErrors.replyToEmail && (<p className="text-sm text-destructive">{emailErrors.replyToEmail}</p>)}
                 </div>
                 
                 <div className="space-y-2">
@@ -319,7 +321,8 @@ const EmailSettings = () => {
             <CardContent>
               <Tabs defaultValue="account_creation">
                 <div className="w-full overflow-x-auto mb-4">
-                  <TabsList className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-1 h-auto p-1 bg-muted">
+                   {/* CORRECTIF RESPONSIVE: Utilisation de flex-wrap pour que les onglets aillent à la ligne sur mobile */}
+                  <TabsList className="flex flex-wrap h-auto justify-start gap-2 p-1 bg-muted">
                     {Object.keys(templateLabels).map((key) => (
                       <TabsTrigger
                         key={key}
