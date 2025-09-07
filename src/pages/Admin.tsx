@@ -128,21 +128,21 @@ const Admin = () => {
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="requests">
-                <TabsList className="mb-6">
-                  <TabsTrigger value="requests">Demandes</TabsTrigger>
-                  <TabsTrigger value="projects">Réalisations</TabsTrigger>
-                  <TabsTrigger value="services">Services</TabsTrigger>
-                  <TabsTrigger value="clients">Clients</TabsTrigger>
-                  <TabsTrigger value="emails">Emails</TabsTrigger>
-                  <TabsTrigger value="security">Sécurité</TabsTrigger>
-                  <TabsTrigger value="settings">Paramètres</TabsTrigger>
+                <TabsList className="mb-6 grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-7 h-auto">
+                  <TabsTrigger value="requests" className="text-xs">Demandes</TabsTrigger>
+                  <TabsTrigger value="projects" className="text-xs">Projets</TabsTrigger>
+                  <TabsTrigger value="services" className="text-xs">Services</TabsTrigger>
+                  <TabsTrigger value="clients" className="text-xs">Clients</TabsTrigger>
+                  <TabsTrigger value="emails" className="text-xs">Emails</TabsTrigger>
+                  <TabsTrigger value="security" className="text-xs">Sécurité</TabsTrigger>
+                  <TabsTrigger value="settings" className="text-xs">Paramètres</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="requests">
                   <div className="space-y-6">
-                    <div className="flex flex-col md:flex-row gap-4 justify-between">
-                      <div className="flex-1 flex gap-4">
-                        <div className="w-full md:w-64">
+                    <div className="flex flex-col gap-4">
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="w-full sm:w-48">
                           <Select
                             value={filter.status}
                             onValueChange={(value) => setFilter({ ...filter, status: value })}
@@ -169,30 +169,30 @@ const Admin = () => {
                             className="pl-10"
                           />
                         </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Select onValueChange={(value) => {
-                          if (value === "csv") exportRequestsToCSV(filteredRequests);
-                          if (value === "excel") exportRequestsToExcel(filteredRequests);
-                        }}>
-                          <SelectTrigger className="w-32">
-                            <SelectValue placeholder="Exporter" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="csv">
-                              <div className="flex items-center gap-2">
-                                <FileSpreadsheet className="h-4 w-4" />
-                                CSV
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="excel">
-                              <div className="flex items-center gap-2">
-                                <Download className="h-4 w-4" />
-                                Excel
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <div className="w-full sm:w-auto">
+                          <Select onValueChange={(value) => {
+                            if (value === "csv") exportRequestsToCSV(filteredRequests);
+                            if (value === "excel") exportRequestsToExcel(filteredRequests);
+                          }}>
+                            <SelectTrigger className="w-full sm:w-32">
+                              <SelectValue placeholder="Exporter" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="csv">
+                                <div className="flex items-center gap-2">
+                                  <FileSpreadsheet className="h-4 w-4" />
+                                  CSV
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="excel">
+                                <div className="flex items-center gap-2">
+                                  <Download className="h-4 w-4" />
+                                  Excel
+                                </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     </div>
                     
@@ -208,14 +208,14 @@ const Admin = () => {
                         {filteredRequests.map((request) => (
                           <Card key={request.id}>
                             <CardContent className="p-6">
-                               <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
+                               <div className="flex flex-col gap-4 mb-4">
                                  <div>
                                    <h4 className="text-lg font-semibold">{request.renovationType || request.renovation_type}</h4>
                                    <p className="text-sm text-muted-foreground">
                                      Demande #{request.id.slice(-6)} • {formatDate(request.createdAt || request.created_at)}
                                    </p>
                                  </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                                   <Badge variant={statusLabels[request.status].variant}>
                                     {statusLabels[request.status].label}
                                   </Badge>
@@ -223,7 +223,7 @@ const Admin = () => {
                                      value={request.status}
                                      onValueChange={(value) => updateRequestStatus(request.id, value)}
                                    >
-                                     <SelectTrigger className="w-36">
+                                     <SelectTrigger className="w-full sm:w-40">
                                        <SelectValue placeholder="Changer le statut" />
                                      </SelectTrigger>
                                      <SelectContent>
@@ -237,7 +237,7 @@ const Admin = () => {
                                 </div>
                               </div>
                               
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+                              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
                                 <div className="space-y-3">
                                   <h5 className="text-sm font-semibold text-primary border-b border-border pb-1">Client</h5>
                                   <div className="space-y-1">
@@ -267,17 +267,17 @@ const Admin = () => {
                                  </div>
                                )}
                                
-                                <div className="flex gap-2">
-                                  <Button variant="outline" size="sm" onClick={() => handleViewDetails(request)}>
-                                    <Eye className="h-4 w-4 mr-2" />
-                                    Voir les détails
-                                  </Button>
-                                  
-                                  <Button size="sm" onClick={() => handleContactClient(request)}>
-                                    <Phone className="h-4 w-4 mr-2" />
-                                    Contacter le client
-                                  </Button>
-                                </div>
+                                 <div className="flex flex-col sm:flex-row gap-2">
+                                   <Button variant="outline" size="sm" onClick={() => handleViewDetails(request)} className="w-full sm:w-auto">
+                                     <Eye className="h-4 w-4 mr-2" />
+                                     Voir les détails
+                                   </Button>
+                                   
+                                   <Button size="sm" onClick={() => handleContactClient(request)} className="w-full sm:w-auto">
+                                     <Phone className="h-4 w-4 mr-2" />
+                                     Contacter le client
+                                   </Button>
+                                 </div>
                             </CardContent>
                           </Card>
                         ))}
