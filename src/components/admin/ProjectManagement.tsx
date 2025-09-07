@@ -186,9 +186,9 @@ const ProjectManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
+    <div className="space-y-6 max-w-4xl mx-auto px-3 min-w-0">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div className="min-w-0">
           <h3 className="text-lg font-semibold">Gestion des réalisations</h3>
           <p className="text-sm text-muted-foreground">
             Ajoutez, modifiez ou supprimez vos projets de rénovation.
@@ -196,12 +196,13 @@ const ProjectManagement = () => {
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setIsAddDialogOpen(true)}>
+            <Button onClick={() => setIsAddDialogOpen(true)} className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
-              Ajouter un projet
+              <span className="hidden sm:inline">Ajouter un projet</span>
+              <span className="sm:hidden">Ajouter</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="w-[95vw] max-w-2xl h-[90vh] max-h-[80vh] overflow-y-auto mx-3">
             <DialogHeader>
               <DialogTitle>
                 {editingProject ? "Modifier le projet" : "Ajouter un nouveau projet"}
@@ -402,22 +403,22 @@ const ProjectManagement = () => {
         <div className="grid gap-6">
           {projects.map((project) => (
             <Card key={project.id}>
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h4 className="text-lg font-semibold">{project.name}</h4>
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-lg font-semibold break-words">{project.name}</h4>
                     <p className="text-sm text-muted-foreground">Année: {project.year}</p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => handleEditProject(project)}>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Modifier
+                  <div className="flex gap-2 flex-shrink-0">
+                    <Button variant="outline" size="sm" onClick={() => handleEditProject(project)} className="flex-1 sm:flex-none">
+                      <Edit className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Modifier</span>
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Supprimer
+                        <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
+                          <Trash2 className="h-4 w-4 sm:mr-2" />
+                          <span className="hidden sm:inline">Supprimer</span>
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -439,7 +440,7 @@ const ProjectManagement = () => {
                   </div>
                 </div>
                 
-                <p className="text-sm mb-4">{project.description}</p>
+                <p className="text-sm mb-4 break-words">{project.description}</p>
                 
                 <div className="flex gap-2 flex-wrap">
                   {project.images && project.images.length > 0 && (
