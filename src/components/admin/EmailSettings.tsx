@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-// CORRECTIF: Importation de Supabase via une URL CDN pour résoudre le problème de compilation.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2"; 
+
+import { createClient } from "@supabase/supabase-js";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,22 +11,23 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { AlertCircle, CheckCircle, Mail, Send, Settings } from "lucide-react";
+import { AlertCircle, CheckCircle, Mail, Send } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { EmailTemplates } from "@/types";
 
 // NOTE: Initialisation du client Supabase.
 const supabaseUrl = "https://fbkprtfdoeoazfgmsecm.supabase.co";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZia3BydGZkb2VvYXpmZ21zZWNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NjkzOTgsImV4cCI6MjA3MjI0NTM5OH0.cKfliAwLAH8eId-7mM9y3J6yi3ACmFPa9U4SQA87AHw";
+const supabaseAnonKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZia3BydGZkb2VvYXpmZ21zZWNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NjkzOTgsImV4cCI6MjA3MjI0NTM5OH0.cKfliAwLAH8eId-7mM9y3J6yi3ACmFPa9U4SQA87AHw";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// NOTE: La fonction de validation a été intégrée directement ici pour résoudre le problème d'importation.
+// NOTE: Validation email locale
 const validateEmail = (email: string): boolean => {
   if (!email) return false;
-  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const re =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
 };
-
 
 interface EmailConfig {
   smtp_host: string;
@@ -39,24 +41,29 @@ interface EmailConfig {
 const defaultTemplates: EmailTemplates = {
   account_creation: {
     subject: "Bienvenue sur reno360.ch",
-    body: "Bonjour {{name}},\n\nVotre compte a été créé avec succès sur reno360.ch.\n\nVous pouvez maintenant vous connecter et soumettre vos demandes de devis.\n\nCordialement,\nL'équipe reno360.ch"
+    body:
+      "Bonjour {{name}},\n\nVotre compte a été créé avec succès sur reno360.ch.\n\nVous pouvez maintenant vous connecter et soumettre vos demandes de devis.\n\nCordialement,\nL'équipe reno360.ch",
   },
   password_change: {
     subject: "Modification de votre mot de passe",
-    body: "Bonjour {{name}},\n\nVotre mot de passe a été modifié avec succès.\n\nSi vous n'êtes pas à l'origine de cette modification, contactez-nous immédiatement.\n\nCordialement,\nL'équipe reno360.ch"
+    body:
+      "Bonjour {{name}},\n\nVotre mot de passe a été modifié avec succès.\n\nSi vous n'êtes pas à l'origine de cette modification, contactez-nous immédiatement.\n\nCordialement,\nL'équipe reno360.ch",
   },
   account_closure: {
     subject: "Fermeture de votre compte",
-    body: "Bonjour {{name}},\n\nVotre compte a été fermé comme demandé.\n\nVos données personnelles seront supprimées conformément à notre politique de confidentialité.\n\nCordialement,\nL'équipe reno360.ch"
+    body:
+      "Bonjour {{name}},\n\nVotre compte a été fermé comme demandé.\n\nVos données personnelles seront supprimées conformément à notre politique de confidentialité.\n\nCordialement,\nL'équipe reno360.ch",
   },
   account_deletion: {
     subject: "Suppression de votre compte",
-    body: "Bonjour {{name}},\n\nVotre compte et toutes vos données ont été supprimés définitivement.\n\nCordialement,\nL'équipe reno360.ch"
+    body:
+      "Bonjour {{name}},\n\nVotre compte et toutes vos données ont été supprimés définitivement.\n\nCordialement,\nL'équipe reno360.ch",
   },
   request_status_change: {
     subject: "Mise à jour de votre demande de devis",
-    body: "Bonjour {{name}},\n\nLe statut de votre demande \"{{renovationType}}\" a été modifié : {{status}}\n\nVous pouvez consulter les détails dans votre espace client.\n\nCordialement,\nL'équipe reno360.ch"
-  }
+    body:
+      'Bonjour {{name}},\n\nLe statut de votre demande "{{renovationType}}" a été modifié : {{status}}\n\nVous pouvez consulter les détails dans votre espace client.\n\nCordialement,\nL\'équipe reno360.ch',
+  },
 };
 
 const EmailSettings = () => {
@@ -66,7 +73,7 @@ const EmailSettings = () => {
     smtp_user: "",
     smtp_pass: "",
     smtp_from: "",
-    smtp_tls: true
+    smtp_tls: true,
   });
   const [templates, setTemplates] = useState<EmailTemplates>(defaultTemplates);
   const [replyToEmail, setReplyToEmail] = useState("contact@reno360.ch");
@@ -82,13 +89,9 @@ const EmailSettings = () => {
   useEffect(() => {
     const fetchConfig = async () => {
       setIsLoading(true);
-      const { data, error } = await supabase
-        .from('smtp_config')
-        .select('*')
-        .eq('id', 1)
-        .single();
+      const { data, error } = await supabase.from("smtp_config").select("*").eq("id", 1).single();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.code !== "PGRST116") {
         console.error("Erreur de chargement de la config SMTP:", error);
         toast({
           title: "Erreur de chargement",
@@ -109,24 +112,28 @@ const EmailSettings = () => {
     };
 
     fetchConfig();
-    
+
     const savedTemplates = localStorage.getItem("emailTemplates");
     if (savedTemplates) {
       setTemplates(JSON.parse(savedTemplates));
     }
+    const savedReply = localStorage.getItem("replyToEmail");
+    if (savedReply) setReplyToEmail(savedReply);
+    const savedRequests = localStorage.getItem("requestsEmail");
+    if (savedRequests) setRequestsEmail(savedRequests);
   }, [toast]);
 
-  const handleTemplateChange = (type: keyof EmailTemplates, field: 'subject' | 'body', value: string) => {
-    setTemplates(prev => ({
+  const handleTemplateChange = (type: keyof EmailTemplates, field: "subject" | "body", value: string) => {
+    setTemplates((prev) => ({
       ...prev,
       [type]: {
         ...prev[type],
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
-  // MODIFIÉ: La sauvegarde se fait dans la table 'smtp_config'
+  // Sauvegarde dans 'smtp_config'
   const saveConfig = async () => {
     setIsLoading(true);
     const errors: Record<string, string> = {};
@@ -134,12 +141,12 @@ const EmailSettings = () => {
       errors.smtp_from = "Format d'email invalide";
     }
     if (!validateEmail(replyToEmail)) {
-        errors.replyToEmail = "Format d'email invalide";
+      errors.replyToEmail = "Format d'email invalide";
     }
     if (!validateEmail(requestsEmail)) {
-        errors.requestsEmail = "Format d'email invalide";
+      errors.requestsEmail = "Format d'email invalide";
     }
-    
+
     if (Object.keys(errors).length > 0) {
       setEmailErrors(errors);
       toast({
@@ -150,7 +157,7 @@ const EmailSettings = () => {
       setIsLoading(false);
       return;
     }
-    
+
     setEmailErrors({});
 
     const updates = {
@@ -163,7 +170,7 @@ const EmailSettings = () => {
       use_tls: config.smtp_tls,
     };
 
-    const { error } = await supabase.from('smtp_config').upsert(updates);
+    const { error } = await supabase.from("smtp_config").upsert(updates);
 
     if (error) {
       console.error("Erreur de sauvegarde:", error);
@@ -199,16 +206,15 @@ const EmailSettings = () => {
     setTestResult(null);
 
     try {
-      const { error } = await supabase.functions.invoke('send-email', {
+      const { error } = await supabase.functions.invoke("send-email", {
         body: {
           to: testEmail,
           subject: "Test de configuration email - Reno360",
           html: `<p>Si vous recevez cet email, votre configuration SMTP fonctionne !</p>`,
-        }
+        },
       });
 
       if (error) {
-        // AMÉLIORATION: Essayer d'extraire un message d'erreur plus détaillé de la réponse de la fonction
         const detailedMessage = (error as any).context?.error?.message || error.message;
         setTestResult({ success: false, message: `Erreur: ${detailedMessage}` });
         toast({ title: "Test échoué", description: `Détail: ${detailedMessage}`, variant: "destructive" });
@@ -230,19 +236,30 @@ const EmailSettings = () => {
     password_change: "Changement de mot de passe",
     account_closure: "Fermeture de compte",
     account_deletion: "Suppression de compte",
-    request_status_change: "Changement de statut de demande"
+    request_status_change: "Changement de statut de demande",
   };
 
+  // Classe commune pour les triggers (évite les retours à la ligne + shrink)
+  const triggerBase =
+    "px-3 py-2 text-sm whitespace-nowrap flex-shrink-0 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm";
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-4xl mx-auto px-3 min-w-0">
       <Tabs defaultValue="smtp-config">
-        {/* CORRECTIF RESPONSIVE: Les onglets principaux passent en colonne sur mobile */}
-        <TabsList className="grid w-full grid-cols-1 gap-1 sm:grid-cols-3">
-          <TabsTrigger value="smtp-config">Configuration SMTP</TabsTrigger>
-          <TabsTrigger value="templates">Templates</TabsTrigger>
-          <TabsTrigger value="test">Test Email</TabsTrigger>
+        {/* Onglets principaux */}
+        <TabsList className="flex w-full gap-2 overflow-x-auto no-scrollbar rounded-md p-1 bg-muted/40 min-w-0">
+          <TabsTrigger value="smtp-config" className={triggerBase}>
+            Configuration SMTP
+          </TabsTrigger>
+          <TabsTrigger value="templates" className={triggerBase}>
+            Templates
+          </TabsTrigger>
+          <TabsTrigger value="test" className={triggerBase}>
+            Test Email
+          </TabsTrigger>
         </TabsList>
-        
+
+        {/* Onglet: Configuration SMTP */}
         <TabsContent value="smtp-config" className="space-y-6">
           <Card>
             <CardHeader>
@@ -251,55 +268,103 @@ const EmailSettings = () => {
                 Configuration SMTP
               </CardTitle>
               <CardDescription>
-                Configurez les paramètres de votre serveur email pour l'envoi automatique de notifications.
+                Configurez les paramètres de votre serveur email pour l&apos;envoi automatique de notifications.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+                <div className="space-y-2 min-w-0">
                   <Label htmlFor="smtp_host">Serveur SMTP</Label>
-                  <Input id="smtp_host" value={config.smtp_host} onChange={(e) => setConfig({ ...config, smtp_host: e.target.value })} placeholder="smtp.gmail.com" />
+                  <Input
+                    id="smtp_host"
+                    value={config.smtp_host}
+                    onChange={(e) => setConfig({ ...config, smtp_host: e.target.value })}
+                    placeholder="smtp.gmail.com"
+                  />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 min-w-0">
                   <Label htmlFor="smtp_port">Port</Label>
-                  <Input id="smtp_port" value={config.smtp_port} onChange={(e) => setConfig({ ...config, smtp_port: e.target.value })} placeholder="587" type="number" />
+                  <Input
+                    id="smtp_port"
+                    value={config.smtp_port}
+                    onChange={(e) => setConfig({ ...config, smtp_port: e.target.value })}
+                    placeholder="587"
+                    type="number"
+                  />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="smtp_user">Nom d'utilisateur</Label>
-                <Input id="smtp_user" value={config.smtp_user} onChange={(e) => setConfig({ ...config, smtp_user: e.target.value })} placeholder="votre-email@gmail.com" type="email" />
+              <div className="space-y-2 min-w-0">
+                <Label htmlFor="smtp_user">Nom d&apos;utilisateur</Label>
+                <Input
+                  id="smtp_user"
+                  value={config.smtp_user}
+                  onChange={(e) => setConfig({ ...config, smtp_user: e.target.value })}
+                  placeholder="votre-email@gmail.com"
+                  type="email"
+                />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0">
                 <Label htmlFor="smtp_pass">Mot de passe</Label>
-                <Input id="smtp_pass" value={config.smtp_pass} onChange={(e) => setConfig({ ...config, smtp_pass: e.target.value })} placeholder="Mot de passe d'application" type="password" />
+                <Input
+                  id="smtp_pass"
+                  value={config.smtp_pass}
+                  onChange={(e) => setConfig({ ...config, smtp_pass: e.target.value })}
+                  placeholder="Mot de passe d'application"
+                  type="password"
+                />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0">
                 <Label htmlFor="smtp_from">Email expéditeur</Label>
-                <Input id="smtp_from" value={config.smtp_from} onChange={(e) => setConfig({ ...config, smtp_from: e.target.value })} placeholder="noreply@reno360.ch" type="email" className={emailErrors.smtp_from ? "border-destructive" : ""} />
-                {emailErrors.smtp_from && (<p className="text-sm text-destructive">{emailErrors.smtp_from}</p>)}
+                <Input
+                  id="smtp_from"
+                  value={config.smtp_from}
+                  onChange={(e) => setConfig({ ...config, smtp_from: e.target.value })}
+                  placeholder="noreply@reno360.ch"
+                  type="email"
+                  className={emailErrors.smtp_from ? "border-destructive" : ""}
+                />
+                {emailErrors.smtp_from && <p className="text-sm text-destructive">{emailErrors.smtp_from}</p>}
               </div>
 
               <div className="flex items-center space-x-2">
-                <Switch id="smtp_tls" checked={config.smtp_tls} onCheckedChange={(checked) => setConfig({ ...config, smtp_tls: checked })} />
+                <Switch
+                  id="smtp_tls"
+                  checked={config.smtp_tls}
+                  onCheckedChange={(checked) => setConfig({ ...config, smtp_tls: checked })}
+                />
                 <Label htmlFor="smtp_tls">Utiliser TLS/SSL</Label>
               </div>
 
               <Separator />
 
               <div className="space-y-4">
-                <div className="space-y-2">
+                <div className="space-y-2 min-w-0">
                   <Label htmlFor="replyToEmail">Adresse de réponse</Label>
-                  <Input id="replyToEmail" value={replyToEmail} onChange={(e) => setReplyToEmail(e.target.value)} placeholder="contact@reno360.ch" className={emailErrors.replyToEmail ? "border-destructive" : ""} />
-                  {emailErrors.replyToEmail && (<p className="text-sm text-destructive">{emailErrors.replyToEmail}</p>)}
+                  <Input
+                    id="replyToEmail"
+                    value={replyToEmail}
+                    onChange={(e) => setReplyToEmail(e.target.value)}
+                    placeholder="contact@reno360.ch"
+                    className={emailErrors.replyToEmail ? "border-destructive" : ""}
+                  />
+                  {emailErrors.replyToEmail && <p className="text-sm text-destructive">{emailErrors.replyToEmail}</p>}
                 </div>
-                
-                <div className="space-y-2">
+
+                <div className="space-y-2 min-w-0">
                   <Label htmlFor="requestsEmail">Email de réception des demandes</Label>
-                  <Input id="requestsEmail" value={requestsEmail} onChange={(e) => setRequestsEmail(e.target.value)} placeholder="demandes@reno360.ch" className={emailErrors.requestsEmail ? "border-destructive" : ""} />
-                  {emailErrors.requestsEmail && (<p className="text-sm text-destructive">{emailErrors.requestsEmail}</p>)}
+                  <Input
+                    id="requestsEmail"
+                    value={requestsEmail}
+                    onChange={(e) => setRequestsEmail(e.target.value)}
+                    placeholder="demandes@reno360.ch"
+                    className={emailErrors.requestsEmail ? "border-destructive" : ""}
+                  />
+                  {emailErrors.requestsEmail && (
+                    <p className="text-sm text-destructive">{emailErrors.requestsEmail}</p>
+                  )}
                 </div>
               </div>
 
@@ -310,31 +375,31 @@ const EmailSettings = () => {
           </Card>
         </TabsContent>
 
+        {/* Onglet: Templates */}
         <TabsContent value="templates" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Templates d'emails</CardTitle>
+              <CardTitle>Templates d&apos;emails</CardTitle>
               <CardDescription>
                 Personnalisez les messages envoyés aux clients. Utilisez les variables: nom, type de rénovation, statut.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="account_creation">
-                <div className="w-full overflow-x-auto mb-4">
-                   {/* CORRECTIF RESPONSIVE: Utilisation de flex-wrap pour que les onglets aillent à la ligne sur mobile */}
-                  <TabsList className="flex flex-wrap h-auto justify-start gap-2 p-1 bg-muted">
+                <div className="w-full mb-4 min-w-0">
+                  <TabsList className="flex w-full gap-2 overflow-x-auto no-scrollbar h-auto p-1 bg-muted rounded-md min-w-0">
                     {Object.keys(templateLabels).map((key) => (
                       <TabsTrigger
                         key={key}
                         value={key}
-                        className="text-xs sm:text-sm px-2 py-2 h-auto text-center whitespace-normal break-words data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                        className="text-xs sm:text-sm px-3 py-2 h-auto text-center whitespace-nowrap flex-shrink-0 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
                       >
                         {templateLabels[key as keyof typeof templateLabels]}
                       </TabsTrigger>
                     ))}
                   </TabsList>
                 </div>
-                
+
                 {Object.entries(templateLabels).map(([key]) => (
                   <TabsContent key={key} value={key} className="space-y-4">
                     <div>
@@ -342,7 +407,7 @@ const EmailSettings = () => {
                       <Input
                         id={`${key}-subject`}
                         value={templates[key as keyof EmailTemplates].subject}
-                        onChange={(e) => handleTemplateChange(key as keyof EmailTemplates, 'subject', e.target.value)}
+                        onChange={(e) => handleTemplateChange(key as keyof EmailTemplates, "subject", e.target.value)}
                       />
                     </div>
                     <div>
@@ -350,14 +415,19 @@ const EmailSettings = () => {
                       <Textarea
                         id={`${key}-body`}
                         value={templates[key as keyof EmailTemplates].body}
-                        onChange={(e) => handleTemplateChange(key as keyof EmailTemplates, 'body', e.target.value)}
+                        onChange={(e) => handleTemplateChange(key as keyof EmailTemplates, "body", e.target.value)}
                         rows={10}
-                        className="min-h-[200px] sm:min-h-[250px] resize-y font-mono text-sm leading-relaxed"
+                        className="min-h-[180px] sm:min-h-[240px] resize-y font-mono text-sm leading-relaxed"
                       />
                       <div className="mt-2 p-3 bg-muted rounded-md">
                         <div className="text-xs sm:text-sm text-muted-foreground space-y-1">
-                          <div><strong>Variables disponibles:</strong> {"{{name}}, {{renovationType}}, {{status}}"}</div>
-                          <div><strong>Exemple:</strong> Bonjour {"{{name}}"}, votre demande de {"{{renovationType}}"} a été {"{{status}}"}</div>
+                          <div>
+                            <strong>Variables disponibles:</strong> {"{{name}}, {{renovationType}}, {{status}}"}
+                          </div>
+                          <div>
+                            <strong>Exemple:</strong> Bonjour {"{{name}}"}, votre demande de {"{{renovationType}}"} a été{" "}
+                            {"{{status}}"}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -368,6 +438,7 @@ const EmailSettings = () => {
           </Card>
         </TabsContent>
 
+        {/* Onglet: Test */}
         <TabsContent value="test" className="space-y-6">
           <Card>
             <CardHeader>
@@ -376,8 +447,8 @@ const EmailSettings = () => {
                 Test de configuration
               </CardTitle>
               <CardDescription>
-                Testez votre configuration en envoyant un email de test. 
-                En cas d'erreur, pensez à consulter les logs de votre fonction sur le tableau de bord Supabase.
+                Testez votre configuration en envoyant un email de test. En cas d&apos;erreur, pensez à consulter les
+                logs de votre fonction sur le tableau de bord Supabase.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -392,12 +463,7 @@ const EmailSettings = () => {
                 />
               </div>
 
-              <Button
-                onClick={testEmailConfig}
-                disabled={isTestingEmail || !testEmail}
-                variant="outline"
-                className="w-full"
-              >
+              <Button onClick={testEmailConfig} disabled={isTestingEmail || !testEmail} variant="outline" className="w-full">
                 <Send className="h-4 w-4 mr-2" />
                 {isTestingEmail ? "Envoi en cours..." : "Envoyer un email de test"}
               </Button>
@@ -425,4 +491,3 @@ const EmailSettings = () => {
 };
 
 export default EmailSettings;
-
