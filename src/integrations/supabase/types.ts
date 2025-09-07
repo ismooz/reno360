@@ -110,6 +110,39 @@ export type Database = {
         }
         Relationships: []
       }
+      smtp_config: {
+        Row: {
+          from_address: string | null
+          host: string | null
+          id: number
+          password: string | null
+          port: number | null
+          updated_at: string | null
+          use_tls: boolean | null
+          username: string | null
+        }
+        Insert: {
+          from_address?: string | null
+          host?: string | null
+          id?: number
+          password?: string | null
+          port?: number | null
+          updated_at?: string | null
+          use_tls?: boolean | null
+          username?: string | null
+        }
+        Update: {
+          from_address?: string | null
+          host?: string | null
+          id?: number
+          password?: string | null
+          port?: number | null
+          updated_at?: string | null
+          use_tls?: boolean | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
