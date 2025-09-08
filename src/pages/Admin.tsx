@@ -9,7 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RenovationRequest } from "@/types";
-import { Search, Eye, Phone, Download, FileSpreadsheet } from "lucide-react";
+import { Search, Eye, Phone, Download, FileSpreadsheet, ChevronDown } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { exportRequestsToCSV, exportRequestsToExcel } from "@/utils/exportUtils";
 import { useToast } from "@/hooks/use-toast";
 import UserManagement from "@/components/admin/UserManagement";
@@ -38,6 +39,7 @@ const Admin = () => {
   const [filteredRequests, setFilteredRequests] = useState<RenovationRequest[]>([]);
   const [selectedRequest, setSelectedRequest] = useState<RenovationRequest | null>(null);
   const [isRequestDetailOpen, setIsRequestDetailOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("requests");
   const [filter, setFilter] = useState({
     status: "all",
     search: "",
@@ -127,8 +129,9 @@ const Admin = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="px-2 sm:px-6">
-              <Tabs defaultValue="requests">
-                <TabsList className="mb-6 grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 h-auto p-1 gap-1">
+              <Tabs value={activeTab} onValueChange={setActiveTab}>
+                {/* Desktop tabs */}
+                <TabsList className="mb-6 hidden sm:grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 h-auto p-1 gap-1">
                   <TabsTrigger value="requests" className="text-xs sm:text-sm px-2 py-2 h-auto">
                     <span className="hidden sm:inline">Demandes</span>
                     <span className="sm:hidden">Dem.</span>
@@ -158,6 +161,52 @@ const Admin = () => {
                     <span className="sm:hidden">Param.</span>
                   </TabsTrigger>
                 </TabsList>
+
+                {/* Mobile dropdown */}
+                <div className="mb-6 sm:hidden">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="w-full justify-between">
+                        {(() => {
+                          const tabLabels = {
+                            requests: "Demandes",
+                            projects: "Projets", 
+                            services: "Services",
+                            clients: "Clients",
+                            emails: "Emails",
+                            security: "Sécurité",
+                            settings: "Paramètres"
+                          };
+                          return tabLabels[activeTab as keyof typeof tabLabels];
+                        })()}
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-full">
+                      <DropdownMenuItem onClick={() => setActiveTab("requests")}>
+                        Demandes
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setActiveTab("projects")}>
+                        Projets
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setActiveTab("services")}>
+                        Services
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setActiveTab("clients")}>
+                        Clients
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setActiveTab("emails")}>
+                        Emails
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setActiveTab("security")}>
+                        Sécurité
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setActiveTab("settings")}>
+                        Paramètres
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
                 
                 <TabsContent value="requests" className="mt-6">
                   <div className="space-y-6 max-w-full min-w-0">
