@@ -172,10 +172,24 @@ const EmailSettings = () => {
 
     loadConfig();
 
+    // Charger les templates avec fusion des défauts
     const savedTemplates = localStorage.getItem("emailTemplates");
     if (savedTemplates) {
-      setTemplates(JSON.parse(savedTemplates));
+      try {
+        const parsedTemplates = JSON.parse(savedTemplates);
+        // Fusionner avec les templates par défaut pour s'assurer qu'aucun template ne manque
+        setTemplates({
+          ...defaultTemplates,
+          ...parsedTemplates
+        });
+      } catch (error) {
+        console.error("Erreur lors du parsing des templates:", error);
+        setTemplates(defaultTemplates);
+      }
+    } else {
+      setTemplates(defaultTemplates);
     }
+    
     const savedReply = localStorage.getItem("replyToEmail");
     if (savedReply) setReplyToEmail(savedReply);
     const savedRequests = localStorage.getItem("requestsEmail");
@@ -580,7 +594,13 @@ const EmailSettings = () => {
                   </div>
                 </div>
 
-                {Object.entries(templateLabels).map(([key]) => (
+                {Object.entries(templateLabels).map(([key]) => {
+                  const template = templates[key as keyof EmailTemplates];
+                  if (!template) {
+                    return null; // Skip if template doesn't exist
+                  }
+                  
+                  return (
                   <TabsContent key={key} value={key} className="space-y-4">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <div className="space-y-4">
@@ -588,7 +608,7 @@ const EmailSettings = () => {
                           <Label htmlFor={`${key}-subject`}>Sujet</Label>
                           <Input
                             id={`${key}-subject`}
-                            value={templates[key as keyof EmailTemplates].subject}
+                            value={template.subject}
                             onChange={(e) => handleTemplateChange(key as keyof EmailTemplates, "subject", e.target.value)}
                             className="mt-1"
                           />
@@ -597,7 +617,7 @@ const EmailSettings = () => {
                           <Label htmlFor={`${key}-body`}>Corps du message (HTML)</Label>
                           <Textarea
                             id={`${key}-body`}
-                            value={templates[key as keyof EmailTemplates].body}
+                            value={template.body}
                             onChange={(e) => handleTemplateChange(key as keyof EmailTemplates, "body", e.target.value)}
                             rows={12}
                             className="mt-1 min-h-[300px] resize-y font-mono text-sm leading-relaxed"
@@ -625,7 +645,7 @@ const EmailSettings = () => {
                           <div className="mt-1 border rounded-md p-4 bg-white min-h-[300px] max-h-[400px] overflow-y-auto">
                             <div 
                               dangerouslySetInnerHTML={{ 
-                                __html: templates[key as keyof EmailTemplates].body
+                                __html: template.body
                                   .replace(/{{name}}/g, "Jean Dupont")
                                   .replace(/{{renovationType}}/g, "Cuisine")
                                   .replace(/{{status}}/g, "Approuvé")
@@ -639,7 +659,8 @@ const EmailSettings = () => {
                       </div>
                     </div>
                   </TabsContent>
-                ))}
+                  );
+                })}
               </Tabs>
             </CardContent>
           </Card>
