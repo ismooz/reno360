@@ -102,12 +102,19 @@ const defaultTemplates: EmailTemplates = {
         <p>Bonjour <strong>{{name}}</strong>,</p>
         <p>Nous avons bien reçu votre demande de devis pour : <strong>{{renovationType}}</strong></p>
         
+        <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #1e40af; margin-top: 0;">📋 Numéro de demande :</h3>
+          <p style="font-size: 18px; font-weight: bold; color: #1e40af; margin: 0;">{{requestId}}</p>
+          <p style="font-size: 14px; color: #6b7280; margin: 5px 0 0 0;">Conservez ce numéro pour le suivi de votre demande</p>
+        </div>
+        
         <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="color: #374151; margin-top: 0;">Détails de votre demande :</h3>
           <p><strong>Type de rénovation :</strong> {{renovationType}}</p>
           <p><strong>Code postal :</strong> {{postalCode}}</p>
           <p><strong>Délai souhaité :</strong> {{deadline}}</p>
           <p><strong>Budget :</strong> {{budget}}</p>
+          {{attachmentsSection}}
         </div>
         
         <p><strong>Notre équipe va examiner votre demande et vous recontacter dans les plus brefs délais.</strong></p>
@@ -116,7 +123,7 @@ const defaultTemplates: EmailTemplates = {
           <p style="margin: 0; color: #1e40af;"><strong>💡 Conseil :</strong> Préparez vos questions et photos du projet pour faciliter notre évaluation.</p>
         </div>
         
-        <p>Si vous avez des questions urgentes, n'hésitez pas à nous contacter.</p>
+        <p>Si vous avez des questions urgentes, n'hésitez pas à nous contacter en mentionnant votre numéro de demande.</p>
         <br>
         <p>Cordialement,<br><strong>L'équipe reno360.ch</strong></p>
       </div>
@@ -575,7 +582,7 @@ const EmailSettings = () => {
             <CardHeader>
               <CardTitle>Templates d&apos;emails HTML</CardTitle>
               <CardDescription>
-                Personnalisez les messages HTML envoyés aux clients. Variables disponibles : name, renovationType, status, postalCode, deadline, budget
+                Personnalisez les messages HTML envoyés aux clients. Variables disponibles : name, renovationType, status, postalCode, deadline, budget, requestId, attachmentsSection
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -636,6 +643,8 @@ const EmailSettings = () => {
                                 <div>• {`{{postalCode}}`} - Code postal</div>
                                 <div>• {`{{deadline}}`} - Délai souhaité</div>
                                 <div>• {`{{budget}}`} - Budget</div>
+                                <div>• {`{{requestId}}`} - Numéro de demande</div>
+                                <div>• {`{{attachmentsSection}}`} - Section des pièces jointes</div>
                               </div>
                             </div>
                         </div>
@@ -654,6 +663,16 @@ const EmailSettings = () => {
                                   .replace(/{{postalCode}}/g, "1000")
                                   .replace(/{{deadline}}/g, "Dans 2 mois")
                                   .replace(/{{budget}}/g, "15'000 CHF")
+                                  .replace(/{{requestId}}/g, "REQ-2025-001")
+                                  .replace(/{{attachmentsSection}}/g, `
+                                    <div style="margin-top: 15px;">
+                                      <p><strong>📎 Pièces jointes :</strong></p>
+                                      <ul style="margin: 10px 0; padding-left: 20px;">
+                                        <li>Photo_cuisine_avant.jpg</li>
+                                        <li>Plan_projet.pdf</li>
+                                      </ul>
+                                    </div>
+                                  `)
                               }} 
                             />
                           </div>
