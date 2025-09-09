@@ -258,6 +258,60 @@ const EmailSettings = () => {
     }
   };
 
+  const checkConfiguration = async () => {
+    if (!config.smtp_host || !config.smtp_user || !config.smtp_pass) {
+      setTestResult({ 
+        success: false, 
+        message: "Configuration incomplète. Veuillez remplir tous les champs SMTP." 
+      });
+      return;
+    }
+
+    setCheckingSecrets(true);
+    setTestResult(null);
+    
+    try {
+      const smtpConfig = {
+        host: config.smtp_host,
+        port: parseInt(config.smtp_port, 10),
+        username: config.smtp_user,
+        password: config.smtp_pass,
+        from: config.smtp_from,
+        useTLS: config.smtp_tls
+      };
+
+      // Test avec un email de validation interne
+      const { error } = await supabase.functions.invoke("send-email", {
+        body: {
+          to: config.smtp_user, // Envoyer à soi-même pour test
+          subject: "Test de configuration SMTP - Reno360",
+          html: `<p>Configuration SMTP validée avec succès !</p>`,
+          smtpConfig
+        },
+      });
+
+      if (error) {
+        const detailedMessage = (error as any).context?.error?.message || error.message;
+        setTestResult({ 
+          success: false, 
+          message: `Configuration invalide: ${detailedMessage}` 
+        });
+      } else {
+        setTestResult({ 
+          success: true, 
+          message: "Configuration SMTP validée avec succès !" 
+        });
+      }
+    } catch (e: any) {
+      setTestResult({ 
+        success: false, 
+        message: `Erreur de validation: ${e.message}` 
+      });
+    } finally {
+      setCheckingSecrets(false);
+    }
+  };
+
   const checkSecrets = async () => {
     setCheckingSecrets(true);
     setSecretsStatus(null);
@@ -357,6 +411,31 @@ const EmailSettings = () => {
                   type="password"
                 />
               </div>
+
+              <Alert>
+                <AlertDescription>
+                  Configuration SMTP gérée depuis le dashboard admin. Utilisez le bouton de vérification pour tester votre configuration.
+                </AlertDescription>
+              </Alert>
+              
+              <div className="flex items-center gap-2">
+                <Button onClick={checkConfiguration} variant="outline" disabled={checkingSecrets}>
+                  {checkingSecrets ? "Vérification..." : "Vérifier la configuration"}
+                </Button>
+              </div>
+              
+              {testResult && (
+                <div className={`flex items-center gap-2 text-sm p-3 rounded-md ${
+                  testResult.success ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                }`}>
+                  {testResult.success ? (
+                    <CheckCircle className="h-4 w-4" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4" />
+                  )}
+                  <span>{testResult.message}</span>
+                </div>
+              )}
 
               <div className="space-y-2 min-w-0">
                 <Label htmlFor="smtp_from">Email expéditeur</Label>
