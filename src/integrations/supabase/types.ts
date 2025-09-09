@@ -115,7 +115,6 @@ export type Database = {
           from_address: string | null
           host: string | null
           id: number
-          password: string | null
           port: number | null
           updated_at: string | null
           use_tls: boolean | null
@@ -125,7 +124,6 @@ export type Database = {
           from_address?: string | null
           host?: string | null
           id?: number
-          password?: string | null
           port?: number | null
           updated_at?: string | null
           use_tls?: boolean | null
@@ -135,7 +133,6 @@ export type Database = {
           from_address?: string | null
           host?: string | null
           id?: number
-          password?: string | null
           port?: number | null
           updated_at?: string | null
           use_tls?: boolean | null

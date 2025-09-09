@@ -91,7 +91,7 @@ const EmailSettings = () => {
   useEffect(() => {
     const fetchConfig = async () => {
       setIsLoading(true);
-      const { data, error } = await supabase.from("smtp_config").select("*").eq("id", 1).single();
+      const { data, error } = await supabase.from("smtp_config").select("host, port, username, from_address, use_tls").eq("id", 1).single();
 
       if (error && error.code !== "PGRST116") {
         console.error("Erreur de chargement de la config SMTP:", error);
@@ -105,7 +105,7 @@ const EmailSettings = () => {
           smtp_host: data.host || "",
           smtp_port: data.port?.toString() || "587",
           smtp_user: data.username || "",
-          smtp_pass: data.password || "",
+          smtp_pass: "", // Mot de passe retiré de la base pour sécurité
           smtp_from: data.from_address || "",
           smtp_tls: data.use_tls ?? true,
         });
