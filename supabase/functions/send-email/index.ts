@@ -169,20 +169,58 @@ serve(async (req: Request) => {
           throw new Error(`La commande DATA a été rejetée: ${dataResponse}`);
       }
       
+      // Créer version texte du HTML pour éviter la détection spam
+      const textContent = html
+        .replace(/<style[^>]*>.*?<\/style>/gis, '') // Supprimer CSS
+        .replace(/<script[^>]*>.*?<\/script>/gis, '') // Supprimer JS
+        .replace(/<[^>]*>/g, '') // Supprimer balises HTML
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&')
+        .replace(/\s+/g, ' ') // Normaliser espaces
+        .trim();
+
+      // Générer ID de message unique
+      const messageId = `<${Date.now()}.${Math.random().toString(36).substr(2, 9)}@${smtpConfig.host}>`;
+      const boundary = `boundary_${Math.random().toString(36).substr(2, 15)}`;
+      
       const headers = [
-        `From: Reno360 <${displayFrom}>`, // On utilise l'adresse d'affichage ici
+        `Message-ID: ${messageId}`,
+        `From: Reno360 <${displayFrom}>`,
         `To: ${to}`,
         `Subject: ${subject}`,
-        `MIME-Version: 1.0`,
-        `Content-Type: text/html; charset=utf-8`,
         `Date: ${new Date().toUTCString()}`,
+        `MIME-Version: 1.0`,
+        `Content-Type: multipart/alternative; boundary="${boundary}"`,
+        `X-Mailer: Reno360-SMTP`,
+        `X-Priority: 3`,
       ];
+      
       if (from && from !== displayFrom) {
         headers.push(`Reply-To: ${from}`);
       }
-      headers.push("", html, ".");
       
-      const emailContent = headers.join("\r\n");
+      // Corps du message multipart
+      const emailBody = [
+        "",
+        `--${boundary}`,
+        `Content-Type: text/plain; charset=utf-8`,
+        `Content-Transfer-Encoding: 8bit`,
+        "",
+        textContent,
+        "",
+        `--${boundary}`,
+        `Content-Type: text/html; charset=utf-8`,
+        `Content-Transfer-Encoding: 8bit`,
+        "",
+        html,
+        "",
+        `--${boundary}--`,
+        "."
+      ];
+      
+      const emailContent = [...headers, ...emailBody].join("\r\n");
       // La dernière commande envoyée est le contenu de l'email, sa réponse est lue ensuite
       await conn.write(encoder.encode(emailContent + "\r\n"));
       const finalResponse = await readResponse();
