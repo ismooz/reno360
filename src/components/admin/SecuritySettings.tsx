@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { hashPassword } from "@/utils/security";
-import { Shield, Eye, EyeOff, RefreshCw } from "lucide-react";
+import { generateSecurePassword } from "@/utils/security";
+import { Shield, Eye, EyeOff, RefreshCw, AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SecuritySettings {
   enforceStrongPasswords: boolean;
@@ -43,65 +44,13 @@ const SecuritySettings = () => {
     }));
   };
 
-  const generateSecurePassword = () => {
+  const handleGeneratePassword = () => {
     setIsGeneratingPassword(true);
     setTimeout(() => {
-      const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-      let password = "";
-      
-      // Garantir au moins un caractère de chaque type
-      password += "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random() * 26)];
-      password += "abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 26)];
-      password += "0123456789"[Math.floor(Math.random() * 10)];
-      password += "!@#$%^&*"[Math.floor(Math.random() * 8)];
-      
-      // Compléter avec des caractères aléatoires
-      for (let i = 4; i < 16; i++) {
-        password += charset[Math.floor(Math.random() * charset.length)];
-      }
-      
-      // Mélanger les caractères
-      password = password.split('').sort(() => Math.random() - 0.5).join('');
-      
+      const password = generateSecurePassword(16);
       setNewAdminPassword(password);
       setIsGeneratingPassword(false);
     }, 500);
-  };
-
-  const resetAdminPassword = async () => {
-    if (!newAdminPassword) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez générer ou saisir un nouveau mot de passe.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const hashedPassword = await hashPassword(newAdminPassword);
-      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      
-      const updatedUsers = storedUsers.map((user: any) => 
-        user.email === "admin@reno360.ch" 
-          ? { ...user, password: hashedPassword, lastPasswordChange: new Date().toISOString() }
-          : user
-      );
-      
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-      setNewAdminPassword("");
-      
-      toast({
-        title: "Mot de passe mis à jour",
-        description: "Le mot de passe administrateur a été changé avec succès.",
-      });
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la mise à jour du mot de passe.",
-        variant: "destructive",
-      });
-    }
   };
 
   const saveSettings = () => {
@@ -114,14 +63,12 @@ const SecuritySettings = () => {
 
   const auditSecurityIssues = () => {
     const issues: string[] = [];
-    const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
     
-    // Vérifier les mots de passe faibles
-    storedUsers.forEach((user: any) => {
-      if (user.email === "admin@reno360.ch" && user.password === "admin123") {
-        issues.push("Le mot de passe administrateur par défaut est utilisé");
-      }
-    });
+    // Vérifier si localStorage est encore utilisé pour l'authentification
+    const storedUsers = localStorage.getItem("users");
+    if (storedUsers) {
+      issues.push("Système d'authentification localStorage détecté - migrer vers Supabase Auth");
+    }
 
     if (issues.length > 0) {
       toast({
@@ -140,6 +87,14 @@ const SecuritySettings = () => {
 
   return (
     <div className="space-y-6">
+      <Alert>
+        <AlertTriangle className="h-4 w-4" />
+        <AlertDescription>
+          <strong>Sécurité améliorée:</strong> L'authentification est maintenant gérée par Supabase Auth. 
+          La gestion des mots de passe admin se fait via l'interface utilisateur Supabase.
+        </AlertDescription>
+      </Alert>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -155,7 +110,7 @@ const SecuritySettings = () => {
             <div className="space-y-0.5">
               <Label>Mots de passe forts obligatoires</Label>
               <p className="text-sm text-muted-foreground">
-                Exiger des mots de passe complexes pour tous les utilisateurs
+                Exiger des mots de passe complexes pour tous les utilisateurs (géré par Supabase)
               </p>
             </div>
             <Switch
@@ -219,22 +174,23 @@ const SecuritySettings = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Gestion du mot de passe administrateur</CardTitle>
+          <CardTitle>Générateur de mot de passe sécurisé</CardTitle>
           <CardDescription>
-            Changez le mot de passe du compte administrateur pour sécuriser l'accès
+            Générez des mots de passe sécurisés pour vos comptes
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="newAdminPassword">Nouveau mot de passe administrateur</Label>
+            <Label htmlFor="generatedPassword">Mot de passe généré</Label>
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <Input
-                  id="newAdminPassword"
+                  id="generatedPassword"
                   type={showPassword ? "text" : "password"}
                   value={newAdminPassword}
                   onChange={(e) => setNewAdminPassword(e.target.value)}
-                  placeholder="Saisissez le nouveau mot de passe"
+                  placeholder="Cliquez sur 'Générer' pour créer un mot de passe sécurisé"
+                  readOnly
                 />
                 <Button
                   type="button"
@@ -253,7 +209,7 @@ const SecuritySettings = () => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={generateSecurePassword}
+                onClick={handleGeneratePassword}
                 disabled={isGeneratingPassword}
               >
                 {isGeneratingPassword ? (
@@ -264,13 +220,9 @@ const SecuritySettings = () => {
               </Button>
             </div>
             <p className="text-xs text-muted-foreground">
-              Le mot de passe doit contenir au moins 8 caractères avec majuscules, minuscules, chiffres et symboles
+              Le mot de passe généré contient 16 caractères avec majuscules, minuscules, chiffres et symboles
             </p>
           </div>
-          
-          <Button onClick={resetAdminPassword} variant="secondary">
-            Changer le mot de passe administrateur
-          </Button>
         </CardContent>
       </Card>
 

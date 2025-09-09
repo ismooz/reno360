@@ -17,7 +17,7 @@ interface AuthContextType {
   updateUserProfile: (userData: any) => Promise<void>;
   loading: boolean;
   error: string | null;
-  isAdmin: () => boolean;
+  isAdmin: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -32,7 +32,7 @@ const AuthContext = createContext<AuthContextType>({
   updateUserProfile: async () => {},
   loading: false,
   error: null,
-  isAdmin: () => false,
+  isAdmin: async () => false,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -64,8 +64,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // Check for admin status
-  const isAdmin = () => {
-    return user?.user_metadata?.role === 'admin';
+  const isAdmin = async (): Promise<boolean> => {
+    if (!user) return false;
+    try {
+      const { data, error } = await supabase.rpc('is_admin', { check_user_id: user.id });
+      if (error) {
+        console.error('Error checking admin status:', error);
+        return false;
+      }
+      return data || false;
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      return false;
+    }
   };
 
   const sendEmailNotification = async (email: string, type: string, data?: any) => {

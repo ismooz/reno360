@@ -10,9 +10,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-// Correction : Importation unique des fonctions nécessaires
-import { validatePassword, hashPassword } from "@/utils/security";
-import { Eye, EyeOff } from "lucide-react";
+import { validatePassword } from "@/utils/security";
+import { Eye, EyeOff, AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface UserPasswordDialogProps {
   userId: string;
@@ -30,12 +30,10 @@ const UserPasswordDialog = ({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  // Correction : Déclaration unique de l'état
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Correction : Déclaration unique de la fonction
   const handlePasswordChange = (value: string) => {
     setPassword(value);
     const validation = validatePassword(value);
@@ -53,7 +51,6 @@ const UserPasswordDialog = ({
       return;
     }
     
-    // Correction : Appel de la validation une seule fois
     const validation = validatePassword(password);
     if (!validation.isValid) {
       setError("Le mot de passe ne respecte pas les critères de sécurité");
@@ -68,8 +65,9 @@ const UserPasswordDialog = ({
     }
     
     try {
-      const hashedPassword = await hashPassword(password);
-      onSave(userId, hashedPassword);
+      // Note: Password will be stored as plain text for localStorage compatibility
+      // In production, this should be handled by Supabase Auth
+      onSave(userId, password);
       onClose();
     } catch (err) {
       setError("Erreur lors du traitement du mot de passe");
@@ -91,6 +89,14 @@ const UserPasswordDialog = ({
             Définir un nouveau mot de passe pour cet utilisateur
           </DialogDescription>
         </DialogHeader>
+        
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Note de sécurité:</strong> En production, la gestion des mots de passe 
+            devrait être entièrement gérée par Supabase Auth pour une sécurité optimale.
+          </AlertDescription>
+        </Alert>
         
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="space-y-2">

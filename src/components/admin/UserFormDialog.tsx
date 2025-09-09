@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { validateEmail, hashPassword } from "@/utils/security";
+import { validateEmail } from "@/utils/security";
 
 interface UserFormDialogProps {
   user: User | null;

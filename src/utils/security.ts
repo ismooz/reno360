@@ -1,24 +1,9 @@
 /**
- * Utilitaires de sécurité pour le hachage des mots de passe
- * Dans un environnement de production, utilisez bcrypt ou argon2
+ * Utilitaires de sécurité pour la validation et l'assainissement des données
+ * NOTE: Le hachage des mots de passe est géré par Supabase Auth pour la sécurité
  */
 
-// Fonction simple de hachage pour la démo (à remplacer par bcrypt en production)
-export const hashPassword = async (password: string): Promise<string> => {
-  // Utilisation de l'API Web Crypto pour un hachage basique
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password + "salt_secret_key"); // Salt simple pour la démo
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-};
-
-export const verifyPassword = async (password: string, hashedPassword: string): Promise<boolean> => {
-  const hashedInput = await hashPassword(password);
-  return hashedInput === hashedPassword;
-};
-
-// Fonction pour nettoyer les données sensibles
+// Fonction pour nettoyer les données sensibles (conservée pour compatibilité)
 export const sanitizeUserData = (user: any) => {
   const { password, ...userWithoutPassword } = user;
   return userWithoutPassword;

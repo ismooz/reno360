@@ -33,7 +33,7 @@ import { Search, Edit, Trash, MailCheck, UserCog, Eye, RefreshCw } from "lucide-
 import UserFormDialog from "./UserFormDialog";
 import UserViewDialog from "./UserViewDialog";
 import UserPasswordDialog from "./UserPasswordDialog";
-import { sanitizeUserData, hashPassword } from "@/utils/security";
+import { sanitizeUserData } from "@/utils/security";
 import { supabase } from "@/integrations/supabase/client";
 
 const UserManagement = () => {
@@ -169,12 +169,8 @@ const UserManagement = () => {
       const existingPassword = storedUsers[userIndex].password;
       storedUsers[userIndex] = { ...updatedUser, password: existingPassword };
     } else {
-      // Nouvel utilisateur avec mot de passe par défaut hashé
-      hashPassword("password123").then(hashedPassword => {
-        storedUsers.push({ ...updatedUser, password: hashedPassword });
-        localStorage.setItem("users", JSON.stringify(storedUsers));
-      });
-      return; // Sortir ici pour éviter la double sauvegarde
+      // Nouvel utilisateur - le mot de passe sera géré par Supabase Auth
+      storedUsers.push({ ...updatedUser, password: "managed_by_supabase" });
     }
     
     localStorage.setItem("users", JSON.stringify(storedUsers));
@@ -231,7 +227,26 @@ const UserManagement = () => {
     }).format(date);
   };
 
-  if (!isAdmin()) {
+  // Check admin status asynchronously
+  const [isUserAdmin, setIsUserAdmin] = useState<boolean | null>(null);
+  
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      const adminStatus = await isAdmin();
+      setIsUserAdmin(adminStatus);
+    };
+    checkAdminStatus();
+  }, [isAdmin]);
+
+  if (isUserAdmin === null) {
+    return (
+      <div className="text-center py-10">
+        <h3 className="text-lg font-medium mb-2">Vérification des autorisations...</h3>
+      </div>
+    );
+  }
+
+  if (!isUserAdmin) {
     return (
       <div className="text-center py-10">
         <h3 className="text-lg font-medium mb-2">Accès non autorisé</h3>
