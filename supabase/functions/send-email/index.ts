@@ -13,6 +13,14 @@ interface EmailRequest {
   subject: string;
   html: string;
   from?: string;
+  smtpConfig?: {
+    host: string;
+    port: number;
+    username: string;
+    password: string;
+    from: string;
+    useTLS: boolean;
+  };
 }
 
 serve(async (req: Request) => {
@@ -21,15 +29,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { to, subject, html, from } = (await req.json()) as EmailRequest;
-
-    // Build SMTP configuration from Supabase Secrets (preferred)
-    const envHost = Deno.env.get("SMTP_HOST") ?? "";
-    const envPort = Deno.env.get("SMTP_PORT") ?? "";
-    const envUser = Deno.env.get("SMTP_USER") ?? "";
-    const envPass = Deno.env.get("SMTP_PASS") ?? "";
-    const envFrom = Deno.env.get("SMTP_FROM") ?? "";
-    const envTls = (Deno.env.get("SMTP_TLS") ?? "true").toLowerCase() === "true";
+    const { to, subject, html, from, smtpConfig: providedConfig } = (await req.json()) as EmailRequest;
 
     let smtpConfig: {
       host: string;
@@ -38,59 +38,66 @@ serve(async (req: Request) => {
       password: string;
       from: string;
       useTLS: boolean;
-    } = {
-      host: envHost,
-      port: envPort ? Number(envPort) : 587,
-      username: envUser,
-      password: envPass,
-      from: envFrom || from || "",
-      useTLS: envTls,
     };
 
-    // Backward-compatibility fallback: read non-secret values from DB if missing.
-    // Note: Passwords SHOULD NOT be stored in DB. Secrets take precedence.
-    if (!smtpConfig.host || !smtpConfig.username || !smtpConfig.password || !smtpConfig.from) {
-      try {
-        const supabaseClient = createClient(
-          Deno.env.get("SUPABASE_URL") ?? "",
-          Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-        );
+    // Use provided SMTP config from admin dashboard if available
+    if (providedConfig) {
+      smtpConfig = providedConfig;
+    } else {
+      // Fallback to Supabase secrets or database
+      const envHost = Deno.env.get("SMTP_HOST") ?? "";
+      const envPort = Deno.env.get("SMTP_PORT") ?? "";
+      const envUser = Deno.env.get("SMTP_USER") ?? "";
+      const envPass = Deno.env.get("SMTP_PASS") ?? "";
+      const envFrom = Deno.env.get("SMTP_FROM") ?? "";
+      const envTls = (Deno.env.get("SMTP_TLS") ?? "true").toLowerCase() === "true";
 
-        const { data: config, error: configError } = await supabaseClient
-          .from("smtp_config")
-          .select("*")
-          .eq("id", 1)
-          .single();
+      smtpConfig = {
+        host: envHost,
+        port: envPort ? Number(envPort) : 587,
+        username: envUser,
+        password: envPass,
+        from: envFrom || from || "",
+        useTLS: envTls,
+      };
 
-        if (configError) {
-          console.warn("smtp_config fallback unavailable:", configError.message);
-        }
+      // Database fallback if secrets not configured
+      if (!smtpConfig.host || !smtpConfig.username || !smtpConfig.password || !smtpConfig.from) {
+        try {
+          const supabaseClient = createClient(
+            Deno.env.get("SUPABASE_URL") ?? "",
+            Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+          );
 
-        if (config) {
-          smtpConfig = {
-            host: smtpConfig.host || config.host,
-            port: smtpConfig.port || config.port || 587,
-            username: smtpConfig.username || config.username,
-            // Only use DB password if no secret provided (not recommended)
-            password: smtpConfig.password || config.password || "",
-            from: smtpConfig.from || config.from_address || "",
-            useTLS: smtpConfig.useTLS ?? (config.use_tls ?? true),
-          };
+          const { data: config, error: configError } = await supabaseClient
+            .from("smtp_config")
+            .select("*")
+            .eq("id", 1)
+            .single();
 
-          if (!envPass && config.password) {
-            console.warn(
-              "Using SMTP password from database. Migrate to Supabase Secrets (SMTP_*)."
-            );
+          if (configError) {
+            console.warn("smtp_config fallback unavailable:", configError.message);
           }
+
+          if (config) {
+            smtpConfig = {
+              host: smtpConfig.host || config.host,
+              port: smtpConfig.port || config.port || 587,
+              username: smtpConfig.username || config.username,
+              password: smtpConfig.password || config.password || "",
+              from: smtpConfig.from || config.from_address || "",
+              useTLS: smtpConfig.useTLS ?? (config.use_tls ?? true),
+            };
+          }
+        } catch (e) {
+          console.warn("Error while attempting smtp_config fallback:", (e as Error).message);
         }
-      } catch (e) {
-        console.warn("Error while attempting smtp_config fallback:", (e as Error).message);
       }
     }
 
     if (!smtpConfig.host || !smtpConfig.port || !smtpConfig.username || !smtpConfig.password || !smtpConfig.from) {
       throw new Error(
-        "Configuration SMTP incomplète. Définissez les secrets SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM dans Supabase."
+        "Configuration SMTP incomplète. Veuillez configurer les paramètres SMTP dans le dashboard admin."
       );
     }
 

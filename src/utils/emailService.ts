@@ -40,14 +40,18 @@ export class EmailService {
         body = body.replace(new RegExp(placeholder, 'g'), value);
       });
 
-      // Envoyer l'email via Edge Function
+      // Récupérer la configuration SMTP depuis localStorage
+      const smtpConfig = this.getSMTPConfig();
+
+      // Envoyer l'email via Edge Function avec la config SMTP
       const { supabase } = await import("@/integrations/supabase/client");
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: {
           to,
           subject,
           html: body,
-          from: settings.fromEmail
+          from: settings.fromEmail,
+          smtpConfig
         }
       });
 
@@ -62,6 +66,24 @@ export class EmailService {
       console.error("Erreur lors de l'envoi de l'email:", error);
       return false;
     }
+  }
+
+  private static getSMTPConfig() {
+    const smtpHost = localStorage.getItem("smtpHost") || "";
+    const smtpPort = localStorage.getItem("smtpPort") || "587";
+    const smtpUser = localStorage.getItem("smtpUser") || "";
+    const smtpPass = localStorage.getItem("smtpPass") || "";
+    const smtpFrom = localStorage.getItem("smtpFrom") || "";
+    const smtpTls = localStorage.getItem("smtpTls") !== "false";
+
+    return {
+      host: smtpHost,
+      port: parseInt(smtpPort, 10),
+      username: smtpUser,
+      password: smtpPass,
+      from: smtpFrom,
+      useTLS: smtpTls
+    };
   }
 
   static async sendRequestNotification(requestData: any): Promise<boolean> {
@@ -85,14 +107,18 @@ export class EmailService {
         <p><strong>Budget:</strong> ${requestData.budget || "Non spécifié"}</p>
       `;
 
-      // Envoyer via Edge Function
+      // Récupérer la configuration SMTP depuis localStorage
+      const smtpConfig = this.getSMTPConfig();
+
+      // Envoyer via Edge Function avec la config SMTP
       const { supabase } = await import("@/integrations/supabase/client");
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: {
           to: settings.requestsEmail,
           subject: `Nouvelle demande: ${requestData.renovationType}`,
           html: emailContent,
-          from: settings.fromEmail
+          from: settings.fromEmail,
+          smtpConfig
         }
       });
 

@@ -87,33 +87,32 @@ const EmailSettings = () => {
   const [secretsStatus, setSecretsStatus] = useState<Record<string, boolean> | null>(null);
   const [checkingSecrets, setCheckingSecrets] = useState(false);
 
-  // AU CHARGEMENT: Lire la configuration depuis la table Supabase
+  // AU CHARGEMENT: Lire la configuration depuis localStorage
   useEffect(() => {
-    const fetchConfig = async () => {
+    const loadConfig = () => {
       setIsLoading(true);
-      const { data, error } = await supabase.from("smtp_config").select("host, port, username, from_address, use_tls").eq("id", 1).single();
+      
+      // Charger la configuration SMTP depuis localStorage
+      const smtpHost = localStorage.getItem("smtpHost") || "";
+      const smtpPort = localStorage.getItem("smtpPort") || "587";
+      const smtpUser = localStorage.getItem("smtpUser") || "";
+      const smtpPass = localStorage.getItem("smtpPass") || "";
+      const smtpFrom = localStorage.getItem("smtpFrom") || "";
+      const smtpTls = localStorage.getItem("smtpTls") !== "false";
 
-      if (error && error.code !== "PGRST116") {
-        console.error("Erreur de chargement de la config SMTP:", error);
-        toast({
-          title: "Erreur de chargement",
-          description: "Impossible de charger la configuration SMTP depuis la base de données.",
-          variant: "destructive",
-        });
-      } else if (data) {
-        setConfig({
-          smtp_host: data.host || "",
-          smtp_port: data.port?.toString() || "587",
-          smtp_user: data.username || "",
-          smtp_pass: "", // Mot de passe retiré de la base pour sécurité
-          smtp_from: data.from_address || "",
-          smtp_tls: data.use_tls ?? true,
-        });
-      }
+      setConfig({
+        smtp_host: smtpHost,
+        smtp_port: smtpPort,
+        smtp_user: smtpUser,
+        smtp_pass: smtpPass,
+        smtp_from: smtpFrom,
+        smtp_tls: smtpTls,
+      });
+      
       setIsLoading(false);
     };
 
-    fetchConfig();
+    loadConfig();
 
     const savedTemplates = localStorage.getItem("emailTemplates");
     if (savedTemplates) {
@@ -135,7 +134,7 @@ const EmailSettings = () => {
     }));
   };
 
-  // Sauvegarde dans 'smtp_config'
+  // Sauvegarde dans 'smtp_config' et localStorage
   const saveConfig = async () => {
     setIsLoading(true);
     const errors: Record<string, string> = {};
@@ -161,6 +160,14 @@ const EmailSettings = () => {
     }
 
     setEmailErrors({});
+
+    // Sauvegarder dans localStorage pour l'EmailService
+    localStorage.setItem("smtpHost", config.smtp_host);
+    localStorage.setItem("smtpPort", config.smtp_port);
+    localStorage.setItem("smtpUser", config.smtp_user);
+    localStorage.setItem("smtpPass", config.smtp_pass);
+    localStorage.setItem("smtpFrom", config.smtp_from);
+    localStorage.setItem("smtpTls", config.smtp_tls.toString());
 
     const updates = {
       id: 1,
@@ -203,15 +210,34 @@ const EmailSettings = () => {
       return;
     }
 
+    if (!config.smtp_host || !config.smtp_user || !config.smtp_pass) {
+      toast({
+        title: "Configuration incomplète",
+        description: "Veuillez configurer tous les paramètres SMTP avant de tester.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsTestingEmail(true);
     setTestResult(null);
 
     try {
+      const smtpConfig = {
+        host: config.smtp_host,
+        port: parseInt(config.smtp_port, 10),
+        username: config.smtp_user,
+        password: config.smtp_pass,
+        from: config.smtp_from,
+        useTLS: config.smtp_tls
+      };
+
       const { error } = await supabase.functions.invoke("send-email", {
         body: {
           to: testEmail,
           subject: "Test de configuration email - Reno360",
           html: `<p>Si vous recevez cet email, votre configuration SMTP fonctionne !</p>`,
+          smtpConfig
         },
       });
 
@@ -321,30 +347,16 @@ const EmailSettings = () => {
                 />
               </div>
 
-               <Alert>
-                 <AlertDescription>
-                   Les identifiants SMTP (hôte, utilisateur, mot de passe) sont désormais gérés via des Secrets Supabase et ne sont jamais stockés en base.
-                 </AlertDescription>
-               </Alert>
-               <div className="flex items-center gap-2">
-                 <Button onClick={checkSecrets} variant="outline" disabled={checkingSecrets}>
-                   {checkingSecrets ? "Vérification..." : "Vérifier les secrets"}
-                 </Button>
-               </div>
-               {secretsStatus && (
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                   {Object.entries(secretsStatus).map(([key, ok]) => (
-                     <div key={key} className="flex items-center gap-2 text-sm">
-                       {ok ? (
-                         <CheckCircle className="h-4 w-4 text-green-600" />
-                       ) : (
-                         <AlertCircle className="h-4 w-4 text-red-600" />
-                       )}
-                       <span>{key}: {ok ? 'OK' : 'Manquant'}</span>
-                     </div>
-                   ))}
-                 </div>
-               )}
+              <div className="space-y-2 min-w-0">
+                <Label htmlFor="smtp_pass">Mot de passe</Label>
+                <Input
+                  id="smtp_pass"
+                  value={config.smtp_pass}
+                  onChange={(e) => setConfig({ ...config, smtp_pass: e.target.value })}
+                  placeholder="Votre mot de passe SMTP"
+                  type="password"
+                />
+              </div>
 
               <div className="space-y-2 min-w-0">
                 <Label htmlFor="smtp_from">Email expéditeur</Label>
