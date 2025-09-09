@@ -41,28 +41,86 @@ interface EmailConfig {
 const defaultTemplates: EmailTemplates = {
   account_creation: {
     subject: "Bienvenue sur reno360.ch",
-    body:
-      "Bonjour {{name}},\n\nVotre compte a été créé avec succès sur reno360.ch.\n\nVous pouvez maintenant vous connecter et soumettre vos demandes de devis.\n\nCordialement,\nL'équipe reno360.ch",
+    body: `
+      <h2>Bienvenue sur reno360.ch</h2>
+      <p>Bonjour <strong>{{name}}</strong>,</p>
+      <p>Votre compte a été créé avec succès sur reno360.ch.</p>
+      <p>Vous pouvez maintenant vous connecter et soumettre vos demandes de devis.</p>
+      <br>
+      <p>Cordialement,<br>L'équipe reno360.ch</p>
+    `,
   },
   password_change: {
     subject: "Modification de votre mot de passe",
-    body:
-      "Bonjour {{name}},\n\nVotre mot de passe a été modifié avec succès.\n\nSi vous n'êtes pas à l'origine de cette modification, contactez-nous immédiatement.\n\nCordialement,\nL'équipe reno360.ch",
+    body: `
+      <h2>Modification de mot de passe</h2>
+      <p>Bonjour <strong>{{name}}</strong>,</p>
+      <p>Votre mot de passe a été modifié avec succès.</p>
+      <p style="color: #d97706;">Si vous n'êtes pas à l'origine de cette modification, contactez-nous immédiatement.</p>
+      <br>
+      <p>Cordialement,<br>L'équipe reno360.ch</p>
+    `,
   },
   account_closure: {
     subject: "Fermeture de votre compte",
-    body:
-      "Bonjour {{name}},\n\nVotre compte a été fermé comme demandé.\n\nVos données personnelles seront supprimées conformément à notre politique de confidentialité.\n\nCordialement,\nL'équipe reno360.ch",
+    body: `
+      <h2>Fermeture de compte</h2>
+      <p>Bonjour <strong>{{name}}</strong>,</p>
+      <p>Votre compte a été fermé comme demandé.</p>
+      <p>Vos données personnelles seront supprimées conformément à notre politique de confidentialité.</p>
+      <br>
+      <p>Cordialement,<br>L'équipe reno360.ch</p>
+    `,
   },
   account_deletion: {
     subject: "Suppression de votre compte",
-    body:
-      "Bonjour {{name}},\n\nVotre compte et toutes vos données ont été supprimés définitivement.\n\nCordialement,\nL'équipe reno360.ch",
+    body: `
+      <h2>Suppression de compte</h2>
+      <p>Bonjour <strong>{{name}}</strong>,</p>
+      <p>Votre compte et toutes vos données ont été supprimés définitivement.</p>
+      <br>
+      <p>Cordialement,<br>L'équipe reno360.ch</p>
+    `,
   },
   request_status_change: {
     subject: "Mise à jour de votre demande de devis",
-    body:
-      'Bonjour {{name}},\n\nLe statut de votre demande "{{renovationType}}" a été modifié : {{status}}\n\nVous pouvez consulter les détails dans votre espace client.\n\nCordialement,\nL\'équipe reno360.ch',
+    body: `
+      <h2>Mise à jour de votre demande</h2>
+      <p>Bonjour <strong>{{name}}</strong>,</p>
+      <p>Le statut de votre demande "<em>{{renovationType}}</em>" a été modifié :</p>
+      <p style="font-size: 18px; color: #059669;"><strong>{{status}}</strong></p>
+      <p>Vous pouvez consulter les détails dans votre espace client.</p>
+      <br>
+      <p>Cordialement,<br>L'équipe reno360.ch</p>
+    `,
+  },
+  client_request_received: {
+    subject: "Confirmation de réception de votre demande",
+    body: `
+      <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+        <h2 style="color: #1f2937;">Demande reçue avec succès</h2>
+        <p>Bonjour <strong>{{name}}</strong>,</p>
+        <p>Nous avons bien reçu votre demande de devis pour : <strong>{{renovationType}}</strong></p>
+        
+        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #374151; margin-top: 0;">Détails de votre demande :</h3>
+          <p><strong>Type de rénovation :</strong> {{renovationType}}</p>
+          <p><strong>Code postal :</strong> {{postalCode}}</p>
+          <p><strong>Délai souhaité :</strong> {{deadline}}</p>
+          <p><strong>Budget :</strong> {{budget}}</p>
+        </div>
+        
+        <p><strong>Notre équipe va examiner votre demande et vous recontacter dans les plus brefs délais.</strong></p>
+        
+        <div style="background-color: #dbeafe; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0; color: #1e40af;"><strong>💡 Conseil :</strong> Préparez vos questions et photos du projet pour faciliter notre évaluation.</p>
+        </div>
+        
+        <p>Si vous avez des questions urgentes, n'hésitez pas à nous contacter.</p>
+        <br>
+        <p>Cordialement,<br><strong>L'équipe reno360.ch</strong></p>
+      </div>
+    `,
   },
 };
 
@@ -333,6 +391,7 @@ const EmailSettings = () => {
     account_closure: "Fermeture de compte",
     account_deletion: "Suppression de compte",
     request_status_change: "Changement de statut de demande",
+    client_request_received: "Confirmation de demande client",
   };
 
   // Classe commune pour les triggers (évite les retours à la ligne + shrink)
@@ -500,54 +559,81 @@ const EmailSettings = () => {
         <TabsContent value="templates" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Templates d&apos;emails</CardTitle>
+              <CardTitle>Templates d&apos;emails HTML</CardTitle>
               <CardDescription>
-                Personnalisez les messages envoyés aux clients. Utilisez les variables: nom, type de rénovation, statut.
+                Personnalisez les messages HTML envoyés aux clients. Variables disponibles : name, renovationType, status, postalCode, deadline, budget
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="account_creation">
-                <div className="w-full mb-4 min-w-0">
-                  <TabsList className="flex w-full gap-2 overflow-x-auto no-scrollbar h-auto p-1 bg-muted rounded-md min-w-0">
+              <Tabs defaultValue="account_creation" className="w-full">
+                <div className="w-full mb-4">
+                  <div className="flex overflow-x-auto gap-1 p-1 bg-muted rounded-md">
                     {Object.keys(templateLabels).map((key) => (
                       <TabsTrigger
                         key={key}
                         value={key}
-                        className="text-xs sm:text-sm px-3 py-2 h-auto text-center whitespace-nowrap flex-shrink-0 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                        className="text-xs px-2 py-1 whitespace-nowrap flex-shrink-0 data-[state=active]:bg-background"
                       >
                         {templateLabels[key as keyof typeof templateLabels]}
                       </TabsTrigger>
                     ))}
-                  </TabsList>
+                  </div>
                 </div>
 
                 {Object.entries(templateLabels).map(([key]) => (
                   <TabsContent key={key} value={key} className="space-y-4">
-                    <div>
-                      <Label htmlFor={`${key}-subject`}>Sujet</Label>
-                      <Input
-                        id={`${key}-subject`}
-                        value={templates[key as keyof EmailTemplates].subject}
-                        onChange={(e) => handleTemplateChange(key as keyof EmailTemplates, "subject", e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor={`${key}-body`}>Corps du message</Label>
-                      <Textarea
-                        id={`${key}-body`}
-                        value={templates[key as keyof EmailTemplates].body}
-                        onChange={(e) => handleTemplateChange(key as keyof EmailTemplates, "body", e.target.value)}
-                        rows={10}
-                        className="min-h-[180px] sm:min-h-[240px] resize-y font-mono text-sm leading-relaxed"
-                      />
-                      <div className="mt-2 p-3 bg-muted rounded-md">
-                        <div className="text-xs sm:text-sm text-muted-foreground space-y-1">
-                          <div>
-                            <strong>Variables disponibles:</strong> {"{{name}}, {{renovationType}}, {{status}}"}
-                          </div>
-                          <div>
-                            <strong>Exemple:</strong> Bonjour {"{{name}}"}, votre demande de {"{{renovationType}}"} a été{" "}
-                            {"{{status}}"}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor={`${key}-subject`}>Sujet</Label>
+                          <Input
+                            id={`${key}-subject`}
+                            value={templates[key as keyof EmailTemplates].subject}
+                            onChange={(e) => handleTemplateChange(key as keyof EmailTemplates, "subject", e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`${key}-body`}>Corps du message (HTML)</Label>
+                          <Textarea
+                            id={`${key}-body`}
+                            value={templates[key as keyof EmailTemplates].body}
+                            onChange={(e) => handleTemplateChange(key as keyof EmailTemplates, "body", e.target.value)}
+                            rows={12}
+                            className="mt-1 min-h-[300px] resize-y font-mono text-sm leading-relaxed"
+                            placeholder="Entrez votre template HTML ici..."
+                          />
+                        </div>
+                        <div className="p-3 bg-blue-50 rounded-md text-sm">
+                            <div className="text-blue-800">
+                              <strong>Variables disponibles :</strong>
+                              <div className="mt-1 space-y-1">
+                                <div>• {`{{name}}`} - Nom du client</div>
+                                <div>• {`{{renovationType}}`} - Type de rénovation</div>
+                                <div>• {`{{status}}`} - Statut de la demande</div>
+                                <div>• {`{{postalCode}}`} - Code postal</div>
+                                <div>• {`{{deadline}}`} - Délai souhaité</div>
+                                <div>• {`{{budget}}`} - Budget</div>
+                              </div>
+                            </div>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <Label>Aperçu du rendu</Label>
+                          <div className="mt-1 border rounded-md p-4 bg-white min-h-[300px] max-h-[400px] overflow-y-auto">
+                            <div 
+                              dangerouslySetInnerHTML={{ 
+                                __html: templates[key as keyof EmailTemplates].body
+                                  .replace(/{{name}}/g, "Jean Dupont")
+                                  .replace(/{{renovationType}}/g, "Cuisine")
+                                  .replace(/{{status}}/g, "Approuvé")
+                                  .replace(/{{postalCode}}/g, "1000")
+                                  .replace(/{{deadline}}/g, "Dans 2 mois")
+                                  .replace(/{{budget}}/g, "15'000 CHF")
+                              }} 
+                            />
                           </div>
                         </div>
                       </div>

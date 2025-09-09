@@ -90,6 +90,7 @@ export type EmailTemplates = {
   account_closure: EmailTemplate;
   account_deletion: EmailTemplate;
   request_status_change: EmailTemplate;
+  client_request_received: EmailTemplate;
 };
 
 export interface EmailSettings {

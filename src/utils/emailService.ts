@@ -88,23 +88,50 @@ export class EmailService {
 
   static async sendRequestNotification(requestData: any): Promise<boolean> {
     try {
+      // Envoyer email de confirmation au client
+      const clientEmailSent = await this.sendEmail(
+        requestData.email,
+        'client_request_received',
+        {
+          name: requestData.name,
+          renovationType: requestData.renovationType,
+          postalCode: requestData.postalCode || '',
+          deadline: requestData.deadline || '',
+          budget: requestData.budget || 'Non spécifié'
+        }
+      );
+
+      if (!clientEmailSent) {
+        console.warn("Échec de l'envoi de l'email de confirmation au client");
+      }
+
       const settings = this.getSettings();
       
       // Email à l'équipe pour nouvelle demande
       const emailContent = `
-        <h2>Nouvelle demande de devis reçue</h2>
-        
-        <p><strong>Client:</strong> ${requestData.name}</p>
-        <p><strong>Email:</strong> ${requestData.email}</p>
-        <p><strong>Téléphone:</strong> ${requestData.phone}</p>
-        <p><strong>Type de rénovation:</strong> ${requestData.renovationType}</p>
-        <p><strong>Code postal:</strong> ${requestData.postalCode}</p>
-        
-        <h3>Description:</h3>
-        <p>${requestData.description}</p>
-        
-        <p><strong>Délai souhaité:</strong> ${requestData.deadline}</p>
-        <p><strong>Budget:</strong> ${requestData.budget || "Non spécifié"}</p>
+        <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+          <h2 style="color: #1f2937;">Nouvelle demande de devis reçue</h2>
+          
+          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #374151; margin-top: 0;">Informations client :</h3>
+            <p><strong>Client:</strong> ${requestData.name}</p>
+            <p><strong>Email:</strong> ${requestData.email}</p>
+            <p><strong>Téléphone:</strong> ${requestData.phone}</p>
+            <p><strong>Code postal:</strong> ${requestData.postalCode}</p>
+          </div>
+          
+          <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #1e40af; margin-top: 0;">Détails du projet :</h3>
+            <p><strong>Type de rénovation:</strong> ${requestData.renovationType}</p>
+            <p><strong>Délai souhaité:</strong> ${requestData.deadline}</p>
+            <p><strong>Budget:</strong> ${requestData.budget || "Non spécifié"}</p>
+          </div>
+          
+          <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #374151; margin-top: 0;">Description :</h3>
+            <p>${requestData.description}</p>
+          </div>
+        </div>
       `;
 
       // Récupérer la configuration SMTP depuis localStorage
