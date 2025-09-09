@@ -581,17 +581,17 @@ const EmailSettings = () => {
             <CardContent>
               <Tabs defaultValue="account_creation" className="w-full">
                 <div className="w-full mb-4">
-                  <div className="flex overflow-x-auto gap-1 p-1 bg-muted rounded-md">
+                  <TabsList className="grid w-full grid-cols-6 h-auto p-1 bg-muted rounded-md">
                     {Object.keys(templateLabels).map((key) => (
                       <TabsTrigger
                         key={key}
                         value={key}
-                        className="text-xs px-2 py-1 whitespace-nowrap flex-shrink-0 data-[state=active]:bg-background"
+                        className="text-xs px-1 py-2 whitespace-nowrap data-[state=active]:bg-background h-auto"
                       >
                         {templateLabels[key as keyof typeof templateLabels]}
                       </TabsTrigger>
                     ))}
-                  </div>
+                  </TabsList>
                 </div>
 
                 {Object.entries(templateLabels).map(([key]) => {
