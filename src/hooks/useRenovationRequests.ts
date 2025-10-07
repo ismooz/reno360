@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { RenovationRequest } from "@/types";
 import { useAuth } from "./useAuth";
@@ -10,16 +10,15 @@ export const useRenovationRequests = () => {
   const { user, isAdmin } = useAuth();
   const { toast } = useToast();
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     try {
       setIsLoading(true);
-      
+
       let query = supabase
         .from('renovation_requests')
         .select('*')
         .order('created_at', { ascending: false });
 
-      // Si ce n'est pas un admin, filtrer par utilisateur
       if (!isAdmin()) {
         query = query.eq('user_id', user?.id);
       }
@@ -30,16 +29,14 @@ export const useRenovationRequests = () => {
 
       if (error) {
         console.error('Erreur lors du chargement des demandes:', error);
-        // Fallback vers localStorage si Supabase échoue
         const localRequests = JSON.parse(localStorage.getItem("renovationRequests") || "[]");
-        const filteredRequests = isAdmin() 
-          ? localRequests 
+        const filteredRequests = isAdmin()
+          ? localRequests
           : localRequests.filter((req: RenovationRequest) => req.clientId === user?.id || req.user_id === user?.id);
-        
+
         console.log('Using localStorage data:', filteredRequests);
         setRequests(filteredRequests);
       } else {
-        // Normaliser les données pour la compatibilité
         const normalizedData = (data || []).map(req => ({
           ...req,
           renovationType: req.renovation_type,
@@ -51,11 +48,10 @@ export const useRenovationRequests = () => {
           createdAt: req.created_at,
           status: req.status as 'pending' | 'approved' | 'in-progress' | 'completed' | 'rejected'
         }));
-        
+
         console.log('Supabase data:', normalizedData);
         setRequests(normalizedData);
-        
-        // Si admin et pas de données Supabase, on essaie le localStorage aussi
+
         if (isAdmin() && normalizedData.length === 0) {
           const localRequests = JSON.parse(localStorage.getItem("renovationRequests") || "[]");
           console.log('Admin: also loading from localStorage:', localRequests);
@@ -64,18 +60,17 @@ export const useRenovationRequests = () => {
       }
     } catch (error) {
       console.error('Erreur réseau:', error);
-      // Fallback vers localStorage
       const localRequests = JSON.parse(localStorage.getItem("renovationRequests") || "[]");
-        const filteredRequests = isAdmin() 
-          ? localRequests 
-          : localRequests.filter((req: RenovationRequest) => req.clientId === user?.id || req.user_id === user?.id);
-        
-        console.log('Network error, using localStorage:', filteredRequests);
-        setRequests(filteredRequests);
+      const filteredRequests = isAdmin()
+        ? localRequests
+        : localRequests.filter((req: RenovationRequest) => req.clientId === user?.id || req.user_id === user?.id);
+
+      console.log('Network error, using localStorage:', filteredRequests);
+      setRequests(filteredRequests);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user, isAdmin]);
 
   const createRequest = async (requestData: Omit<RenovationRequest, 'id' | 'created_at' | 'updated_at'>) => {
     try {
@@ -182,33 +177,9 @@ export const useRenovationRequests = () => {
     const uploadedUrls: string[] = [];
 
     for (const file of files) {
-      try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${user?.id || 'anonymous'}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-
-        console.log('Uploading file:', fileName);
-
-        const { data, error } = await supabase.storage
-          .from('request-attachments')
-          .upload(fileName, file);
-
-        if (error) {
-          console.error('Erreur upload:', error);
-          // Fallback: créer une URL locale
-          const blobUrl = URL.createObjectURL(file);
-          console.log('Using blob URL as fallback:', blobUrl);
-          uploadedUrls.push(blobUrl);
-        } else {
-          console.log('Upload successful:', data);
-          // Stocker juste le path, pas l'URL complète
-          uploadedUrls.push(fileName);
-        }
-      } catch (error) {
-        console.error('Erreur upload fichier:', error);
-        // Fallback: créer une URL locale
-        const blobUrl = URL.createObjectURL(file);
-        console.log('Using blob URL as fallback:', blobUrl);
-        uploadedUrls.push(blobUrl);
+      const uploadedUrl = await uploadFileWithRetry(file, 3);
+      if (uploadedUrl) {
+        uploadedUrls.push(uploadedUrl);
       }
     }
 
@@ -216,18 +187,60 @@ export const useRenovationRequests = () => {
     return uploadedUrls;
   };
 
+  const uploadFileWithRetry = async (file: File, maxRetries: number): Promise<string | null> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user?.id || 'anonymous'}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`Uploading file (attempt ${attempt}/${maxRetries}):`, fileName);
+
+        const { data, error } = await supabase.storage
+          .from('request-attachments')
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (error) {
+          console.error(`Upload error (attempt ${attempt}):`, error);
+          if (attempt === maxRetries) {
+            const blobUrl = URL.createObjectURL(file);
+            console.log('All retries failed, using blob URL as fallback:', blobUrl);
+            return blobUrl;
+          }
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+          continue;
+        }
+
+        console.log('Upload successful:', data);
+        return fileName;
+      } catch (error) {
+        console.error(`Upload exception (attempt ${attempt}):`, error);
+        if (attempt === maxRetries) {
+          const blobUrl = URL.createObjectURL(file);
+          console.log('All retries failed, using blob URL as fallback:', blobUrl);
+          return blobUrl;
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      }
+    }
+
+    return null;
+  };
+
   const getFileUrl = (attachment: string): string => {
-    // Si l'URL commence par blob: ou http, on la retourne telle quelle
+    if (!attachment) return '';
+
     if (attachment.startsWith('blob:') || attachment.startsWith('http')) {
       return attachment;
     }
-    
-    // Si c'est un chemin de fichier local/upload, essayer de générer l'URL Supabase
+
     try {
       const { data: { publicUrl } } = supabase.storage
         .from('request-attachments')
         .getPublicUrl(attachment);
-      
+
       console.log('Generated public URL for', attachment, ':', publicUrl);
       return publicUrl;
     } catch (error) {
@@ -240,7 +253,7 @@ export const useRenovationRequests = () => {
     if (user !== undefined) {
       fetchRequests();
     }
-  }, [user]);
+  }, [user, fetchRequests]);
 
   return {
     requests,

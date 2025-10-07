@@ -17,7 +17,8 @@ interface AuthContextType {
   updateUserProfile: (userData: any) => Promise<void>;
   loading: boolean;
   error: string | null;
-  isAdmin: () => Promise<boolean>;
+  isAdmin: () => boolean;
+  checkAdminStatus: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -32,7 +33,8 @@ const AuthContext = createContext<AuthContextType>({
   updateUserProfile: async () => {},
   loading: false,
   error: null,
-  isAdmin: async () => false,
+  isAdmin: () => false,
+  checkAdminStatus: async () => false,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -40,43 +42,61 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAdminUser, setIsAdminUser] = useState<boolean>(false);
 
-  // Vérifier si l'utilisateur est déjà connecté au chargement
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        if (session?.user) {
+          checkAdminStatus();
+        } else {
+          setIsAdminUser(false);
+        }
       }
     );
 
-    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      if (session?.user) {
+        checkAdminStatus();
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  // Check for admin status
-  const isAdmin = async (): Promise<boolean> => {
-    if (!user) return false;
+  const checkAdminStatus = async (): Promise<boolean> => {
+    if (!user) {
+      setIsAdminUser(false);
+      return false;
+    }
     try {
       const { data, error } = await supabase.rpc('is_admin', { check_user_id: user.id });
       if (error) {
         console.error('Error checking admin status:', error);
+        setIsAdminUser(false);
         return false;
       }
-      return data || false;
+      const adminStatus = data || false;
+      setIsAdminUser(adminStatus);
+      return adminStatus;
     } catch (error) {
       console.error('Error checking admin status:', error);
+      setIsAdminUser(false);
       return false;
     }
+  };
+
+  const isAdmin = (): boolean => {
+    return isAdminUser;
   };
 
   const sendEmailNotification = async (email: string, type: string, data?: any) => {
@@ -291,19 +311,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ 
+    <AuthContext.Provider value={{
       user,
       session,
-      signIn, 
+      signIn,
       signUp,
       signInWithGoogle,
       signInWithApple,
-      signOut, 
-      updatePassword, 
-      updateUserProfile, 
-      loading, 
-      error, 
-      isAdmin 
+      signOut,
+      updatePassword,
+      updateUserProfile,
+      loading,
+      error,
+      isAdmin,
+      checkAdminStatus
     }}>
       {children}
     </AuthContext.Provider>

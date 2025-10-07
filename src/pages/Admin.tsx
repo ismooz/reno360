@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RenovationRequest } from "@/types";
-import { Search, Eye, Phone, Download, FileSpreadsheet, ChevronDown } from "lucide-react";
+import { Search, Eye, Phone, Download, FileSpreadsheet, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { exportRequestsToCSV, exportRequestsToExcel } from "@/utils/exportUtils";
 import { useToast } from "@/hooks/use-toast";
@@ -44,6 +44,8 @@ const Admin = () => {
     status: "all",
     search: "",
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   
   useEffect(() => {
     if (!loading && !user) {
@@ -58,13 +60,12 @@ const Admin = () => {
   }, [user, loading, navigate, isAdmin]);
   
   useEffect(() => {
-    // Appliquer les filtres
     let result = [...requests];
-    
+
     if (filter.status !== "all") {
       result = result.filter(req => req.status === filter.status);
     }
-    
+
     if (filter.search) {
       const searchLower = filter.search.toLowerCase();
       result = result.filter(
@@ -74,8 +75,9 @@ const Admin = () => {
               (req.postalCode || req.postal_code || "").includes(searchLower)
       );
     }
-    
+
     setFilteredRequests(result);
+    setCurrentPage(1);
   }, [requests, filter]);
   
   const handleViewDetails = (request: RenovationRequest) => {
@@ -276,8 +278,14 @@ const Admin = () => {
                         </p>
                       </div>
                     ) : (
-                      <div className="space-y-4">
-                        {filteredRequests.map((request) => (
+                      <>
+                        <div className="text-sm text-muted-foreground mb-4">
+                          Affichage de {Math.min((currentPage - 1) * itemsPerPage + 1, filteredRequests.length)} à {Math.min(currentPage * itemsPerPage, filteredRequests.length)} sur {filteredRequests.length} demande(s)
+                        </div>
+                        <div className="space-y-4">
+                          {filteredRequests
+                            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                            .map((request) => (
                           <Card key={request.id}>
                             <CardContent className="p-4 sm:p-6">
                               <div className="flex flex-col gap-4 mb-4">
@@ -352,8 +360,34 @@ const Admin = () => {
                               </div>
                             </CardContent>
                           </Card>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
+                        {filteredRequests.length > itemsPerPage && (
+                          <div className="flex items-center justify-center gap-2 mt-6">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                              disabled={currentPage === 1}
+                            >
+                              <ChevronLeft className="h-4 w-4" />
+                              Précédent
+                            </Button>
+                            <span className="text-sm text-muted-foreground">
+                              Page {currentPage} sur {Math.ceil(filteredRequests.length / itemsPerPage)}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredRequests.length / itemsPerPage), prev + 1))}
+                              disabled={currentPage === Math.ceil(filteredRequests.length / itemsPerPage)}
+                            >
+                              Suivant
+                              <ChevronRight className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </TabsContent>
