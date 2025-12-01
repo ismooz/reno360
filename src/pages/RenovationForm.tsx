@@ -237,7 +237,7 @@ const RenovationForm = () => {
         <div className="max-w-3xl mx-auto">
           <Card>
             <CardHeader className="space-y-1 text-center">
-              <CardTitle className="text-2xl font-bold text-primary">Formulaire de demande</CardTitle>
+              <CardTitle className="text-2xl font-bold text-primary">Demande de devis</CardTitle>
               <CardDescription>Remplissez ce formulaire pour recevoir un devis personnalisé</CardDescription>
             </CardHeader>
             <CardContent>
