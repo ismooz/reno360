@@ -1,419 +1,461 @@
-
-import { RenovationType } from '@/types';
+import { RenovationType } from "@/types";
 
 export const renovationTypes: RenovationType[] = [
-  // Services de base
+  // --- GROS ŒUVRE & STRUCTURE ---
   {
-    id: 'peinture',
-    name: 'Peinture',
-    description: 'Services de peinture intérieure et extérieure pour tous types de bâtiments',
-    icon: '🎨',
-    category: 'Finition'
+    id: "maconnerie",
+    name: "Maçonnerie",
+    description: "Travaux de maçonnerie générale, murs porteurs et rénovation structurelle",
+    icon: "🧱",
+    category: "Structure",
   },
   {
-    id: 'plomberie',
-    name: 'Plomberie',
-    description: 'Installation et réparation de systèmes de plomberie pour cuisines et salles de bains',
-    icon: '🚿',
-    category: 'Technique'
+    id: "charpente",
+    name: "Charpente",
+    description: "Rénovation et traitement de charpentes en bois",
+    icon: "🏗️",
+    category: "Structure",
   },
   {
-    id: 'electricite',
-    name: 'Électricité',
-    description: 'Services d\'installation électrique et de mise aux normes',
-    icon: '⚡',
-    category: 'Technique'
+    id: "toiture",
+    name: "Toiture & Ferblanterie",
+    description: "Réparation de toits, tuiles, chenaux et étanchéité",
+    icon: "🏠",
+    category: "Structure",
   },
   {
-    id: 'chauffage',
-    name: 'Chauffage',
-    description: 'Installation et réparation de systèmes de chauffage',
-    icon: '🌡️',
-    category: 'Technique'
+    id: "demolition",
+    name: "Démolition",
+    description: "Démolition de cloisons, murs et évacuation de gravats",
+    icon: "🔨",
+    category: "Structure",
   },
   {
-    id: 'isolation',
-    name: 'Isolation',
-    description: 'Services d\'isolation thermique et acoustique',
-    icon: '🛡️',
-    category: 'Rénovation énergétique'
+    id: "extension",
+    name: "Extension",
+    description: "Agrandissement de maison et annexes",
+    icon: "🏗️",
+    category: "Structure",
   },
   {
-    id: 'menuiserie',
-    name: 'Menuiserie',
-    description: 'Rénovation de portes, fenêtres et autres éléments en bois',
-    icon: '🔨',
-    category: 'Structure'
+    id: "surelevation",
+    name: "Surélévation",
+    description: "Surélévation de toiture pour gagner un étage",
+    icon: "⬆️",
+    category: "Structure",
+  },
+
+  // --- SECOND ŒUVRE & TECHNIQUE ---
+  {
+    id: "electricite",
+    name: "Électricité",
+    description: "Installation, mise aux normes et tableaux électriques",
+    icon: "⚡",
+    category: "Technique",
   },
   {
-    id: 'carrelage',
-    name: 'Carrelage',
-    description: 'Installation et rénovation de carrelage et revêtements de sol',
-    icon: '🔲',
-    category: 'Finition'
+    id: "plomberie",
+    name: "Plomberie",
+    description: "Réseaux d'eau, fuites et installations sanitaires",
+    icon: "🚿",
+    category: "Technique",
   },
   {
-    id: 'maconnerie',
-    name: 'Maçonnerie',
-    description: 'Travaux de maçonnerie générale et de rénovation',
-    icon: '🧱',
-    category: 'Structure'
+    id: "chauffage",
+    name: "Chauffage",
+    description: "Radiateurs, chaudières et chauffage au sol",
+    icon: "🌡️",
+    category: "Technique",
   },
   {
-    id: 'toiture',
-    name: 'Toiture',
-    description: 'Réparation et rénovation de toitures',
-    icon: '🏠',
-    category: 'Structure'
+    id: "ventilation",
+    name: "Ventilation & VMC",
+    description: "Systèmes d'aération et qualité de l'air",
+    icon: "💨",
+    category: "Technique",
   },
   {
-    id: 'amenagement',
-    name: 'Aménagement',
-    description: 'Aménagement intérieur et extérieur',
-    icon: '📐',
-    category: 'Design'
+    id: "climatisation",
+    name: "Climatisation",
+    description: "Installation de climatiseurs fixes et réversibles",
+    icon: "❄️",
+    category: "Technique",
   },
   {
-    id: 'salle_de_bain',
-    name: 'Salle de bain',
-    description: 'Rénovation complète de salle de bain',
-    icon: '🛁',
-    category: 'Pièce'
+    id: "adoucisseur",
+    name: "Adoucisseur d'eau",
+    description: "Installation et entretien de systèmes anti-calcaire",
+    icon: "💧",
+    category: "Technique",
+  },
+
+  // --- ÉNERGIE & DURABILITÉ (Important pour la Suisse) ---
+  {
+    id: "panneaux_solaires",
+    name: "Panneaux Solaires",
+    description: "Installation photovoltaïque et thermique",
+    icon: "☀️",
+    category: "Énergie",
   },
   {
-    id: 'cuisine',
-    name: 'Cuisine',
-    description: 'Rénovation et installation de cuisines',
-    icon: '🍽️',
-    category: 'Pièce'
+    id: "pompe_a_chaleur",
+    name: "Pompe à chaleur (PAC)",
+    description: "Installation de PAC air-eau, géothermie ou air-air",
+    icon: "🔋",
+    category: "Énergie",
   },
   {
-    id: 'ventilation',
-    name: 'Ventilation',
-    description: 'Installation et maintenance de systèmes de ventilation',
-    icon: '💨',
-    category: 'Technique'
+    id: "isolation",
+    name: "Isolation",
+    description: "Isolation thermique (ITH/ITE) et phonique",
+    icon: "🛡️",
+    category: "Énergie",
   },
   {
-    id: 'domotique',
-    name: 'Domotique',
-    description: 'Installation de systèmes domotiques pour maisons intelligentes',
-    icon: '📱',
-    category: 'Technologie'
+    id: "borne_recharge",
+    name: "Borne de recharge",
+    description: "Installation de bornes pour véhicules électriques",
+    icon: "🚗",
+    category: "Énergie",
   },
   {
-    id: 'jardin',
-    name: 'Aménagement extérieur',
-    description: 'Aménagement de jardin et espaces extérieurs',
-    icon: '🌳',
-    category: 'Extérieur'
+    id: "audit_energetique",
+    name: "Audit Énergétique",
+    description: "Analyse CECB et conseils pour subventions",
+    icon: "📊",
+    category: "Conseil",
+  },
+
+  // --- MENUISERIE & OUVERTURES ---
+  {
+    id: "menuiserie",
+    name: "Menuiserie générale",
+    description: "Travaux sur mesure, plinthes et finitions bois",
+    icon: "🪵",
+    category: "Menuiserie",
   },
   {
-    id: 'piscine',
-    name: 'Piscine',
-    description: 'Installation et rénovation de piscines',
-    icon: '🏊',
-    category: 'Extérieur'
+    id: "fenetre",
+    name: "Fenêtres & Vitrerie",
+    description: "Pose de fenêtres (PVC, Bois, Alu) et remplacement de vitres",
+    icon: "🪟",
+    category: "Menuiserie",
   },
   {
-    id: 'cloisons',
-    name: 'Cloisons & Plâtrerie',
-    description: 'Installation de cloisons et travaux de plâtrerie',
-    icon: '🧱',
-    category: 'Structure'
+    id: "stores_volets",
+    name: "Stores & Volets",
+    description: "Installation et réparation de stores, volets roulants et battants",
+    icon: "🌗",
+    category: "Menuiserie",
   },
   {
-    id: 'sols',
-    name: 'Revêtements de sols',
-    description: 'Installation de parquets, stratifiés et autres revêtements de sols',
-    icon: '🪵',
-    category: 'Finition'
+    id: "porte",
+    name: "Portes",
+    description: "Portes d'entrée, intérieures et blindées",
+    icon: "🚪",
+    category: "Menuiserie",
   },
   {
-    id: 'renovation_complete',
-    name: 'Rénovation complète',
-    description: 'Services de rénovation complète de propriétés',
-    icon: '🏗️',
-    category: 'Projet global'
+    id: "escalier",
+    name: "Escaliers",
+    description: "Création, rénovation ou habillage d'escaliers",
+    icon: "🪜",
+    category: "Menuiserie",
+  },
+
+  // --- FINITIONS & DÉCORATION ---
+  {
+    id: "peinture",
+    name: "Peinture",
+    description: "Peinture murs, plafonds et boiseries (intérieur/extérieur)",
+    icon: "🎨",
+    category: "Finition",
   },
   {
-    id: 'architecte',
-    name: 'Services d\'architecte',
-    description: 'Conception, plans et supervision de projets de rénovation',
-    icon: '📝',
-    category: 'Conseil'
-  },
-  
-  // Nouveaux services étoffés
-  {
-    id: 'parquet',
-    name: 'Parquet',
-    description: 'Pose et rénovation de parquets massifs, contrecollés et stratifiés',
-    icon: '🪵',
-    category: 'Finition'
+    id: "papier_peint",
+    name: "Papier Peint & Déco",
+    description: "Pose de papiers peints, tapisseries et enduits décoratifs",
+    icon: "🖼️",
+    category: "Finition",
   },
   {
-    id: 'climatisation',
-    name: 'Climatisation',
-    description: 'Installation et maintenance de systèmes de climatisation',
-    icon: '❄️',
-    category: 'Technique'
+    id: "carrelage",
+    name: "Carrelage & Faïence",
+    description: "Pose de carrelage sol et mural, mosaïque",
+    icon: "🔲",
+    category: "Finition",
   },
   {
-    id: 'fenetre',
-    name: 'Fenêtres',
-    description: 'Remplacement et installation de fenêtres PVC, alu ou bois',
-    icon: '🪟',
-    category: 'Structure'
+    id: "parquet",
+    name: "Parquet",
+    description: "Pose, ponçage et vitrification de parquets",
+    icon: "🪵",
+    category: "Finition",
   },
   {
-    id: 'porte',
-    name: 'Portes',
-    description: 'Installation de portes intérieures et extérieures',
-    icon: '🚪',
-    category: 'Structure'
+    id: "sols_souples",
+    name: "Sols Souples",
+    description: "Lino, vinyle, moquette et PVC",
+    icon: "🧶",
+    category: "Finition",
   },
   {
-    id: 'escalier',
-    name: 'Escaliers',
-    description: 'Création et rénovation d\'escaliers en bois, métal ou béton',
-    icon: '🪜',
-    category: 'Structure'
+    id: "beton_cire",
+    name: "Béton Ciré",
+    description: "Application de béton ciré sur sols et murs",
+    icon: "🌫️",
+    category: "Finition",
   },
   {
-    id: 'placard',
-    name: 'Placards & Dressing',
-    description: 'Aménagement de placards sur mesure et dressings',
-    icon: '🗄️',
-    category: 'Rangement'
+    id: "cloisons",
+    name: "Plâtrerie & Cloisons",
+    description: "Faux-plafonds, cloisons sèches et lissage",
+    icon: "🧱",
+    category: "Finition",
+  },
+
+  // --- PIÈCES SPÉCIFIQUES ---
+  {
+    id: "salle_de_bain",
+    name: "Salle de bain",
+    description: "Rénovation clé en main, douches italiennes",
+    icon: "🛁",
+    category: "Pièce",
   },
   {
-    id: 'bibliotheque',
-    name: 'Bibliothèques',
-    description: 'Création de bibliothèques et étagères sur mesure',
-    icon: '📚',
-    category: 'Rangement'
+    id: "cuisine",
+    name: "Cuisine",
+    description: "Pose de cuisine équipée et rénovation",
+    icon: "🍽️",
+    category: "Pièce",
   },
   {
-    id: 'mezzanine',
-    name: 'Mezzanine',
-    description: 'Création de mezzanines pour optimiser l\'espace',
-    icon: '🏢',
-    category: 'Structure'
+    id: "combles",
+    name: "Combles & Grenier",
+    description: "Aménagement et isolation de combles habitables",
+    icon: "🏠",
+    category: "Pièce",
   },
   {
-    id: 'veranda',
-    name: 'Véranda',
-    description: 'Construction et rénovation de vérandas',
-    icon: '🌿',
-    category: 'Extérieur'
+    id: "cave",
+    name: "Cave & Sous-sol",
+    description: "Assainissement et aménagement de sous-sols",
+    icon: "🔦",
+    category: "Pièce",
   },
   {
-    id: 'pergola',
-    name: 'Pergola',
-    description: 'Installation de pergolas et structures extérieures',
-    icon: '🌳',
-    category: 'Extérieur'
+    id: "bureau",
+    name: "Bureau / Télétravail",
+    description: "Création d'espaces de travail optimisés",
+    icon: "💻",
+    category: "Pièce",
+  },
+
+  // --- EXTÉRIEUR & JARDIN ---
+  {
+    id: "jardin",
+    name: "Paysagisme",
+    description: "Création de jardins, pelouses et plantations",
+    icon: "🌳",
+    category: "Extérieur",
   },
   {
-    id: 'terrasse',
-    name: 'Terrasse',
-    description: 'Création et rénovation de terrasses en bois, composite ou carrelage',
-    icon: '☀️',
-    category: 'Extérieur'
+    id: "terrasse",
+    name: "Terrasse",
+    description: "Construction de terrasses bois, composite ou dalles",
+    icon: "☀️",
+    category: "Extérieur",
   },
   {
-    id: 'clotture',
-    name: 'Clôture',
-    description: 'Installation de clôtures et portails',
-    icon: '🚧',
-    category: 'Extérieur'
+    id: "clotture",
+    name: "Clôtures & Portails",
+    description: "Installation de délimitations et portails automatiques",
+    icon: "🚧",
+    category: "Extérieur",
   },
   {
-    id: 'garage',
-    name: 'Garage',
-    description: 'Aménagement et rénovation de garages',
-    icon: '🚗',
-    category: 'Utilitaire'
+    id: "piscine",
+    name: "Piscine & Spa",
+    description: "Construction et rénovation de piscines",
+    icon: "🏊",
+    category: "Extérieur",
   },
   {
-    id: 'cave',
-    name: 'Cave & Sous-sol',
-    description: 'Aménagement de caves et sous-sols',
-    icon: '🏠',
-    category: 'Utilitaire'
+    id: "pavage",
+    name: "Pavage & Dallage",
+    description: "Allées de garage, cours et chemins d'accès",
+    icon: "🧱",
+    category: "Extérieur",
   },
   {
-    id: 'combles',
-    name: 'Combles',
-    description: 'Aménagement de combles et greniers',
-    icon: '🏠',
-    category: 'Espace'
+    id: "veranda",
+    name: "Véranda & Pergola",
+    description: "Extensions vitrées et protections solaires extérieures",
+    icon: "🌿",
+    category: "Extérieur",
   },
   {
-    id: 'extension',
-    name: 'Extension',
-    description: 'Extension de maison et agrandissement',
-    icon: '🏗️',
-    category: 'Structure'
+    id: "ravalement",
+    name: "Façade",
+    description: "Nettoyage, crépi et rénovation de façades",
+    icon: "🏠",
+    category: "Extérieur",
+  },
+
+  // --- SÉCURITÉ & ACCESSIBILITÉ ---
+  {
+    id: "securite",
+    name: "Systèmes de Sécurité",
+    description: "Alarmes, vidéosurveillance et contrôle d'accès",
+    icon: "📹",
+    category: "Sécurité",
   },
   {
-    id: 'surélévation',
-    name: 'Surélévation',
-    description: 'Surélévation de maison pour gagner de l\'espace',
-    icon: '⬆️',
-    category: 'Structure'
+    id: "serrurerie",
+    name: "Serrurerie",
+    description: "Changement de serrures, blindage et dépannage",
+    icon: "🔑",
+    category: "Sécurité",
   },
   {
-    id: 'ravalement',
-    name: 'Ravalement',
-    description: 'Ravalement de façade et nettoyage extérieur',
-    icon: '🧽',
-    category: 'Extérieur'
+    id: "pmr",
+    name: "Accessibilité PMR",
+    description: "Adaptation du logement pour mobilité réduite (rampes, douches)",
+    icon: "♿",
+    category: "Accessibilité",
+  },
+
+  // --- AGENCEMENT & RANGEMENT ---
+  {
+    id: "dressing",
+    name: "Dressing & Placards",
+    description: "Rangements sur mesure et penderies",
+    icon: "👔",
+    category: "Agencement",
   },
   {
-    id: 'nettoyage',
-    name: 'Nettoyage',
-    description: 'Nettoyage après travaux et entretien',
-    icon: '🧹',
-    category: 'Service'
+    id: "bibliotheque",
+    name: "Bibliothèque",
+    description: "Meubles TV et bibliothèques sur mesure",
+    icon: "📚",
+    category: "Agencement",
   },
   {
-    id: 'demenagement',
-    name: 'Déménagement',
-    description: 'Services de déménagement pour vos travaux',
-    icon: '🚚',
-    category: 'Service'
+    id: "amenagement_interieur",
+    name: "Agencement Intérieur",
+    description: "Optimisation de l'espace et cloisons amovibles",
+    icon: "📐",
+    category: "Agencement",
+  },
+
+  // --- SERVICES & PETITS TRAVAUX ---
+  {
+    id: "bricolage",
+    name: "Homme à tout faire",
+    description: "Petits travaux: montage meubles, fixation cadres, réparations",
+    icon: "🛠️",
+    category: "Service",
   },
   {
-    id: 'design_interieur',
-    name: 'Design d\'intérieur',
-    description: 'Conseil en décoration et aménagement d\'intérieur',
-    icon: '🎨',
-    category: 'Conseil'
+    id: "nettoyage",
+    name: "Nettoyage Fin de Chantier",
+    description: "Remise en état après travaux",
+    icon: "🧹",
+    category: "Service",
   },
   {
-    id: 'bureau',
-    name: 'Bureau',
-    description: 'Aménagement d\'espaces de travail et bureaux',
-    icon: '💻',
-    category: 'Pièce'
+    id: "demenagement",
+    name: "Aide au Déménagement",
+    description: "Manutention et transport pour vos projets",
+    icon: "📦",
+    category: "Service",
   },
   {
-    id: 'chambre',
-    name: 'Chambre',
-    description: 'Rénovation et aménagement de chambres',
-    icon: '🛏️',
-    category: 'Pièce'
+    id: "home_staging",
+    name: "Home Staging",
+    description: "Valorisation immobilière pour la vente",
+    icon: "✨",
+    category: "Conseil",
   },
   {
-    id: 'salon',
-    name: 'Salon',
-    description: 'Rénovation et aménagement de salons',
-    icon: '🛋️',
-    category: 'Pièce'
+    id: "architecte",
+    name: "Architecte / Ingénieur",
+    description: "Plans, demandes de permis et direction de travaux",
+    icon: "📝",
+    category: "Conseil",
   },
   {
-    id: 'salle_a_manger',
-    name: 'Salle à manger',
-    description: 'Aménagement de salles à manger',
-    icon: '🍽️',
-    category: 'Pièce'
+    id: "design_interieur",
+    name: "Décorateur d'intérieur",
+    description: "Conseil en ambiance, couleurs et mobilier",
+    icon: "🎨",
+    category: "Conseil",
+  },
+
+  // --- TRAITEMENTS SPÉCIFIQUES ---
+  {
+    id: "desamiantage",
+    name: "Désamiantage",
+    description: "Retrait sécurisé de matériaux contenant de l'amiante",
+    icon: "⚠️",
+    category: "Traitement",
   },
   {
-    id: 'entree',
-    name: 'Entrée',
-    description: 'Aménagement d\'entrées et halls',
-    icon: '🚪',
-    category: 'Pièce'
+    id: "humidite",
+    name: "Traitement Humidité",
+    description: "Injections, assèchement et traitement des moisissures",
+    icon: "💧",
+    category: "Traitement",
   },
   {
-    id: 'couloir',
-    name: 'Couloir',
-    description: 'Optimisation et décoration de couloirs',
-    icon: '➡️',
-    category: 'Pièce'
+    id: "nuisibles",
+    name: "Gestion Nuisibles",
+    description: "Traitement de charpentes et dératisation",
+    icon: "🐜",
+    category: "Traitement",
+  },
+
+  // --- LUXE & LOISIRS ---
+  {
+    id: "cave_vin",
+    name: "Cave à vin",
+    description: "Aménagement de caves climatisées sur mesure",
+    icon: "🍷",
+    category: "Luxe",
   },
   {
-    id: 'buanderie',
-    name: 'Buanderie',
-    description: 'Aménagement de buanderies et espaces techniques',
-    icon: '👕',
-    category: 'Utilitaire'
+    id: "home_cinema",
+    name: "Home Cinéma",
+    description: "Salles dédiées et acoustique",
+    icon: "🎬",
+    category: "Luxe",
   },
   {
-    id: 'cellier',
-    name: 'Cellier',
-    description: 'Aménagement de celliers et garde-manger',
-    icon: '📦',
-    category: 'Utilitaire'
+    id: "domotique",
+    name: "Domotique (Smart Home)",
+    description: "Maison connectée : éclairage, chauffage, volets",
+    icon: "📱",
+    category: "Technologie",
   },
-  {
-    id: 'spa',
-    name: 'Spa & Wellness',
-    description: 'Création d\'espaces spa et bien-être',
-    icon: '🧘',
-    category: 'Luxe'
-  },
-  {
-    id: 'home_cinema',
-    name: 'Home cinéma',
-    description: 'Aménagement de salles de cinéma privées',
-    icon: '🎬',
-    category: 'Luxe'
-  },
-  {
-    id: 'cave_vin',
-    name: 'Cave à vin',
-    description: 'Création de caves à vin climatisées',
-    icon: '🍷',
-    category: 'Luxe'
-  },
-  {
-    id: 'salle_sport',
-    name: 'Salle de sport',
-    description: 'Aménagement de salles de sport privées',
-    icon: '🏋️',
-    category: 'Luxe'
-  },
-  {
-    id: 'studio',
-    name: 'Studio',
-    description: 'Aménagement de studios et espaces multifonctions',
-    icon: '🏠',
-    category: 'Pièce'
-  },
-  {
-    id: 'loft',
-    name: 'Loft',
-    description: 'Rénovation et aménagement de lofts',
-    icon: '🏢',
-    category: 'Pièce'
-  },
-  {
-    id: 'duplex',
-    name: 'Duplex',
-    description: 'Aménagement de duplex et triplex',
-    icon: '🏘️',
-    category: 'Pièce'
-  }
 ];
 
+// Fonctions utilitaires inchangées ou optimisées
+
 export const findRenovationTypeByName = (name: string): RenovationType | undefined => {
-  return renovationTypes.find(type => 
-    type.name.toLowerCase().includes(name.toLowerCase()) || 
-    type.description.toLowerCase().includes(name.toLowerCase())
+  const search = name.toLowerCase();
+  return renovationTypes.find(
+    (type) => type.name.toLowerCase().includes(search) || type.description.toLowerCase().includes(search),
   );
 };
 
 export const findRenovationTypeById = (id: string): RenovationType | undefined => {
-  return renovationTypes.find(type => type.id === id);
+  return renovationTypes.find((type) => type.id === id);
 };
 
 export const getRenovationCategories = (): string[] => {
-  return [...new Set(renovationTypes.map(type => type.category))].sort();
+  return [...new Set(renovationTypes.map((type) => type.category))].sort();
 };
 
 export const getRenovationsByCategory = (category: string): RenovationType[] => {
-  return renovationTypes.filter(type => type.category === category);
+  return renovationTypes.filter((type) => type.category === category);
 };
