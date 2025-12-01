@@ -236,7 +236,7 @@ const RenovationForm = () => {
       <div className="container py-10" id="formulaire">
         <div className="max-w-3xl mx-auto">
           <Card>
-            <CardHeader className="space-y-1">
+            <CardHeader className="space-y-1 text-center">
               <CardTitle className="text-2xl font-bold text-primary">Formulaire de demande</CardTitle>
               <CardDescription>Remplissez ce formulaire pour recevoir un devis personnalisé</CardDescription>
             </CardHeader>
