@@ -62,10 +62,10 @@ const RenovationForm = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { createRequest, uploadFiles } = useRenovationRequests();
-  
+
   const searchParams = new URLSearchParams(location.search);
   const renovationParam = searchParams.get("renovation");
-  
+
   const [renovationType, setRenovationType] = useState("");
   const [currentService, setCurrentService] = useState<RenovationType | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -87,7 +87,7 @@ const RenovationForm = () => {
     preferredDate: "",
     includeDocument: false,
   });
-  
+
   useEffect(() => {
     if (renovationParam) {
       const typeById = findRenovationTypeById(renovationParam);
@@ -106,14 +106,12 @@ const RenovationForm = () => {
       }
     }
   }, [renovationParam]);
-  
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
+
   const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -137,7 +135,7 @@ const RenovationForm = () => {
       });
       return;
     }
-    
+
     // Les fichiers ont déjà été optimisés par RenovationFormFiles
     setFiles(optimizedFiles);
     setFileMetadata(metadata);
@@ -147,10 +145,10 @@ const RenovationForm = () => {
     setFiles(files.filter((_, i) => i !== index));
     setFileMetadata(fileMetadata.filter((_, i) => i !== index));
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!agreedToTerms) {
       toast({
         title: "Acceptation requise",
@@ -159,7 +157,7 @@ const RenovationForm = () => {
       });
       return;
     }
-    
+
     try {
       toast({
         title: "Envoi en cours...",
@@ -174,10 +172,10 @@ const RenovationForm = () => {
         // Mettre à jour les métadonnées avec les URLs finales
         updatedMetadata = fileMetadata.map((meta, index) => ({
           ...meta,
-          filename: attachmentUrls[index] || meta.filename
+          filename: attachmentUrls[index] || meta.filename,
         }));
       }
-      
+
       const requestData = {
         renovation_type: renovationType,
         renovationType: renovationType, // Pour compatibilité
@@ -204,7 +202,7 @@ const RenovationForm = () => {
       };
 
       await createRequest(requestData);
-      
+
       // Envoyer notification par email à l'équipe
       EmailService.sendRequestNotification({
         id: Date.now().toString(),
@@ -215,15 +213,15 @@ const RenovationForm = () => {
         status: "pending",
         createdAt: new Date().toISOString(),
       });
-      
+
       toast({
         title: "Demande envoyée",
         description: "Votre demande a été enregistrée avec succès.",
       });
-      
+
       navigate("/confirmation");
     } catch (error) {
-      console.error('Erreur lors de l\'envoi:', error);
+      console.error("Erreur lors de l'envoi:", error);
       toast({
         title: "Erreur",
         description: "Une erreur s'est produite lors de l'envoi de votre demande.",
@@ -231,23 +229,16 @@ const RenovationForm = () => {
       });
     }
   };
-  
+
   return (
     <Layout>
-      <ServiceHeader 
-        renovationType={currentService}
-        serviceName={renovationType}
-      />
+      <ServiceHeader renovationType={currentService} serviceName={renovationType} />
       <div className="container py-10" id="formulaire">
         <div className="max-w-3xl mx-auto">
           <Card>
             <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl font-bold">
-                Formulaire de demande
-              </CardTitle>
-              <CardDescription>
-                Remplissez ce formulaire pour recevoir un devis personnalisé
-              </CardDescription>
+              <CardTitle className="text-2xl font-bold text-primary">Formulaire de demande</CardTitle>
+              <CardDescription>Remplissez ce formulaire pour recevoir un devis personnalisé</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -273,14 +264,8 @@ const RenovationForm = () => {
                   handleFileChange={handleFileChange}
                   removeFile={removeFile}
                 />
-                <RenovationFormContact
-                  formData={formData}
-                  handleChange={handleChange}
-                />
-                <RenovationFormTerms
-                  agreedToTerms={agreedToTerms}
-                  setAgreedToTerms={setAgreedToTerms}
-                />
+                <RenovationFormContact formData={formData} handleChange={handleChange} />
+                <RenovationFormTerms agreedToTerms={agreedToTerms} setAgreedToTerms={setAgreedToTerms} />
                 <Button type="submit" className="w-full">
                   Envoyer ma demande
                   <ArrowRight className="ml-2 h-4 w-4" />
