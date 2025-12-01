@@ -240,7 +240,6 @@ const RenovationForm = () => {
               <CardTitle className="text-2xl font-bold text-primary">Formulaire de demande</CardTitle>
               <CardDescription>Remplissez ce formulaire pour recevoir un devis personnalisé</CardDescription>
             </CardHeader>
-            <hr></hr>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <RenovationFormAddress
