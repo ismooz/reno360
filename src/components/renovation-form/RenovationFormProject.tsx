@@ -1,11 +1,10 @@
-
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -38,18 +37,25 @@ const RenovationFormProject = ({
   handleDateSelect,
   handleChange,
 }: RenovationFormProjectProps) => (
-  <div className="space-y-4">
-    <h3 className="text-lg font-semibold text-primary">Description de votre projet</h3>
+  <div className="space-y-4 p-5 bg-muted/30 rounded-lg border border-border/50">
+    <div className="flex items-center gap-2">
+      <div className="p-2 bg-primary/10 rounded-lg">
+        <ClipboardList className="h-5 w-5 text-primary" />
+      </div>
+      <h3 className="text-lg font-semibold text-primary">Description de votre projet</h3>
+    </div>
     <div className="grid gap-4 md:grid-cols-2">
       <div className="space-y-2">
-        <Label htmlFor="buildingType">Bâtiment dans lequel se feront les travaux</Label>
+        <Label htmlFor="buildingType" className="flex items-center gap-1">
+          Type de bâtiment <span className="text-destructive">*</span>
+        </Label>
         <Select
           value={formData.buildingType}
           onValueChange={(value) => handleSelectChange("buildingType", value)}
           required
         >
-          <SelectTrigger id="buildingType">
-            <SelectValue placeholder="Sélectionnez un type de bâtiment" />
+          <SelectTrigger id="buildingType" className="bg-background">
+            <SelectValue placeholder="Sélectionnez un type" />
           </SelectTrigger>
           <SelectContent>
             {buildingTypes.map((type) => (
@@ -61,14 +67,16 @@ const RenovationFormProject = ({
         </Select>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="surfaceType">Genre de surface</Label>
+        <Label htmlFor="surfaceType" className="flex items-center gap-1">
+          Genre de surface <span className="text-destructive">*</span>
+        </Label>
         <Select
           value={formData.surfaceType}
           onValueChange={(value) => handleSelectChange("surfaceType", value)}
           required
         >
-          <SelectTrigger id="surfaceType">
-            <SelectValue placeholder="Sélectionnez un type de surface" />
+          <SelectTrigger id="surfaceType" className="bg-background">
+            <SelectValue placeholder="Sélectionnez un type" />
           </SelectTrigger>
           <SelectContent>
             {surfaceTypes.map((type) => (
@@ -82,13 +90,15 @@ const RenovationFormProject = ({
     </div>
     <div className="grid gap-4 md:grid-cols-2">
       <div className="space-y-2">
-        <Label htmlFor="deadline">Quels sont vos délais ?</Label>
+        <Label htmlFor="deadline" className="flex items-center gap-1">
+          Délais souhaités <span className="text-destructive">*</span>
+        </Label>
         <Select
           value={formData.deadline}
           onValueChange={(value) => handleSelectChange("deadline", value)}
           required
         >
-          <SelectTrigger id="deadline">
+          <SelectTrigger id="deadline" className="bg-background">
             <SelectValue placeholder="Sélectionnez un délai" />
           </SelectTrigger>
           <SelectContent>
@@ -108,7 +118,7 @@ const RenovationFormProject = ({
               id="preferredDate"
               variant="outline"
               className={cn(
-                "w-full justify-start text-left font-normal",
+                "w-full justify-start text-left font-normal bg-background",
                 !selectedDate && "text-muted-foreground"
               )}
             >
@@ -133,26 +143,31 @@ const RenovationFormProject = ({
       </div>
     </div>
     <div className="space-y-2">
-      <Label htmlFor="description">Description détaillée des travaux à réaliser</Label>
+      <Label htmlFor="description" className="flex items-center gap-1">
+        Description des travaux <span className="text-destructive">*</span>
+      </Label>
       <Textarea
         id="description"
         name="description"
         placeholder="Décrivez votre projet en détail : dimensions, finitions, contraintes spécifiques..."
-        rows={5}
+        rows={4}
         value={formData.description}
         onChange={handleChange}
         required
+        className="bg-background resize-none"
       />
     </div>
     <div className="grid gap-4 md:grid-cols-2">
       <div className="space-y-2">
-        <Label htmlFor="materialsNeeded">Matériels nécessaires</Label>
+        <Label htmlFor="materialsNeeded" className="flex items-center gap-1">
+          Fourniture des matériaux <span className="text-destructive">*</span>
+        </Label>
         <Select
           value={formData.materialsNeeded}
           onValueChange={(value) => handleSelectChange("materialsNeeded", value)}
           required
         >
-          <SelectTrigger id="materialsNeeded">
+          <SelectTrigger id="materialsNeeded" className="bg-background">
             <SelectValue placeholder="Sélectionnez une option" />
           </SelectTrigger>
           <SelectContent>
@@ -168,7 +183,7 @@ const RenovationFormProject = ({
           value={formData.budget}
           onValueChange={(value) => handleSelectChange("budget", value)}
         >
-          <SelectTrigger id="budget">
+          <SelectTrigger id="budget" className="bg-background">
             <SelectValue placeholder="Sélectionnez un budget" />
           </SelectTrigger>
           <SelectContent>

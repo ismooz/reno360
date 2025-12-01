@@ -118,9 +118,17 @@ const RenovationFormFiles = ({ files, fileMetadata, handleFileChange, removeFile
   };
 
   return (
-    <div className="space-y-2">
-      <Label htmlFor="fileUpload">Photos ou documents (max 5 fichiers, 15 Mo chacun)</Label>
-      <div className="border border-input rounded-md p-4">
+    <div className="space-y-4 p-5 bg-muted/30 rounded-lg border border-border/50">
+      <div className="flex items-center gap-2">
+        <div className="p-2 bg-primary/10 rounded-lg">
+          <Upload className="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-primary">Pièces jointes</h3>
+          <p className="text-sm text-muted-foreground">Photos ou documents (max 5 fichiers, 15 Mo chacun)</p>
+        </div>
+      </div>
+      <div className="border border-input rounded-md p-4 bg-background">
         <input
           type="file"
           id="fileUpload"
@@ -132,10 +140,10 @@ const RenovationFormFiles = ({ files, fileMetadata, handleFileChange, removeFile
         />
         <label 
           htmlFor="fileUpload"
-          className={`flex flex-col items-center justify-center h-32 border-2 border-dashed border-input rounded-md transition-colors ${
+          className={`flex flex-col items-center justify-center h-28 border-2 border-dashed border-border rounded-md transition-colors ${
             isOptimizing 
               ? 'cursor-not-allowed opacity-50' 
-              : 'cursor-pointer hover:border-primary/50'
+              : 'cursor-pointer hover:border-primary/50 hover:bg-muted/50'
           }`}
         >
           {isOptimizing ? (
@@ -151,14 +159,17 @@ const RenovationFormFiles = ({ files, fileMetadata, handleFileChange, removeFile
               <span className="text-sm text-muted-foreground">
                 Cliquez pour ajouter des fichiers
               </span>
+              <span className="text-xs text-muted-foreground/70 mt-1">
+                Images, PDF, documents Word acceptés
+              </span>
             </>
           )}
         </label>
 
         {filesWithMetadata.length > 0 && (
-          <div className="mt-4 space-y-3">
+          <div className="mt-4 space-y-2">
             {filesWithMetadata.map((item, index) => (
-              <div key={index} className="flex items-center gap-2 p-3 bg-secondary rounded-md">
+              <div key={index} className="flex items-center gap-2 p-3 bg-muted/50 rounded-md border border-border/30">
                 <div className="flex-1">
                   <div className="text-xs text-muted-foreground mb-1">
                     Fichier: {item.file.name}
@@ -168,7 +179,7 @@ const RenovationFormFiles = ({ files, fileMetadata, handleFileChange, removeFile
                       <Input
                         defaultValue={item.displayName}
                         placeholder="Nom à afficher"
-                        className="h-8"
+                        className="h-8 bg-background"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             saveDisplayName(index, e.currentTarget.value);
