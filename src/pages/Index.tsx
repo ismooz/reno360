@@ -64,7 +64,7 @@ const Index = () => {
                     className="mt-2"
                     onClick={() => handleServiceClick(service.id)}
                   >
-                    En savoir plus
+                    Demander un devis
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </CardContent>
