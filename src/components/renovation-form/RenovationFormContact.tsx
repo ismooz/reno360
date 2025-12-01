@@ -9,7 +9,7 @@ interface RenovationFormContactProps {
 
 const RenovationFormContact = ({ formData, handleChange }: RenovationFormContactProps) => (
   <div className="space-y-4">
-    <h3 className="text-lg font-semibold">Vos coordonnées</h3>
+    <h3 className="text-lg font-semibold text-primary">Vos coordonnées</h3>
     <div className="grid gap-4 md:grid-cols-2">
       <div className="space-y-2">
         <Label htmlFor="name">Nom complet</Label>

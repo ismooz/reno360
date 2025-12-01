@@ -10,7 +10,7 @@ interface RenovationFormAddressProps {
 
 const RenovationFormAddress = ({ address, postalCode, onChange }: RenovationFormAddressProps) => (
   <div className="space-y-4">
-    <h3 className="text-lg font-semibold">Dans quelle région souhaitez-vous faire vos travaux?</h3>
+    <h3 className="text-lg font-semibold text-primary">Dans quelle région souhaitez-vous faire vos travaux?</h3>
     <div className="grid gap-4">
       <div className="space-y-2">
         <Label htmlFor="address">Adresse complète</Label>

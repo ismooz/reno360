@@ -39,7 +39,7 @@ const RenovationFormProject = ({
   handleChange,
 }: RenovationFormProjectProps) => (
   <div className="space-y-4">
-    <h3 className="text-lg font-semibold">Description de votre projet</h3>
+    <h3 className="text-lg font-semibold text-primary">Description de votre projet</h3>
     <div className="grid gap-4 md:grid-cols-2">
       <div className="space-y-2">
         <Label htmlFor="buildingType">Bâtiment dans lequel se feront les travaux</Label>
