@@ -241,7 +241,7 @@ const RenovationForm = () => {
               <CardDescription>Remplissez ce formulaire pour recevoir un devis personnalisé</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <RenovationFormAddress
                   address={formData.address}
                   postalCode={formData.postalCode}
@@ -266,9 +266,9 @@ const RenovationForm = () => {
                 />
                 <RenovationFormContact formData={formData} handleChange={handleChange} />
                 <RenovationFormTerms agreedToTerms={agreedToTerms} setAgreedToTerms={setAgreedToTerms} />
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full h-12 text-base font-medium">
                   Envoyer ma demande
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </form>
             </CardContent>
