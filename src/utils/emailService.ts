@@ -72,7 +72,8 @@ export class EmailService {
     const smtpHost = localStorage.getItem("smtpHost") || "";
     const smtpPort = localStorage.getItem("smtpPort") || "587";
     const smtpUser = localStorage.getItem("smtpUser") || "";
-    const smtpPass = localStorage.getItem("smtpPass") || "";
+    // NOTE: Password is NOT read from localStorage for security reasons
+    // The Edge Function should use SMTP_PASS from Supabase secrets
     const smtpFrom = localStorage.getItem("smtpFrom") || "";
     const smtpTls = localStorage.getItem("smtpTls") !== "false";
 
@@ -80,7 +81,7 @@ export class EmailService {
       host: smtpHost,
       port: parseInt(smtpPort, 10),
       username: smtpUser,
-      password: smtpPass,
+      // Password omitted - Edge Function will use SMTP_PASS secret
       from: smtpFrom,
       useTLS: smtpTls
     };
