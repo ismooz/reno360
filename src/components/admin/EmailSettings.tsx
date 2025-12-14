@@ -157,11 +157,12 @@ const EmailSettings = () => {
     const loadConfig = () => {
       setIsLoading(true);
       
-      // Charger la configuration SMTP depuis localStorage
+      // Charger la configuration SMTP depuis localStorage (password excluded for security)
       const smtpHost = localStorage.getItem("smtpHost") || "";
       const smtpPort = localStorage.getItem("smtpPort") || "587";
       const smtpUser = localStorage.getItem("smtpUser") || "";
-      const smtpPass = localStorage.getItem("smtpPass") || "";
+      // NOTE: Password is not stored in localStorage - use Supabase secrets
+      const smtpPass = "";
       const smtpFrom = localStorage.getItem("smtpFrom") || "";
       const smtpTls = localStorage.getItem("smtpTls") !== "false";
 
@@ -240,11 +241,12 @@ const EmailSettings = () => {
 
     setEmailErrors({});
 
-    // Sauvegarder dans localStorage pour l'EmailService
+    // Sauvegarder dans localStorage pour l'EmailService (excluding password for security)
     localStorage.setItem("smtpHost", config.smtp_host);
     localStorage.setItem("smtpPort", config.smtp_port);
     localStorage.setItem("smtpUser", config.smtp_user);
-    localStorage.setItem("smtpPass", config.smtp_pass);
+    // NOTE: SMTP password is NOT stored in localStorage for security reasons
+    // It should only be configured via Supabase secrets (SMTP_PASS)
     localStorage.setItem("smtpFrom", config.smtp_from);
     localStorage.setItem("smtpTls", config.smtp_tls.toString());
 
