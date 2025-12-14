@@ -8,31 +8,22 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { RenovationType } from "@/types";
 import { HeroBackground } from "@/components/ui/hero-background";
-
 const Index = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState<RenovationType[]>([]);
-  
   useEffect(() => {
     const customServices = getCustomServices();
     setServices(customServices);
   }, []);
-  
   const handleServiceClick = (serviceId: string) => {
     navigate(`/formulaire?renovation=${encodeURIComponent(serviceId)}`);
   };
-
-  return (
-    <Layout>
+  return <Layout>
       {/* Hero Section */}
       <HeroBackground>
         <div className="container mx-auto text-center px-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
-            Solutions de rénovation sur mesure pour votre propriété
-          </h1>
-          <p className="text-lg sm:text-xl text-white/90 mb-8 sm:mb-12 max-w-3xl mx-auto">
-            Des professionnels qualifiés pour tous vos projets de rénovation immobilière
-          </p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">Solutions de rénovation et de travaux pour votre propriété</h1>
+          <p className="text-lg sm:text-xl text-white/90 mb-8 sm:mb-12 max-w-3xl mx-auto">Du travail de qualité pour tous vos projets de rénovation et de travaux</p>
           
           <div className="flex justify-center px-4 sm:px-8">
             <SearchBar fullWidth className="w-full" />
@@ -49,8 +40,7 @@ const Index = () => {
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.slice(0, 9).map((service) => (
-              <Card key={service.id} className="hover:shadow-md transition-shadow">
+            {services.slice(0, 9).map(service => <Card key={service.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-3">
                     <span className="text-2xl">{service.icon}</span>
@@ -59,17 +49,12 @@ const Index = () => {
                   <p className="text-muted-foreground mb-4">
                     {service.description}
                   </p>
-                  <Button 
-                    variant="outline" 
-                    className="mt-2"
-                    onClick={() => handleServiceClick(service.id)}
-                  >
+                  <Button variant="outline" className="mt-2" onClick={() => handleServiceClick(service.id)}>
                     Demander un devis
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
           
           <div className="text-center mt-12">
@@ -134,8 +119,6 @@ const Index = () => {
           </Button>
         </div>
       </section>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default Index;
