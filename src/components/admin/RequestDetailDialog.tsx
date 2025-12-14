@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RenovationRequest } from "@/types";
-import { Phone, Mail, MapPin, Calendar, DollarSign, FileText, Download } from "lucide-react";
+import { Phone, Mail, MapPin, Calendar, DollarSign, FileText, Download, Loader2 } from "lucide-react";
 import ImageGallery from "@/components/ui/image-gallery";
 import { exportRequestToPDF } from "@/utils/exportUtils";
+import { supabase } from "@/integrations/supabase/client";
 
 interface RequestDetailDialogProps {
   request: RenovationRequest | null;
@@ -31,6 +32,43 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
   onStatusChange,
   isAdmin = false
 }) => {
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
+  const [loadingUrls, setLoadingUrls] = useState<Record<string, boolean>>({});
+
+  // Fetch signed URLs for attachments when dialog opens
+  useEffect(() => {
+    if (isOpen && request?.attachments && request.attachments.length > 0) {
+      const fetchSignedUrls = async () => {
+        for (const attachment of request.attachments || []) {
+          if (!signedUrls[attachment] && !loadingUrls[attachment]) {
+            setLoadingUrls(prev => ({ ...prev, [attachment]: true }));
+            try {
+              // Extract just the path if it's a full URL
+              let filePath = attachment;
+              if (attachment.startsWith('http')) {
+                const urlParts = attachment.split('/request-attachments/');
+                filePath = urlParts[1] || attachment;
+              }
+              
+              const { data, error } = await supabase.functions.invoke('get-signed-url', {
+                body: { filePath, bucket: 'request-attachments' }
+              });
+              
+              if (!error && data?.signedUrl) {
+                setSignedUrls(prev => ({ ...prev, [attachment]: data.signedUrl }));
+              }
+            } catch (error) {
+              console.error('Error getting signed URL:', error);
+            } finally {
+              setLoadingUrls(prev => ({ ...prev, [attachment]: false }));
+            }
+          }
+        }
+      };
+      fetchSignedUrls();
+    }
+  }, [isOpen, request?.attachments]);
+
   if (!request) return null;
 
   const formatDate = (dateString: string) => {
@@ -244,6 +282,8 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
                   
                   const displayName = metadata?.displayName || attachment.split('/').pop() || `Fichier ${index + 1}`;
                   const originalName = metadata?.originalName || attachment.split('/').pop();
+                  const signedUrl = signedUrls[attachment];
+                  const isLoading = loadingUrls[attachment];
                   
                   return (
                     <div key={index} className="border rounded-lg p-3 space-y-2">
@@ -257,14 +297,19 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => window.open(attachment.startsWith('http') ? attachment : `https://fbkprtfdoeoazfgmsecm.supabase.co/storage/v1/object/public/request-attachments/${attachment}`, '_blank')}
+                          disabled={isLoading || !signedUrl}
+                          onClick={() => signedUrl && window.open(signedUrl, '_blank')}
                         >
-                          Ouvrir
+                          {isLoading ? (
+                            <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Chargement...</>
+                          ) : (
+                            'Ouvrir'
+                          )}
                         </Button>
                       </div>
-                      {/\.(jpg|jpeg|png|gif|webp)$/i.test(attachment) && (
+                      {/\.(jpg|jpeg|png|gif|webp)$/i.test(attachment) && signedUrl && (
                         <img 
-                          src={attachment.startsWith('http') ? attachment : `https://fbkprtfdoeoazfgmsecm.supabase.co/storage/v1/object/public/request-attachments/${attachment}`}
+                          src={signedUrl}
                           alt={displayName}
                           className="w-full max-w-sm h-32 object-cover rounded"
                         />
