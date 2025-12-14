@@ -19,7 +19,7 @@ import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import Confirmation from "./pages/Confirmation";
 import NotFound from "./pages/NotFound";
-import SetupAdmin from "./pages/SetupAdmin";
+
 import { useEffect } from "react";
 import { initSystem } from "./utils/initSystem";
 
@@ -63,7 +63,7 @@ const App = () => (
               <Route path="/a-propos" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/auth" element={<Auth />} />
-              <Route path="/setup-admin" element={<SetupAdmin />} />
+              
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
               <Route path="/confirmation" element={<Confirmation />} />

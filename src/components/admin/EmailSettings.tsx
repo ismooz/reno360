@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import DOMPurify from "dompurify";
 
 import { createClient } from "@supabase/supabase-js";
 
@@ -658,23 +659,25 @@ const EmailSettings = () => {
                           <div className="mt-1 border rounded-md p-4 bg-white min-h-[300px] max-h-[400px] overflow-y-auto">
                             <div 
                               dangerouslySetInnerHTML={{ 
-                                __html: template.body
-                                  .replace(/{{name}}/g, "Jean Dupont")
-                                  .replace(/{{renovationType}}/g, "Cuisine")
-                                  .replace(/{{status}}/g, "Approuvé")
-                                  .replace(/{{postalCode}}/g, "1000")
-                                  .replace(/{{deadline}}/g, "Dans 2 mois")
-                                  .replace(/{{budget}}/g, "15'000 CHF")
-                                  .replace(/{{requestId}}/g, "REQ-2025-001")
-                                  .replace(/{{attachmentsSection}}/g, `
-                                    <div style="margin-top: 15px;">
-                                      <p><strong>📎 Pièces jointes :</strong></p>
-                                      <ul style="margin: 10px 0; padding-left: 20px;">
-                                        <li>Photo_cuisine_avant.jpg</li>
-                                        <li>Plan_projet.pdf</li>
-                                      </ul>
-                                    </div>
-                                  `)
+                                __html: DOMPurify.sanitize(
+                                  template.body
+                                    .replace(/{{name}}/g, "Jean Dupont")
+                                    .replace(/{{renovationType}}/g, "Cuisine")
+                                    .replace(/{{status}}/g, "Approuvé")
+                                    .replace(/{{postalCode}}/g, "1000")
+                                    .replace(/{{deadline}}/g, "Dans 2 mois")
+                                    .replace(/{{budget}}/g, "15'000 CHF")
+                                    .replace(/{{requestId}}/g, "REQ-2025-001")
+                                    .replace(/{{attachmentsSection}}/g, `
+                                      <div style="margin-top: 15px;">
+                                        <p><strong>📎 Pièces jointes :</strong></p>
+                                        <ul style="margin: 10px 0; padding-left: 20px;">
+                                          <li>Photo_cuisine_avant.jpg</li>
+                                          <li>Plan_projet.pdf</li>
+                                        </ul>
+                                      </div>
+                                    `)
+                                )
                               }} 
                             />
                           </div>
