@@ -32,8 +32,14 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Unauthorized");
     }
 
-    // Check if user is admin
-    const isAdmin = user.user_metadata?.role === "admin";
+    // Check if user is admin using the database function (secure, not user_metadata)
+    const { data: isAdmin, error: roleError } = await supabaseAdmin.rpc('is_admin', { check_user_id: user.id });
+    
+    if (roleError) {
+      console.error("Error checking admin role:", roleError);
+      throw new Error("Failed to verify admin role");
+    }
+    
     if (!isAdmin) {
       throw new Error("Access denied - admin role required");
     }
