@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { useState, useEffect, useRef } from 'react';
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Download, FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from '@/components/ui/image';
 import { cn } from '@/lib/utils';
-import { useRenovationRequests } from '@/hooks/useRenovationRequests';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { useFileUrl } from '@/hooks/useFileUrl';
 
 interface ImageGalleryProps {
   attachments?: string[];
@@ -15,12 +16,24 @@ interface ImageGalleryProps {
 const ImageGallery = ({ attachments = [], className }: ImageGalleryProps) => {
   const [resolvedUrls, setResolvedUrls] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
-  const { getFileUrl } = useRenovationRequests();
+  const { getFileUrl } = useFileUrl();
+  const hasResolvedRef = useRef(false);
+  const attachmentsKeyRef = useRef<string>('');
 
   useEffect(() => {
+    // Create a stable key from attachments to detect actual changes
+    const attachmentsKey = JSON.stringify(attachments);
+    
+    // Skip if already resolved for these attachments
+    if (hasResolvedRef.current && attachmentsKeyRef.current === attachmentsKey) {
+      return;
+    }
+
     const resolveUrls = async () => {
       if (!attachments || attachments.length === 0) {
         setLoading(false);
+        hasResolvedRef.current = true;
+        attachmentsKeyRef.current = attachmentsKey;
         return;
       }
 
@@ -41,6 +54,8 @@ const ImageGallery = ({ attachments = [], className }: ImageGalleryProps) => {
       
       setResolvedUrls(urls);
       setLoading(false);
+      hasResolvedRef.current = true;
+      attachmentsKeyRef.current = attachmentsKey;
     };
 
     resolveUrls();
@@ -112,6 +127,10 @@ const ImageGallery = ({ attachments = [], className }: ImageGalleryProps) => {
                   </div>
                 </DialogTrigger>
                 <DialogContent className="max-w-4xl">
+                  <VisuallyHidden>
+                    <DialogTitle>Pièce jointe {index + 1}</DialogTitle>
+                    <DialogDescription>Aperçu de l'image</DialogDescription>
+                  </VisuallyHidden>
                   <div className="relative">
                     <Button
                       variant="ghost"
