@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { X, Download, FileText, Image as ImageIcon } from 'lucide-react';
+import { Download, FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from '@/components/ui/image';
 import { cn } from '@/lib/utils';
@@ -13,13 +13,52 @@ interface ImageGalleryProps {
 }
 
 const ImageGallery = ({ attachments = [], className }: ImageGalleryProps) => {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [resolvedUrls, setResolvedUrls] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
   const { getFileUrl } = useRenovationRequests();
+
+  useEffect(() => {
+    const resolveUrls = async () => {
+      if (!attachments || attachments.length === 0) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      const urls: Record<string, string> = {};
+      
+      await Promise.all(
+        attachments.map(async (attachment) => {
+          try {
+            const url = await getFileUrl(attachment);
+            urls[attachment] = url;
+          } catch (error) {
+            console.error('Error resolving URL for', attachment, error);
+            urls[attachment] = attachment;
+          }
+        })
+      );
+      
+      setResolvedUrls(urls);
+      setLoading(false);
+    };
+
+    resolveUrls();
+  }, [attachments, getFileUrl]);
 
   if (!attachments || attachments.length === 0) {
     return (
       <div className={cn("text-sm text-muted-foreground", className)}>
         Aucune pièce jointe
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className={cn("flex items-center gap-2 text-sm text-muted-foreground", className)}>
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Chargement des pièces jointes...
       </div>
     );
   }
@@ -52,7 +91,7 @@ const ImageGallery = ({ attachments = [], className }: ImageGalleryProps) => {
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {attachments.map((attachment, index) => {
-          const fileUrl = getFileUrl(attachment);
+          const fileUrl = resolvedUrls[attachment] || attachment;
           const fileName = getFileName(attachment);
           const isImg = isImage(attachment);
           

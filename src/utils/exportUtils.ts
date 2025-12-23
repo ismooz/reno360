@@ -22,20 +22,26 @@ const getImageBase64 = async (url: string): Promise<string | null> => {
   }
 };
 
-// Helper function to get file URL from Supabase
-const getFileUrl = (attachment: string): string => {
+// Helper function to get file URL from Supabase using signed URLs for private bucket
+const getFileUrl = async (attachment: string): Promise<string> => {
   if (attachment.startsWith('blob:') || attachment.startsWith('http')) {
     return attachment;
   }
   
   try {
-    const { data: { publicUrl } } = supabase.storage
-      .from('request-attachments')
-      .getPublicUrl(attachment);
+    // Use signed URL for private bucket access
+    const { data, error } = await supabase.functions.invoke('get-signed-url', {
+      body: { filePath: attachment, bucket: 'request-attachments' }
+    });
     
-    return publicUrl;
+    if (error) {
+      console.error('Error getting signed URL for', attachment, error);
+      return attachment;
+    }
+    
+    return data.signedUrl;
   } catch (error) {
-    console.error('Error generating public URL for', attachment, error);
+    console.error('Error generating signed URL for', attachment, error);
     return attachment;
   }
 };
@@ -121,7 +127,7 @@ export const exportRequestToPDF = async (request: RenovationRequest) => {
     // Traiter chaque pièce jointe
     for (let i = 0; i < request.attachments.length; i++) {
       const attachment = request.attachments[i];
-      const fileUrl = getFileUrl(attachment);
+      const fileUrl = await getFileUrl(attachment);
       
       // Chercher les métadonnées correspondantes
       const metadata = request.attachment_metadata?.find((meta: any) => 

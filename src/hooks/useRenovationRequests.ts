@@ -229,7 +229,7 @@ export const useRenovationRequests = () => {
     return null;
   };
 
-  const getFileUrl = (attachment: string): string => {
+  const getFileUrl = async (attachment: string): Promise<string> => {
     if (!attachment) return '';
 
     if (attachment.startsWith('blob:') || attachment.startsWith('http')) {
@@ -237,14 +237,20 @@ export const useRenovationRequests = () => {
     }
 
     try {
-      const { data: { publicUrl } } = supabase.storage
-        .from('request-attachments')
-        .getPublicUrl(attachment);
+      // Use signed URL for private bucket access
+      const { data, error } = await supabase.functions.invoke('get-signed-url', {
+        body: { filePath: attachment, bucket: 'request-attachments' }
+      });
 
-      console.log('Generated public URL for', attachment, ':', publicUrl);
-      return publicUrl;
+      if (error) {
+        console.error('Error getting signed URL for', attachment, error);
+        return attachment;
+      }
+
+      console.log('Generated signed URL for', attachment);
+      return data.signedUrl;
     } catch (error) {
-      console.error('Error generating public URL for', attachment, error);
+      console.error('Error generating signed URL for', attachment, error);
       return attachment;
     }
   };
