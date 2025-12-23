@@ -11,6 +11,7 @@ import { RenovationRequest, User } from "@/types";
 import { FileText, Users, TrendingUp, Calendar, Shield, Settings } from "lucide-react";
 import ProfileEditDialog from "@/components/profile/ProfileEditDialog";
 import DeleteAccountDialog from "@/components/profile/DeleteAccountDialog";
+import ForcePasswordChangeDialog from "@/components/profile/ForcePasswordChangeDialog";
 import ImageGallery from "@/components/ui/image-gallery";
 import RequestDetailDialog from "@/components/admin/RequestDetailDialog";
 import { useRenovationRequests } from "@/hooks/useRenovationRequests";
@@ -30,6 +31,7 @@ const Dashboard = () => {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [isProfileEditOpen, setIsProfileEditOpen] = useState(false);
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
+  const [isForcePasswordChangeOpen, setIsForcePasswordChangeOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<RenovationRequest | null>(null);
   const [isRequestDetailOpen, setIsRequestDetailOpen] = useState(false);
   const [stats, setStats] = useState({
@@ -46,6 +48,11 @@ const Dashboard = () => {
     }
     
     if (user) {
+      // Check if user must change password
+      if (user.user_metadata?.must_change_password) {
+        setIsForcePasswordChangeOpen(true);
+      }
+      
       // Rediriger les admins vers le panel d'administration
       if (isAdmin()) {
         navigate("/admin");
@@ -243,6 +250,10 @@ const Dashboard = () => {
       <DeleteAccountDialog 
         isOpen={isDeleteAccountOpen} 
         onClose={() => setIsDeleteAccountOpen(false)} 
+      />
+      <ForcePasswordChangeDialog
+        isOpen={isForcePasswordChangeOpen}
+        onClose={() => setIsForcePasswordChangeOpen(false)}
       />
     </Layout>
   );

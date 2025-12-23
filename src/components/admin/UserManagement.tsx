@@ -432,6 +432,7 @@ const UserManagement = () => {
 
       <UserPasswordDialog
         userId={selectedUser?.id || ""}
+        userEmail={selectedUser?.email}
         isOpen={isPasswordDialogOpen}
         onClose={() => setIsPasswordDialogOpen(false)}
         onSave={handlePasswordChanged}
