@@ -34,7 +34,6 @@ interface EmailConfig {
   smtp_host: string;
   smtp_port: string;
   smtp_user: string;
-  smtp_pass: string;
   smtp_from: string;
   smtp_tls: boolean;
 }
@@ -137,7 +136,6 @@ const EmailSettings = () => {
     smtp_host: "",
     smtp_port: "587",
     smtp_user: "",
-    smtp_pass: "",
     smtp_from: "",
     smtp_tls: true,
   });
@@ -158,12 +156,10 @@ const EmailSettings = () => {
     const loadConfig = () => {
       setIsLoading(true);
       
-      // Charger la configuration SMTP depuis localStorage (password excluded for security)
+      // Charger la configuration SMTP depuis localStorage (password managed via Supabase secrets only)
       const smtpHost = localStorage.getItem("smtpHost") || "";
       const smtpPort = localStorage.getItem("smtpPort") || "587";
       const smtpUser = localStorage.getItem("smtpUser") || "";
-      // NOTE: Password is not stored in localStorage - use Supabase secrets
-      const smtpPass = "";
       const smtpFrom = localStorage.getItem("smtpFrom") || "";
       const smtpTls = localStorage.getItem("smtpTls") !== "false";
 
@@ -171,7 +167,6 @@ const EmailSettings = () => {
         smtp_host: smtpHost,
         smtp_port: smtpPort,
         smtp_user: smtpUser,
-        smtp_pass: smtpPass,
         smtp_from: smtpFrom,
         smtp_tls: smtpTls,
       });
@@ -292,10 +287,10 @@ const EmailSettings = () => {
       return;
     }
 
-    if (!config.smtp_host || !config.smtp_user || !config.smtp_pass) {
+    if (!config.smtp_host || !config.smtp_user) {
       toast({
         title: "Configuration incomplète",
-        description: "Veuillez configurer tous les paramètres SMTP avant de tester.",
+        description: "Veuillez configurer les paramètres SMTP avant de tester. Le mot de passe doit être configuré via les secrets Supabase.",
         variant: "destructive",
       });
       return;
@@ -305,21 +300,12 @@ const EmailSettings = () => {
     setTestResult(null);
 
     try {
-      const smtpConfig = {
-        host: config.smtp_host,
-        port: parseInt(config.smtp_port, 10),
-        username: config.smtp_user,
-        password: config.smtp_pass,
-        from: config.smtp_from,
-        useTLS: config.smtp_tls
-      };
-
+      // NOTE: Password is NOT sent from client - Edge Function uses SMTP_PASS secret
       const { error } = await supabase.functions.invoke("send-email", {
         body: {
           to: testEmail,
           subject: "Test de configuration email - Reno360",
           html: `<p>Si vous recevez cet email, votre configuration SMTP fonctionne !</p>`,
-          smtpConfig
         },
       });
 
@@ -341,10 +327,10 @@ const EmailSettings = () => {
   };
 
   const checkConfiguration = async () => {
-    if (!config.smtp_host || !config.smtp_user || !config.smtp_pass) {
+    if (!config.smtp_host || !config.smtp_user) {
       setTestResult({ 
         success: false, 
-        message: "Configuration incomplète. Veuillez remplir tous les champs SMTP." 
+        message: "Configuration incomplète. Veuillez remplir les champs SMTP. Le mot de passe doit être configuré via les secrets Supabase (SMTP_PASS)." 
       });
       return;
     }
@@ -353,22 +339,13 @@ const EmailSettings = () => {
     setTestResult(null);
     
     try {
-      const smtpConfig = {
-        host: config.smtp_host,
-        port: parseInt(config.smtp_port, 10),
-        username: config.smtp_user,
-        password: config.smtp_pass,
-        from: config.smtp_from,
-        useTLS: config.smtp_tls
-      };
-
+      // NOTE: Password is NOT sent from client - Edge Function uses SMTP_PASS secret
       // Test avec un email de validation interne
       const { error } = await supabase.functions.invoke("send-email", {
         body: {
           to: config.smtp_user, // Envoyer à soi-même pour test
           subject: "Test de configuration SMTP - Reno360",
           html: `<p>Configuration SMTP validée avec succès !</p>`,
-          smtpConfig
         },
       });
 
@@ -484,20 +461,10 @@ const EmailSettings = () => {
                 />
               </div>
 
-              <div className="space-y-2 min-w-0">
-                <Label htmlFor="smtp_pass">Mot de passe</Label>
-                <Input
-                  id="smtp_pass"
-                  value={config.smtp_pass}
-                  onChange={(e) => setConfig({ ...config, smtp_pass: e.target.value })}
-                  placeholder="Votre mot de passe SMTP"
-                  type="password"
-                />
-              </div>
-
               <Alert>
                 <AlertDescription>
-                  Configuration SMTP gérée depuis le dashboard admin. Utilisez le bouton de vérification pour tester votre configuration.
+                  <strong>Mot de passe SMTP:</strong> Pour des raisons de sécurité, le mot de passe SMTP doit être configuré via les secrets Supabase (SMTP_PASS). 
+                  Accédez aux <a href="https://supabase.com/dashboard/project/fbkprtfdoeoazfgmsecm/settings/functions" target="_blank" rel="noopener noreferrer" className="text-primary underline">paramètres des fonctions</a> pour configurer le secret.
                 </AlertDescription>
               </Alert>
               
