@@ -12,6 +12,7 @@ import { FileText, Users, TrendingUp, Calendar, Shield, Settings } from "lucide-
 import ProfileEditDialog from "@/components/profile/ProfileEditDialog";
 import DeleteAccountDialog from "@/components/profile/DeleteAccountDialog";
 import ForcePasswordChangeDialog from "@/components/profile/ForcePasswordChangeDialog";
+import ChangePasswordDialog from "@/components/profile/ChangePasswordDialog";
 import ImageGallery from "@/components/ui/image-gallery";
 import RequestDetailDialog from "@/components/admin/RequestDetailDialog";
 import { useRenovationRequests } from "@/hooks/useRenovationRequests";
@@ -32,6 +33,7 @@ const Dashboard = () => {
   const [isProfileEditOpen, setIsProfileEditOpen] = useState(false);
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
   const [isForcePasswordChangeOpen, setIsForcePasswordChangeOpen] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<RenovationRequest | null>(null);
   const [isRequestDetailOpen, setIsRequestDetailOpen] = useState(false);
   const [stats, setStats] = useState({
@@ -212,13 +214,18 @@ const Dashboard = () => {
                       </div>
                     </div>
                     
-                    <div className="pt-4 border-t">
+                    <div className="pt-4 border-t flex flex-wrap gap-2">
                       <Button 
-                        variant="outline" 
-                        className="mr-2"
+                        variant="outline"
                         onClick={() => setIsProfileEditOpen(true)}
                       >
                         Modifier mon profil
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        onClick={() => setIsChangePasswordOpen(true)}
+                      >
+                        Changer mon mot de passe
                       </Button>
                       <Button 
                         variant="destructive"
@@ -254,6 +261,10 @@ const Dashboard = () => {
       <ForcePasswordChangeDialog
         isOpen={isForcePasswordChangeOpen}
         onClose={() => setIsForcePasswordChangeOpen(false)}
+      />
+      <ChangePasswordDialog
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
       />
     </Layout>
   );
