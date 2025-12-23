@@ -1,11 +1,22 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+// SECURITY: Restrict CORS to known origins
+const ALLOWED_ORIGINS = [
+  'https://lovable.dev',
+  'https://fbkprtfdoeoazfgmsecm.lovable.app',
+  'http://localhost:5173',
+  'http://localhost:8080',
+];
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get('origin') || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  };
+}
 
 interface SecretsStatus {
   SMTP_HOST: boolean;
@@ -17,6 +28,8 @@ interface SecretsStatus {
 }
 
 serve(async (req: Request) => {
+  const corsHeaders = getCorsHeaders(req);
+  
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -32,7 +45,7 @@ serve(async (req: Request) => {
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
       return new Response(
-        JSON.stringify({ error: "No authorization header" }),
+        JSON.stringify({ error: "Unauthorized" }),
         { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -53,14 +66,14 @@ serve(async (req: Request) => {
     if (roleError) {
       console.error("Error checking admin role:", roleError);
       return new Response(
-        JSON.stringify({ error: "Failed to verify admin role" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        JSON.stringify({ error: "Access denied" }),
+        { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
     
     if (!isAdmin) {
       return new Response(
-        JSON.stringify({ error: "Access denied - admin role required" }),
+        JSON.stringify({ error: "Access denied" }),
         { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -84,8 +97,8 @@ serve(async (req: Request) => {
   } catch (error: any) {
     console.error("Error in email-secrets-status function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      JSON.stringify({ error: "An error occurred" }),
+      { status: 500, headers: { "Content-Type": "application/json", ...getCorsHeaders(req) } }
     );
   }
 });

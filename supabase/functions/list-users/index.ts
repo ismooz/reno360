@@ -1,12 +1,26 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+// SECURITY: Restrict CORS to known origins
+const ALLOWED_ORIGINS = [
+  'https://lovable.dev',
+  'https://fbkprtfdoeoazfgmsecm.lovable.app',
+  'http://localhost:5173',
+  'http://localhost:8080',
+];
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get('origin') || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  };
+}
 
 const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = getCorsHeaders(req);
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -22,14 +36,20 @@ const handler = async (req: Request): Promise<Response> => {
     // Get the current user to verify admin role
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
-      throw new Error("No authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
 
     const token = authHeader.replace("Bearer ", "");
     const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
 
     if (authError || !user) {
-      throw new Error("Unauthorized");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
 
     // Check if user is admin using the database function (secure, not user_metadata)
@@ -37,18 +57,28 @@ const handler = async (req: Request): Promise<Response> => {
     
     if (roleError) {
       console.error("Error checking admin role:", roleError);
-      throw new Error("Failed to verify admin role");
+      return new Response(
+        JSON.stringify({ error: "Access denied" }),
+        { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
     
     if (!isAdmin) {
-      throw new Error("Access denied - admin role required");
+      return new Response(
+        JSON.stringify({ error: "Access denied" }),
+        { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
 
     // Fetch all users using admin client
     const { data: { users }, error: usersError } = await supabaseAdmin.auth.admin.listUsers();
 
     if (usersError) {
-      throw usersError;
+      console.error("Error fetching users:", usersError);
+      return new Response(
+        JSON.stringify({ error: "Failed to fetch users" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
 
     // Format users data for frontend
@@ -77,10 +107,10 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in list-users function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "An error occurred" }),
       {
-        status: error.message.includes("Unauthorized") || error.message.includes("Access denied") ? 403 : 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        status: 500,
+        headers: { "Content-Type": "application/json", ...getCorsHeaders(req) },
       }
     );
   }

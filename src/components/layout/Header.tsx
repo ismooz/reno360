@@ -11,8 +11,11 @@ const Header = () => {
   const { user: rawUser, signOut, isAdmin } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   
-  // Navigation différente selon le rôle
-  const navigationLinks = rawUser?.user_metadata?.role === "admin" ? [
+  // Use server-verified admin status from isAdmin() hook
+  const isAdminUser = isAdmin();
+  
+  // Navigation différente selon le rôle (server-verified)
+  const navigationLinks = isAdminUser ? [
     { to: "/", label: "Accueil" },
     { to: "/services", label: "Services" },
     { to: "/projects", label: "Réalisations" },
@@ -51,9 +54,9 @@ const Header = () => {
         
         {/* Actions desktop */}
         <div className="hidden lg:flex items-center gap-3">
-          {rawUser ? (
+        {rawUser ? (
             <>
-              {rawUser.user_metadata?.role === "admin" ? (
+              {isAdminUser ? (
                 <>
                   <Link to="/admin" className="text-sm font-medium flex items-center gap-2 hover:text-primary">
                     <Shield size={18} />
@@ -83,7 +86,7 @@ const Header = () => {
               </Button>
             </Link>
           )}
-          {rawUser?.user_metadata?.role !== "admin" && (
+          {!isAdminUser && (
             <Link to="/contact">
               <Button size="default" className="h-10 whitespace-nowrap">
                 Demander un devis
@@ -96,7 +99,7 @@ const Header = () => {
         <div className="hidden md:flex lg:hidden items-center gap-2">
           {rawUser ? (
             <>
-              {rawUser.user_metadata?.role === "admin" ? (
+              {isAdminUser ? (
                 <>
                   <Link to="/admin" className="p-2 hover:text-primary">
                     <Shield size={20} />
@@ -121,7 +124,7 @@ const Header = () => {
               </Button>
             </Link>
           )}
-          {rawUser?.user_metadata?.role !== "admin" && (
+          {!isAdminUser && (
             <Link to="/contact">
               <Button size="sm" className="whitespace-nowrap text-xs px-2">
                 Devis
@@ -162,7 +165,7 @@ const Header = () => {
                 <div className="flex flex-col gap-3 pt-4 border-t">
                   {rawUser ? (
                     <>
-                      {rawUser.user_metadata?.role === "admin" ? (
+                      {isAdminUser ? (
                         <>
                           <Link 
                             to="/admin" 
@@ -211,7 +214,7 @@ const Header = () => {
                       </Button>
                     </Link>
                   )}
-                  {rawUser?.user_metadata?.role !== "admin" && (
+                  {!isAdminUser && (
                     <Link to="/contact" onClick={() => setIsOpen(false)}>
                       <Button className="w-full h-12">
                         Demande de devis
