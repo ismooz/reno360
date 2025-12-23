@@ -16,8 +16,9 @@ import { validateEmail, validatePassword } from "@/utils/security";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { user, signIn, signUp, signInWithGoogle, signInWithApple, loading, error } = useAuth();
+  const { user, signIn, signUp, signInWithGoogle, signInWithApple, resetPassword, loading, error } = useAuth();
   const [activeTab, setActiveTab] = useState("login");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -35,6 +36,9 @@ const Auth = () => {
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
+  
+  // Forgot password state
+  const [forgotEmail, setForgotEmail] = useState("");
   
   // Form errors
   const [formError, setFormError] = useState<string | null>(null);
@@ -82,6 +86,29 @@ const Auth = () => {
     
     try {
       await signUp(registerEmail, registerPassword, registerName);
+    } catch (err) {
+      // Error is handled by useAuth
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+    
+    if (!forgotEmail) {
+      setFormError("Veuillez entrer votre email");
+      return;
+    }
+    
+    if (!validateEmail(forgotEmail)) {
+      setFormError("Format d'email invalide");
+      return;
+    }
+    
+    try {
+      await resetPassword(forgotEmail);
+      setShowForgotPassword(false);
+      setForgotEmail("");
     } catch (err) {
       // Error is handled by useAuth
     }
@@ -141,12 +168,13 @@ const Auth = () => {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label htmlFor="password">Mot de passe</Label>
-                        <a 
-                          href="#" 
+                        <button 
+                          type="button"
+                          onClick={() => setShowForgotPassword(true)}
                           className="text-sm text-primary underline-offset-4 hover:underline"
                         >
                           Mot de passe oublié?
-                        </a>
+                        </button>
                       </div>
                       <Input 
                         id="password" 
@@ -335,6 +363,59 @@ const Auth = () => {
                 </form>
               </TabsContent>
             </Tabs>
+            
+            {/* Forgot Password Modal */}
+            {showForgotPassword && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <Card className="w-full max-w-md mx-4">
+                  <CardHeader>
+                    <CardTitle>Réinitialiser le mot de passe</CardTitle>
+                    <CardDescription>
+                      Entrez votre email pour recevoir un lien de réinitialisation
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {formError && (
+                      <Alert variant="destructive" className="mb-4">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>{formError}</AlertDescription>
+                      </Alert>
+                    )}
+                    <form onSubmit={handleForgotPassword}>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="forgot-email">Email</Label>
+                          <Input
+                            id="forgot-email"
+                            type="email"
+                            placeholder="votre@email.com"
+                            value={forgotEmail}
+                            onChange={(e) => setForgotEmail(e.target.value)}
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="flex-1"
+                            onClick={() => {
+                              setShowForgotPassword(false);
+                              setForgotEmail("");
+                              setFormError(null);
+                            }}
+                          >
+                            Annuler
+                          </Button>
+                          <Button type="submit" className="flex-1" disabled={loading}>
+                            {loading ? "Envoi..." : "Envoyer"}
+                          </Button>
+                        </div>
+                      </div>
+                    </form>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
