@@ -49,13 +49,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('Auth state changed:', event, session);
+        console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
 
         if (session?.user) {
-          checkAdminStatus();
+          // Pass user ID directly to avoid race condition
+          setTimeout(() => {
+            checkAdminStatusForUser(session.user.id);
+          }, 0);
         } else {
           setIsAdminUser(false);
         }
@@ -68,26 +71,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
 
       if (session?.user) {
-        checkAdminStatus();
+        checkAdminStatusForUser(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const checkAdminStatus = async (): Promise<boolean> => {
-    if (!user) {
-      setIsAdminUser(false);
-      return false;
-    }
+  const checkAdminStatusForUser = async (userId: string): Promise<boolean> => {
     try {
-      const { data, error } = await supabase.rpc('is_admin', { check_user_id: user.id });
+      console.log('Checking admin status for user:', userId);
+      const { data, error } = await supabase.rpc('is_admin', { check_user_id: userId });
       if (error) {
         console.error('Error checking admin status:', error);
         setIsAdminUser(false);
         return false;
       }
       const adminStatus = data || false;
+      console.log('Admin status result:', adminStatus);
       setIsAdminUser(adminStatus);
       return adminStatus;
     } catch (error) {
@@ -95,6 +96,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsAdminUser(false);
       return false;
     }
+  };
+
+  const checkAdminStatus = async (): Promise<boolean> => {
+    if (!user) {
+      setIsAdminUser(false);
+      return false;
+    }
+    return checkAdminStatusForUser(user.id);
   };
 
   const isAdmin = (): boolean => {
