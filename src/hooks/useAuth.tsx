@@ -13,6 +13,7 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<void>;
   signInWithApple: () => Promise<void>;
   signOut: () => void;
+  resetPassword: (email: string) => Promise<void>;
   updatePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   updateUserProfile: (userData: any) => Promise<void>;
   loading: boolean;
@@ -29,6 +30,7 @@ const AuthContext = createContext<AuthContextType>({
   signInWithGoogle: async () => {},
   signInWithApple: async () => {},
   signOut: () => {},
+  resetPassword: async () => {},
   updatePassword: async () => {},
   updateUserProfile: async () => {},
   loading: false,
@@ -253,6 +255,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Use current origin to ensure correct domain (not localhost in production)
+      const redirectUrl = `${window.location.origin}/auth?type=recovery`;
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) {
+        throw error;
+      }
+      
+      toast.success("Email de récupération envoyé ! Vérifiez votre boîte de réception.");
+    } catch (err: any) {
+      setError(err.message);
+      toast.error("Erreur lors de l'envoi de l'email de récupération");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const updatePassword = async (currentPassword: string, newPassword: string) => {
     try {
       setLoading(true);
@@ -319,6 +346,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       signInWithGoogle,
       signInWithApple,
       signOut,
+      resetPassword,
       updatePassword,
       updateUserProfile,
       loading,
