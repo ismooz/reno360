@@ -9,7 +9,7 @@ interface AuthContextType {
   user: SupabaseUser | null;
   session: Session | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, name: string) => Promise<void>;
+  signUp: (email: string, password: string, name: string, phone?: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signInWithApple: () => Promise<void>;
   signOut: () => void;
@@ -171,20 +171,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signUp = async (email: string, password: string, name: string) => {
+  const signUp = async (email: string, password: string, name: string, phone?: string) => {
     try {
       setLoading(true);
       setError(null);
       
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: redirectUrl,
           data: {
             name: name,
+            phone: phone,
             role: 'user'
           }
         }
@@ -192,6 +193,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (error) {
         throw error;
+      }
+      
+      // Update profiles table with phone number if user was created
+      if (data.user && phone) {
+        await supabase
+          .from('profiles')
+          .update({ phone: phone, display_name: name })
+          .eq('user_id', data.user.id);
       }
       
       // Envoyer notification de création de compte

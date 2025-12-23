@@ -34,6 +34,7 @@ const Auth = () => {
   // Register form state
   const [registerName, setRegisterName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPhone, setRegisterPhone] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
   
@@ -63,8 +64,16 @@ const Auth = () => {
     e.preventDefault();
     setFormError(null);
     
-    if (!registerName || !registerEmail || !registerPassword || !registerConfirmPassword) {
+    if (!registerName || !registerEmail || !registerPhone || !registerPassword || !registerConfirmPassword) {
       setFormError("Veuillez remplir tous les champs");
+      return;
+    }
+    
+    // Validate phone number (Swiss format)
+    const phoneRegex = /^(\+41|0)[0-9]{9}$/;
+    const cleanedPhone = registerPhone.replace(/\s/g, '');
+    if (!phoneRegex.test(cleanedPhone)) {
+      setFormError("Format de téléphone invalide (ex: +41791234567 ou 0791234567)");
       return;
     }
     
@@ -85,7 +94,7 @@ const Auth = () => {
     }
     
     try {
-      await signUp(registerEmail, registerPassword, registerName);
+      await signUp(registerEmail, registerPassword, registerName, cleanedPhone);
     } catch (err) {
       // Error is handled by useAuth
     }
@@ -266,14 +275,27 @@ const Auth = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-email">Email</Label>
+                      <Label htmlFor="register-email">Email *</Label>
                       <Input 
                         id="register-email" 
                         type="email" 
                         placeholder="votre@email.com"
                         value={registerEmail}
                         onChange={(e) => setRegisterEmail(e.target.value)}
+                        required
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="register-phone">Téléphone *</Label>
+                      <Input 
+                        id="register-phone" 
+                        type="tel" 
+                        placeholder="+41791234567"
+                        value={registerPhone}
+                        onChange={(e) => setRegisterPhone(e.target.value)}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground">Format: +41791234567 ou 0791234567</p>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="register-password">Mot de passe</Label>
