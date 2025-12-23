@@ -2,11 +2,22 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { encode as base64Encode } from "https://deno.land/std@0.190.0/encoding/base64.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+// SECURITY: Restrict CORS to known origins
+const ALLOWED_ORIGINS = [
+  'https://lovable.dev',
+  'https://fbkprtfdoeoazfgmsecm.lovable.app',
+  'http://localhost:5173',
+  'http://localhost:8080',
+];
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get('origin') || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  };
+}
 
 interface EmailRequest {
   to: string;
@@ -18,6 +29,8 @@ interface EmailRequest {
 }
 
 serve(async (req: Request) => {
+  const corsHeaders = getCorsHeaders(req);
+  
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -79,12 +92,15 @@ serve(async (req: Request) => {
     }
 
     if (!smtpConfig.host || !smtpConfig.port || !smtpConfig.username || !smtpConfig.password || !smtpConfig.from) {
-      throw new Error(
-        "Configuration SMTP incomplète. Veuillez configurer les paramètres SMTP dans le dashboard admin."
+      // Log detailed error server-side only
+      console.error("SMTP configuration incomplete - missing required fields");
+      return new Response(
+        JSON.stringify({ error: "Email service is not configured. Please contact support." }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    console.log("Configuration SMTP chargée. Tentative de connexion...");
+    console.log("SMTP configuration loaded. Attempting connection...");
 
     let conn;
     try {
@@ -93,8 +109,12 @@ serve(async (req: Request) => {
         port: smtpConfig.port,
       });
     } catch (error) {
-      console.error("Échec de la connexion au serveur SMTP:", error);
-      throw new Error(`Impossible de se connecter au serveur SMTP ${smtpConfig.host}:${smtpConfig.port}`);
+      // Log detailed error server-side only
+      console.error("SMTP connection failed:", error);
+      return new Response(
+        JSON.stringify({ error: "Email delivery failed. Please try again later or contact support." }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
 
     const encoder = new TextEncoder();
@@ -133,7 +153,12 @@ serve(async (req: Request) => {
       await sendCommand(base64Encode(encoder.encode(smtpConfig.username)));
       const authResponse = await sendCommand(base64Encode(encoder.encode(smtpConfig.password)));
       if (!authResponse.startsWith("235")) {
-        throw new Error(`Authentification SMTP échouée: ${authResponse}`);
+        // Log detailed error server-side only
+        console.error("SMTP authentication failed:", authResponse);
+        return new Response(
+          JSON.stringify({ error: "Email delivery failed. Please contact support." }),
+          { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
       }
       
       // *** CORRECTIF APPLIQUÉ ICI ***
@@ -146,17 +171,29 @@ serve(async (req: Request) => {
 
       const mailFromResponse = await sendCommand(`MAIL FROM:<${envelopeSender}>`);
       if (!mailFromResponse.startsWith("250")) {
-        throw new Error(`MAIL FROM a été rejeté: ${mailFromResponse}`);
+        console.error("MAIL FROM rejected:", mailFromResponse);
+        return new Response(
+          JSON.stringify({ error: "Email delivery failed. Please contact support." }),
+          { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
       }
 
       const rcptToResponse = await sendCommand(`RCPT TO:<${to}>`);
       if (!rcptToResponse.startsWith("250")) {
-        throw new Error(`RCPT TO a été rejeté: ${rcptToResponse}`);
+        console.error("RCPT TO rejected:", rcptToResponse);
+        return new Response(
+          JSON.stringify({ error: "Email delivery failed. Please contact support." }),
+          { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
       }
 
       const dataResponse = await sendCommand("DATA");
       if (!dataResponse.startsWith("354")) {
-          throw new Error(`La commande DATA a été rejetée: ${dataResponse}`);
+        console.error("DATA command rejected:", dataResponse);
+        return new Response(
+          JSON.stringify({ error: "Email delivery failed. Please contact support." }),
+          { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
       }
       
       // Créer version texte du HTML pour éviter la détection spam
@@ -216,12 +253,16 @@ serve(async (req: Request) => {
       const finalResponse = await readResponse();
 
       if (!finalResponse.startsWith("250")) {
-        throw new Error(`Le message a été rejeté par le serveur: ${finalResponse}`);
+        console.error("Message rejected by server:", finalResponse);
+        return new Response(
+          JSON.stringify({ error: "Email delivery failed. Please contact support." }),
+          { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
       }
       
       await sendCommand("QUIT");
       
-      console.log("Email envoyé avec succès à:", to);
+      console.log("Email sent successfully to:", to);
 
       return new Response(JSON.stringify({ success: true, message: "Email envoyé avec succès." }), {
         status: 200,
@@ -233,14 +274,14 @@ serve(async (req: Request) => {
     }
 
   } catch (error: any) {
-    console.error("Erreur générale dans la fonction :", error.stack);
+    // SECURITY: Log detailed error server-side, return generic message to client
+    console.error("Email function error:", error.stack || error.message);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Email delivery failed. Please try again later or contact support." }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...getCorsHeaders(req) },
       }
     );
   }
 });
-
