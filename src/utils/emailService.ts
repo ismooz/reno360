@@ -1,57 +1,31 @@
-import { EmailSettings, EmailTemplates } from "@/types";
+import { supabase } from "@/integrations/supabase/client";
 
-// Service de gestion des emails (simulation)
+// Service de gestion des emails
 export class EmailService {
-  private static getSettings(): EmailSettings {
-    const fromEmail = localStorage.getItem("fromEmail") || "noreply@reno360.ch";
-    const replyToEmail = localStorage.getItem("replyToEmail") || "contact@reno360.ch";
-    const requestsEmail = localStorage.getItem("requestsEmail") || "demandes@reno360.ch";
-    const templates = JSON.parse(localStorage.getItem("emailTemplates") || "{}");
-    
-    return {
-      fromEmail,
-      replyToEmail,
-      requestsEmail,
-      templates
-    };
+  static getRequestsEmail(): string {
+    return localStorage.getItem("requestsEmail") || "demandes@reno360.ch";
+  }
+
+  private static getFromEmail(): string {
+    return localStorage.getItem("fromEmail") || "noreply@reno360.ch";
   }
 
   static async sendEmail(
     to: string,
-    templateType: keyof EmailTemplates,
-    variables: Record<string, string> = {}
+    subject: string,
+    html: string
   ): Promise<boolean> {
     try {
-      const settings = this.getSettings();
-      const template = settings.templates[templateType];
-      
-      if (!template) {
-        console.error(`Template ${templateType} not found`);
-        return false;
-      }
+      console.log("Envoi d'email via Edge Function...");
+      console.log("To:", to);
+      console.log("Subject:", subject);
 
-      // Remplacer les variables dans le template
-      let subject = template.subject;
-      let body = template.body;
-      
-      Object.entries(variables).forEach(([key, value]) => {
-        const placeholder = `{{${key}}}`;
-        subject = subject.replace(new RegExp(placeholder, 'g'), value);
-        body = body.replace(new RegExp(placeholder, 'g'), value);
-      });
-
-      // Récupérer la configuration SMTP depuis localStorage
-      const smtpConfig = this.getSMTPConfig();
-
-      // Envoyer l'email via Edge Function avec la config SMTP
-      const { supabase } = await import("@/integrations/supabase/client");
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: {
           to,
           subject,
-          html: body,
-          from: settings.fromEmail,
-          smtpConfig
+          html,
+          from: this.getFromEmail()
         }
       });
 
@@ -68,72 +42,12 @@ export class EmailService {
     }
   }
 
-  private static getSMTPConfig() {
-    const smtpHost = localStorage.getItem("smtpHost") || "";
-    const smtpPort = localStorage.getItem("smtpPort") || "587";
-    const smtpUser = localStorage.getItem("smtpUser") || "";
-    // NOTE: Password is NOT read from localStorage for security reasons
-    // The Edge Function should use SMTP_PASS from Supabase secrets
-    const smtpFrom = localStorage.getItem("smtpFrom") || "";
-    const smtpTls = localStorage.getItem("smtpTls") !== "false";
-
-    return {
-      host: smtpHost,
-      port: parseInt(smtpPort, 10),
-      username: smtpUser,
-      // Password omitted - Edge Function will use SMTP_PASS secret
-      from: smtpFrom,
-      useTLS: smtpTls
-    };
-  }
-
   static async sendRequestNotification(requestData: any): Promise<boolean> {
     try {
+      const requestsEmail = this.getRequestsEmail();
+      
       // Préparer la section des pièces jointes
       let attachmentsSection = '';
-      if (requestData.attachments && requestData.attachments.length > 0) {
-        const attachmentsList = requestData.attachments
-          .map((attachment: string, index: number) => {
-            const fileName = requestData.attachment_metadata?.[index]?.displayName || 
-                           requestData.attachment_metadata?.[index]?.originalName || 
-                           `Pièce jointe ${index + 1}`;
-            return `<li>${fileName}</li>`;
-          })
-          .join('');
-        
-        attachmentsSection = `
-          <div style="margin-top: 15px;">
-            <p><strong>📎 Pièces jointes reçues :</strong></p>
-            <ul style="margin: 10px 0; padding-left: 20px;">
-              ${attachmentsList}
-            </ul>
-          </div>
-        `;
-      }
-
-      // Envoyer email de confirmation au client
-      const clientEmailSent = await this.sendEmail(
-        requestData.email,
-        'client_request_received',
-        {
-          name: requestData.name,
-          renovationType: requestData.renovationType || requestData.renovation_type,
-          postalCode: requestData.postalCode || requestData.postal_code || '',
-          deadline: requestData.deadline || '',
-          budget: requestData.budget || 'Non spécifié',
-          requestId: requestData.id ? `REQ-${requestData.id.slice(-8).toUpperCase()}` : 'Numéro en cours d\'attribution',
-          attachmentsSection
-        }
-      );
-
-      if (!clientEmailSent) {
-        console.warn("Échec de l'envoi de l'email de confirmation au client");
-      }
-
-      const settings = this.getSettings();
-      
-      // Préparer la section des pièces jointes pour l'équipe
-      let teamAttachmentsSection = '';
       if (requestData.attachments && requestData.attachments.length > 0) {
         const attachmentsList = requestData.attachments
           .map((attachment: string, index: number) => {
@@ -144,7 +58,7 @@ export class EmailService {
           })
           .join('');
         
-        teamAttachmentsSection = `
+        attachmentsSection = `
           <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="color: #92400e; margin-top: 0;">📎 Pièces jointes :</h3>
             <ul style="margin: 10px 0; padding-left: 20px;">
@@ -153,70 +67,110 @@ export class EmailService {
           </div>
         `;
       }
-      
-      // Email à l'équipe pour nouvelle demande
-      const emailContent = `
+
+      const requestId = requestData.id ? `REQ-${requestData.id.slice(-8).toUpperCase()}` : `REQ-${Date.now().toString(36).toUpperCase()}`;
+
+      // Email de confirmation au client
+      const clientEmailContent = `
         <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
-          <h2 style="color: #1f2937;">Nouvelle demande de devis reçue</h2>
-          
-          <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #1e40af; margin-top: 0;">📋 Numéro de demande :</h3>
-            <p style="font-size: 18px; font-weight: bold; color: #1e40af; margin: 0;">${requestData.id ? `REQ-${requestData.id.slice(-8).toUpperCase()}` : 'ID en cours d\'attribution'}</p>
+          <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 30px; border-radius: 12px 12px 0 0;">
+            <h1 style="color: white; margin: 0; text-align: center;">Reno360</h1>
           </div>
           
-          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #374151; margin-top: 0;">Informations client :</h3>
-            <p><strong>Client:</strong> ${requestData.name}</p>
-            <p><strong>Email:</strong> ${requestData.email}</p>
-            <p><strong>Téléphone:</strong> ${requestData.phone}</p>
-            <p><strong>Code postal:</strong> ${requestData.postalCode}</p>
-          </div>
-          
-          <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #1e40af; margin-top: 0;">Détails du projet :</h3>
-            <p><strong>Type de rénovation:</strong> ${requestData.renovationType || requestData.renovation_type}</p>
-            <p><strong>Délai souhaité:</strong> ${requestData.deadline}</p>
-            <p><strong>Budget:</strong> ${requestData.budget || "Non spécifié"}</p>
-          </div>
-          
-          ${teamAttachmentsSection}
-          
-          <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #374151; margin-top: 0;">Description :</h3>
-            <p>${requestData.description}</p>
+          <div style="background-color: #f9fafb; padding: 30px; border-radius: 0 0 12px 12px;">
+            <h2 style="color: #1f2937;">Bonjour ${requestData.name},</h2>
+            
+            <p style="color: #4b5563; line-height: 1.6;">
+              Nous avons bien reçu votre demande de devis et nous vous en remercions !
+            </p>
+            
+            <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 0; color: #1e40af;"><strong>Numéro de référence :</strong> ${requestId}</p>
+            </div>
+            
+            <div style="background-color: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; margin: 20px 0;">
+              <h3 style="color: #374151; margin-top: 0;">Récapitulatif de votre demande :</h3>
+              <p><strong>Type de travaux :</strong> ${requestData.renovationType || requestData.renovation_type || 'Non spécifié'}</p>
+              <p><strong>Code postal :</strong> ${requestData.postalCode || requestData.postal_code || 'Non spécifié'}</p>
+              <p><strong>Délai souhaité :</strong> ${requestData.deadline || 'Non spécifié'}</p>
+              <p><strong>Budget :</strong> ${requestData.budget || 'Non spécifié'}</p>
+            </div>
+            
+            <p style="color: #4b5563; line-height: 1.6;">
+              Notre équipe analysera votre demande et vous contactera dans les plus brefs délais pour discuter de votre projet.
+            </p>
+            
+            <p style="color: #4b5563;">Cordialement,<br><strong>L'équipe Reno360</strong></p>
           </div>
         </div>
       `;
 
-      // Récupérer la configuration SMTP depuis localStorage
-      const smtpConfig = this.getSMTPConfig();
+      // Envoyer email de confirmation au client
+      const clientEmailSent = await this.sendEmail(
+        requestData.email,
+        `Demande de devis reçue - ${requestId}`,
+        clientEmailContent
+      );
 
-      // Envoyer via Edge Function avec la config SMTP
-      const { supabase } = await import("@/integrations/supabase/client");
-      const { data, error } = await supabase.functions.invoke('send-email', {
-        body: {
-          to: settings.requestsEmail,
-          subject: `Nouvelle demande: ${requestData.renovationType || requestData.renovation_type} (${requestData.id ? `REQ-${requestData.id.slice(-8).toUpperCase()}` : 'ID en attente'})`,
-          html: emailContent,
-          from: settings.fromEmail,
-          smtpConfig
-        }
-      });
+      if (!clientEmailSent) {
+        console.warn("Échec de l'envoi de l'email de confirmation au client");
+      }
 
-      if (error) {
-        console.error("Erreur lors de l'envoi de la notification:", error);
+      // Email à l'équipe pour nouvelle demande
+      const teamEmailContent = `
+        <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+          <h2 style="color: #1f2937;">🔔 Nouvelle demande de devis reçue</h2>
+          
+          <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #1e40af; margin-top: 0;">📋 Numéro de demande :</h3>
+            <p style="font-size: 18px; font-weight: bold; color: #1e40af; margin: 0;">${requestId}</p>
+          </div>
+          
+          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #374151; margin-top: 0;">👤 Informations client :</h3>
+            <p><strong>Nom :</strong> ${requestData.name}</p>
+            <p><strong>Email :</strong> ${requestData.email}</p>
+            <p><strong>Téléphone :</strong> ${requestData.phone || 'Non renseigné'}</p>
+            <p><strong>Code postal :</strong> ${requestData.postalCode || requestData.postal_code || 'Non renseigné'}</p>
+            <p><strong>Adresse :</strong> ${requestData.address || 'Non renseignée'}</p>
+          </div>
+          
+          <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #1e40af; margin-top: 0;">🏠 Détails du projet :</h3>
+            <p><strong>Type de rénovation :</strong> ${requestData.renovationType || requestData.renovation_type || 'Non spécifié'}</p>
+            <p><strong>Type de bâtiment :</strong> ${requestData.buildingType || requestData.building_type || 'Non spécifié'}</p>
+            <p><strong>Surface :</strong> ${requestData.surfaceType || requestData.surface_type || 'Non spécifié'}</p>
+            <p><strong>Délai souhaité :</strong> ${requestData.deadline || 'Non spécifié'}</p>
+            <p><strong>Budget :</strong> ${requestData.budget || 'Non spécifié'}</p>
+            <p><strong>Matériaux :</strong> ${requestData.materialsNeeded || requestData.materials_needed || 'Non spécifié'}</p>
+          </div>
+          
+          ${attachmentsSection}
+          
+          <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #374151; margin-top: 0;">📝 Description :</h3>
+            <p style="white-space: pre-wrap;">${requestData.description || 'Aucune description fournie'}</p>
+          </div>
+        </div>
+      `;
+
+      // Envoyer email à l'équipe
+      const teamEmailSent = await this.sendEmail(
+        requestsEmail,
+        `🔔 Nouvelle demande: ${requestData.renovationType || requestData.renovation_type || 'Rénovation'} - ${requestId}`,
+        teamEmailContent
+      );
+
+      if (!teamEmailSent) {
+        console.error("Échec de l'envoi de la notification à l'équipe");
         return false;
       }
 
-      console.log("Notification envoyée avec succès:", data);
+      console.log("Notifications envoyées avec succès");
       return true;
     } catch (error) {
-      console.error("Erreur lors de l'envoi de la notification:", error);
+      console.error("Erreur lors de l'envoi des notifications:", error);
       return false;
     }
-  }
-
-  static getRequestsEmail(): string {
-    return localStorage.getItem("requestsEmail") || "demandes@reno360.ch";
   }
 }
