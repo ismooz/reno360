@@ -24,8 +24,6 @@ interface EmailRequest {
   subject: string;
   html: string;
   from?: string;
-  // NOTE: smtpConfig with password is no longer accepted from client for security
-  // All SMTP credentials must be configured via Supabase secrets
 }
 
 serve(async (req: Request) => {
@@ -38,8 +36,11 @@ serve(async (req: Request) => {
   try {
     const { to, subject, html, from } = (await req.json()) as EmailRequest;
 
-    // SECURITY: SMTP credentials are ONLY loaded from Supabase secrets
-    // Client-provided passwords are no longer accepted
+    console.log("=== SEND EMAIL REQUEST ===");
+    console.log("To:", to);
+    console.log("Subject:", subject);
+
+    // Load SMTP credentials from Supabase secrets
     const envHost = Deno.env.get("SMTP_HOST") ?? "";
     const envPort = Deno.env.get("SMTP_PORT") ?? "";
     const envUser = Deno.env.get("SMTP_USER") ?? "";
@@ -56,8 +57,7 @@ serve(async (req: Request) => {
       useTLS: envTls,
     };
 
-    // Database fallback for non-sensitive settings only (host, port, username, from, tls)
-    // Password MUST come from Supabase secrets
+    // Database fallback for non-sensitive settings only
     if (!smtpConfig.host || !smtpConfig.username || !smtpConfig.from) {
       try {
         const supabaseClient = createClient(
@@ -80,7 +80,6 @@ serve(async (req: Request) => {
             host: smtpConfig.host || config.host,
             port: smtpConfig.port || config.port || 587,
             username: smtpConfig.username || config.username,
-            // SECURITY: Password ONLY from Supabase secrets, never from database
             password: smtpConfig.password,
             from: smtpConfig.from || config.from_address || "",
             useTLS: smtpConfig.useTLS ?? (config.use_tls ?? true),
@@ -91,16 +90,30 @@ serve(async (req: Request) => {
       }
     }
 
+    console.log("=== SMTP CONFIG ===");
+    console.log("Host:", smtpConfig.host);
+    console.log("Port:", smtpConfig.port);
+    console.log("Username:", smtpConfig.username);
+    console.log("From:", smtpConfig.from);
+    console.log("Use TLS:", smtpConfig.useTLS);
+    console.log("Password set:", !!smtpConfig.password);
+
     if (!smtpConfig.host || !smtpConfig.port || !smtpConfig.username || !smtpConfig.password || !smtpConfig.from) {
-      // Log detailed error server-side only
       console.error("SMTP configuration incomplete - missing required fields");
+      console.error("Missing: ", {
+        host: !smtpConfig.host,
+        port: !smtpConfig.port,
+        username: !smtpConfig.username,
+        password: !smtpConfig.password,
+        from: !smtpConfig.from,
+      });
       return new Response(
-        JSON.stringify({ error: "Email service is not configured. Please contact support." }),
+        JSON.stringify({ error: "Configuration email incomplète. Veuillez vérifier les secrets SMTP." }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    console.log("SMTP configuration loaded. Attempting connection...");
+    console.log("Attempting SMTP connection to", smtpConfig.host, ":", smtpConfig.port);
 
     let conn;
     try {
@@ -108,11 +121,11 @@ serve(async (req: Request) => {
         hostname: smtpConfig.host,
         port: smtpConfig.port,
       });
+      console.log("TCP connection established");
     } catch (error) {
-      // Log detailed error server-side only
       console.error("SMTP connection failed:", error);
       return new Response(
-        JSON.stringify({ error: "Email delivery failed. Please try again later or contact support." }),
+        JSON.stringify({ error: `Impossible de se connecter au serveur SMTP ${smtpConfig.host}:${smtpConfig.port}` }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -121,7 +134,7 @@ serve(async (req: Request) => {
     const decoder = new TextDecoder();
 
     const readResponse = async (): Promise<string> => {
-      const buffer = new Uint8Array(1024);
+      const buffer = new Uint8Array(2048);
       const n = await conn.read(buffer);
       const responseText = decoder.decode(buffer.subarray(0, n || 0));
       console.log(`S: ${responseText.trim()}`);
@@ -129,60 +142,87 @@ serve(async (req: Request) => {
     };
 
     const sendCommand = async (command: string): Promise<string> => {
-      const logCommand = command.includes("AUTH LOGIN") || command.length > 50 ? command.substring(0, 50) + "..." : command;
+      // Don't log credentials
+      const logCommand = command.startsWith("AUTH") || 
+                         /^[A-Za-z0-9+/=]+$/.test(command) ? 
+                         "[CREDENTIALS]" : command;
       console.log(`C: ${logCommand}`);
       await conn.write(encoder.encode(command + "\r\n"));
       return await readResponse();
     };
 
     try {
-      await readResponse(); 
-      await sendCommand(`EHLO ${smtpConfig.host}`);
+      // Initial greeting
+      const greeting = await readResponse();
+      console.log("Server greeting received");
+      
+      // EHLO command
+      const ehloResponse = await sendCommand(`EHLO ${smtpConfig.host}`);
+      console.log("EHLO response received");
 
-      if (smtpConfig.useTLS) {
+      // Handle STARTTLS for Infomaniak and other providers
+      if (smtpConfig.useTLS && smtpConfig.port !== 465) {
+        console.log("Attempting STARTTLS...");
         const startTlsResponse = await sendCommand("STARTTLS");
+        
         if (startTlsResponse.startsWith("220")) {
-            // @ts-ignore: Deno.startTls est une API spécifique à Deno
+          console.log("STARTTLS accepted, upgrading connection...");
+          try {
+            // @ts-ignore: Deno.startTls is a Deno-specific API
             conn = await Deno.startTls(conn, { hostname: smtpConfig.host });
-            await sendCommand(`EHLO ${smtpConfig.host}`);
+            console.log("TLS connection established");
+            
+            // Re-issue EHLO after TLS
+            const ehloAfterTls = await sendCommand(`EHLO ${smtpConfig.host}`);
+            console.log("EHLO after TLS received");
+          } catch (tlsError) {
+            console.error("TLS upgrade failed:", tlsError);
+            return new Response(
+              JSON.stringify({ error: "Échec de l'établissement de la connexion TLS" }),
+              { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+            );
+          }
+        } else {
+          console.warn("STARTTLS not supported or failed:", startTlsResponse);
+          // Continue without TLS if server doesn't support it
         }
       }
 
+      // Authentication
+      console.log("Starting authentication...");
       await sendCommand("AUTH LOGIN");
-      // Encodage base64 via Deno std
       await sendCommand(base64Encode(encoder.encode(smtpConfig.username)));
       const authResponse = await sendCommand(base64Encode(encoder.encode(smtpConfig.password)));
+      
       if (!authResponse.startsWith("235")) {
-        // Log detailed error server-side only
         console.error("SMTP authentication failed:", authResponse);
         return new Response(
-          JSON.stringify({ error: "Email delivery failed. Please contact support." }),
+          JSON.stringify({ error: "Échec de l'authentification SMTP. Vérifiez le nom d'utilisateur et le mot de passe." }),
           { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }
+      console.log("Authentication successful");
       
-      // *** CORRECTIF APPLIQUÉ ICI ***
-      // L'expéditeur de l'enveloppe SMTP (MAIL FROM) doit être l'utilisateur authentifié (username).
-      // C'est ce qui résout l'erreur "550 Sender denied".
+      // For Infomaniak: MAIL FROM must match the authenticated user
       const envelopeSender = smtpConfig.username;
-      
-      // L'adresse "From" visible par le destinataire reste celle configurée (from_address).
       const displayFrom = smtpConfig.from;
 
+      console.log("Sending MAIL FROM:", envelopeSender);
       const mailFromResponse = await sendCommand(`MAIL FROM:<${envelopeSender}>`);
       if (!mailFromResponse.startsWith("250")) {
         console.error("MAIL FROM rejected:", mailFromResponse);
         return new Response(
-          JSON.stringify({ error: "Email delivery failed. Please contact support." }),
+          JSON.stringify({ error: `L'expéditeur a été refusé: ${mailFromResponse}` }),
           { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }
 
+      console.log("Sending RCPT TO:", to);
       const rcptToResponse = await sendCommand(`RCPT TO:<${to}>`);
       if (!rcptToResponse.startsWith("250")) {
         console.error("RCPT TO rejected:", rcptToResponse);
         return new Response(
-          JSON.stringify({ error: "Email delivery failed. Please contact support." }),
+          JSON.stringify({ error: `Le destinataire a été refusé: ${rcptToResponse}` }),
           { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }
@@ -191,24 +231,23 @@ serve(async (req: Request) => {
       if (!dataResponse.startsWith("354")) {
         console.error("DATA command rejected:", dataResponse);
         return new Response(
-          JSON.stringify({ error: "Email delivery failed. Please contact support." }),
+          JSON.stringify({ error: "Le serveur a refusé les données" }),
           { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }
       
-      // Créer version texte du HTML pour éviter la détection spam
+      // Create text version from HTML
       const textContent = html
-        .replace(/<style[^>]*>.*?<\/style>/gis, '') // Supprimer CSS
-        .replace(/<script[^>]*>.*?<\/script>/gis, '') // Supprimer JS
-        .replace(/<[^>]*>/g, '') // Supprimer balises HTML
+        .replace(/<style[^>]*>.*?<\/style>/gis, '')
+        .replace(/<script[^>]*>.*?<\/script>/gis, '')
+        .replace(/<[^>]*>/g, '')
         .replace(/&nbsp;/g, ' ')
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
         .replace(/&amp;/g, '&')
-        .replace(/\s+/g, ' ') // Normaliser espaces
+        .replace(/\s+/g, ' ')
         .trim();
 
-      // Générer ID de message unique
       const messageId = `<${Date.now()}.${Math.random().toString(36).substr(2, 9)}@${smtpConfig.host}>`;
       const boundary = `boundary_${Math.random().toString(36).substr(2, 15)}`;
       
@@ -228,7 +267,6 @@ serve(async (req: Request) => {
         headers.push(`Reply-To: ${from}`);
       }
       
-      // Corps du message multipart
       const emailBody = [
         "",
         `--${boundary}`,
@@ -248,21 +286,21 @@ serve(async (req: Request) => {
       ];
       
       const emailContent = [...headers, ...emailBody].join("\r\n");
-      // La dernière commande envoyée est le contenu de l'email, sa réponse est lue ensuite
       await conn.write(encoder.encode(emailContent + "\r\n"));
       const finalResponse = await readResponse();
 
       if (!finalResponse.startsWith("250")) {
         console.error("Message rejected by server:", finalResponse);
         return new Response(
-          JSON.stringify({ error: "Email delivery failed. Please contact support." }),
+          JSON.stringify({ error: `Le message a été refusé: ${finalResponse}` }),
           { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }
       
       await sendCommand("QUIT");
       
-      console.log("Email sent successfully to:", to);
+      console.log("=== EMAIL SENT SUCCESSFULLY ===");
+      console.log("To:", to);
 
       return new Response(JSON.stringify({ success: true, message: "Email envoyé avec succès." }), {
         status: 200,
@@ -270,14 +308,17 @@ serve(async (req: Request) => {
       });
 
     } finally {
-      conn.close();
+      try {
+        conn.close();
+      } catch (e) {
+        // Connection may already be closed
+      }
     }
 
   } catch (error: any) {
-    // SECURITY: Log detailed error server-side, return generic message to client
     console.error("Email function error:", error.stack || error.message);
     return new Response(
-      JSON.stringify({ error: "Email delivery failed. Please try again later or contact support." }),
+      JSON.stringify({ error: `Erreur lors de l'envoi: ${error.message}` }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...getCorsHeaders(req) },
