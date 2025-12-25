@@ -20,8 +20,24 @@ const Projects = () => {
     const storedProjects = localStorage.getItem("projects");
     const userProjects = storedProjects ? JSON.parse(storedProjects) : [];
     
+    // Récupérer les IDs des projets supprimés
+    const deletedIds = localStorage.getItem("deletedSampleProjectIds");
+    const deletedSampleIds: string[] = deletedIds ? JSON.parse(deletedIds) : [];
+    
+    // Filtrer les projets d'exemple qui n'ont pas été supprimés
+    const visibleSampleProjects = sampleProjects.filter(p => !deletedSampleIds.includes(p.id));
+    
     // Combiner les projets d'exemple avec ceux créés par l'admin
-    const allProjects = [...sampleProjects, ...userProjects];
+    // Les projets utilisateur peuvent remplacer les projets d'exemple s'ils ont le même ID
+    const sampleIds = visibleSampleProjects.map(p => p.id);
+    const nonDuplicateUserProjects = userProjects.filter((p: { id: string }) => !sampleIds.includes(p.id));
+    
+    const allProjects = [...visibleSampleProjects.map(sp => {
+      // Si un projet utilisateur a le même ID (modifié), utiliser la version utilisateur
+      const modifiedVersion = userProjects.find((up: { id: string }) => up.id === sp.id);
+      return modifiedVersion || sp;
+    }), ...nonDuplicateUserProjects];
+    
     setProjects(allProjects);
   }, []);
 
