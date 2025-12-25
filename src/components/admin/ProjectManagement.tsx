@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Project } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit, Trash2, Image, Upload, X } from "lucide-react";
+import { sampleProjects } from "@/data/sampleProjects";
 
 const ProjectManagement = () => {
   const { toast } = useToast();
@@ -33,9 +34,18 @@ const ProjectManagement = () => {
   useEffect(() => {
     // Charger les projets depuis localStorage
     const storedProjects = localStorage.getItem("projects");
-    if (storedProjects) {
-      setProjects(JSON.parse(storedProjects));
-    }
+    const userProjects: Project[] = storedProjects ? JSON.parse(storedProjects) : [];
+    
+    // Récupérer les IDs des projets supprimés
+    const deletedIds = localStorage.getItem("deletedSampleProjectIds");
+    const deletedSampleIds: string[] = deletedIds ? JSON.parse(deletedIds) : [];
+    
+    // Filtrer les projets d'exemple qui n'ont pas été supprimés
+    const visibleSampleProjects = sampleProjects.filter(p => !deletedSampleIds.includes(p.id));
+    
+    // Combiner les projets d'exemple avec ceux créés par l'admin
+    const allProjects = [...visibleSampleProjects, ...userProjects];
+    setProjects(allProjects);
   }, []);
 
   const resetForm = () => {
@@ -81,7 +91,14 @@ const ProjectManagement = () => {
     }
 
     setProjects(updatedProjects);
-    localStorage.setItem("projects", JSON.stringify(updatedProjects));
+    
+    // Sauvegarder uniquement les projets utilisateur (pas les projets d'exemple non modifiés)
+    const userProjects = updatedProjects.filter(p => {
+      const originalSample = sampleProjects.find(sp => sp.id === p.id);
+      // Garder si ce n'est pas un projet d'exemple OU si c'est un projet d'exemple modifié
+      return !originalSample || JSON.stringify(originalSample) !== JSON.stringify(p);
+    });
+    localStorage.setItem("projects", JSON.stringify(userProjects));
 
     toast({
       title: editingProject ? "Projet modifié" : "Projet ajouté",
@@ -104,11 +121,25 @@ const ProjectManagement = () => {
   };
 
   const handleDeleteProject = (projectId: string) => {
+    const deletedProject = projects.find(p => p.id === projectId);
     const updatedProjects = projects.filter(p => p.id !== projectId);
     setProjects(updatedProjects);
-    localStorage.setItem("projects", JSON.stringify(updatedProjects));
+    
+    // Vérifier si c'est un projet d'exemple
+    const isSampleProject = sampleProjects.some(p => p.id === projectId);
+    
+    if (isSampleProject) {
+      // Ajouter l'ID à la liste des projets d'exemple supprimés
+      const deletedIds = localStorage.getItem("deletedSampleProjectIds");
+      const deletedSampleIds: string[] = deletedIds ? JSON.parse(deletedIds) : [];
+      deletedSampleIds.push(projectId);
+      localStorage.setItem("deletedSampleProjectIds", JSON.stringify(deletedSampleIds));
+    }
+    
+    // Sauvegarder les projets utilisateur (exclure les projets d'exemple)
+    const userProjects = updatedProjects.filter(p => !sampleProjects.some(sp => sp.id === p.id));
+    localStorage.setItem("projects", JSON.stringify(userProjects));
 
-    const deletedProject = projects.find(p => p.id === projectId);
     toast({
       title: "Projet supprimé",
       description: `Le projet "${deletedProject?.name}" a été supprimé.`,
