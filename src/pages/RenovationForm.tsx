@@ -201,18 +201,13 @@ const RenovationForm = () => {
         status: "pending" as const,
       };
 
-      await createRequest(requestData);
+      const createdRequest = await createRequest(requestData);
 
-      // Envoyer notification par email à l'équipe
-      EmailService.sendRequestNotification({
-        id: Date.now().toString(),
-        renovationType,
-        clientId: user?.id || "anonymous",
-        ...formData,
-        attachments: attachmentUrls,
-        status: "pending",
-        createdAt: new Date().toISOString(),
-      });
+      // Envoyer notification par email (confirmation client + notification équipe)
+      const notificationSent = await EmailService.sendRequestNotification(createdRequest);
+      if (!notificationSent) {
+        console.warn("Email de notification non envoyé (demande quand même enregistrée)");
+      }
 
       toast({
         title: "Demande envoyée",
