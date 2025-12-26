@@ -55,13 +55,50 @@ const Admin = () => {
     }
 
     if (filter.search) {
-      const searchLower = filter.search.toLowerCase();
-      result = result.filter(
-        req => (req.renovationType || req.renovation_type)?.toLowerCase().includes(searchLower) ||
-              req.name.toLowerCase().includes(searchLower) ||
-              req.email.toLowerCase().includes(searchLower) ||
-              (req.postalCode || req.postal_code || "").includes(searchLower)
-      );
+      const searchLower = filter.search.toLowerCase().trim();
+      result = result.filter(req => {
+        // Recherche par ID (les 6 derniers caractères)
+        const idMatch = req.id.slice(-6).toLowerCase().includes(searchLower) ||
+                        req.id.toLowerCase().includes(searchLower);
+        
+        // Recherche par nom
+        const nameMatch = req.name.toLowerCase().includes(searchLower);
+        
+        // Recherche par email
+        const emailMatch = req.email.toLowerCase().includes(searchLower);
+        
+        // Recherche par type de rénovation
+        const typeMatch = (req.renovationType || req.renovation_type)?.toLowerCase().includes(searchLower);
+        
+        // Recherche par code postal
+        const postalMatch = (req.postalCode || req.postal_code || "").toLowerCase().includes(searchLower);
+        
+        // Recherche par téléphone
+        const phoneMatch = (req.phone || "").toLowerCase().includes(searchLower);
+        
+        // Recherche par adresse
+        const addressMatch = (req.address || "").toLowerCase().includes(searchLower);
+        
+        // Recherche par date (format dd/mm/yyyy ou yyyy-mm-dd)
+        const dateStr = req.createdAt || req.created_at;
+        const date = new Date(dateStr);
+        const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+        const isoDate = dateStr.split('T')[0]; // yyyy-mm-dd
+        const dateMatch = formattedDate.includes(searchLower) || isoDate.includes(searchLower);
+        
+        // Recherche par statut
+        const statusLabels: Record<string, string> = {
+          pending: "en attente",
+          approved: "approuvé",
+          "in-progress": "en cours",
+          completed: "terminé",
+          rejected: "rejeté"
+        };
+        const statusMatch = statusLabels[req.status]?.includes(searchLower);
+        
+        return idMatch || nameMatch || emailMatch || typeMatch || postalMatch || 
+               phoneMatch || addressMatch || dateMatch || statusMatch;
+      });
     }
 
     setFilteredRequests(result);
