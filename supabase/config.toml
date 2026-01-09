@@ -10,7 +10,7 @@ verify_jwt = true
 verify_jwt = false
 
 [functions.get-signed-url]
-verify_jwt = true
+verify_jwt = false
 
 [functions.admin-user-actions]
 verify_jwt = true
