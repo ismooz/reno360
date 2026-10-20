@@ -21,7 +21,7 @@ class Settings {
 			// Général.
 			'company'               => 'Reno360',
 			'public_email'          => 'info@reno360.ch',
-			'phone'                 => '+41 21 888 10 10',
+			'phone'                 => '',
 			'address'               => '1565 Missy, Vaud',
 			'notify_emails'         => get_option( 'admin_email' ),
 			'from_name'             => 'Reno360',

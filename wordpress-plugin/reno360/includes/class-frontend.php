@@ -401,11 +401,13 @@ class Frontend {
 				},
 				(array) Settings::get( 'cantons', array() )
 			),
-			'provider'    => array(
-				'@type'     => 'Organization',
-				'name'      => Settings::get( 'company' ),
-				'url'       => home_url( '/' ),
-				'telephone' => Settings::get( 'phone' ),
+			'provider'    => array_filter(
+				array(
+					'@type'     => 'Organization',
+					'name'      => Settings::get( 'company' ),
+					'url'       => home_url( '/' ),
+					'telephone' => Settings::get( 'phone' ),
+				)
 			),
 			'url'         => $a['url'],
 		);

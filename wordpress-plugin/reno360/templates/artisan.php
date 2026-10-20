@@ -24,8 +24,9 @@ if ( ! $rn_q || ! $rn_r ) : ?>
 			<div class="rn-panel rn-login">
 				<h1 class="rn-h2">Espace artisan</h1>
 				<p class="rn-muted">Ce lien est invalide ou a expiré. Utilisez le lien reçu par e-mail pour chaque demande, ou contactez-nous.</p>
-				<?php if ( Settings::get( 'phone' ) ) : ?>
-					<p><strong><?php echo esc_html( Settings::get( 'phone' ) ); ?></strong> · <?php echo esc_html( Settings::get( 'public_email' ) ); ?></p>
+				<?php $rn_contact = array_filter( array( Settings::get( 'phone' ), Settings::get( 'public_email' ) ) ); ?>
+				<?php if ( $rn_contact ) : ?>
+					<p><strong><?php echo esc_html( implode( ' · ', $rn_contact ) ); ?></strong></p>
 				<?php endif; ?>
 				<p><a class="rn-btn rn-btn--ghost" href="<?php echo esc_url( Settings::page_url( 'partner' ) ); ?>">Devenir partenaire</a></p>
 			</div>

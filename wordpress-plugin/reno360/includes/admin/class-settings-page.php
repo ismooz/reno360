@@ -66,7 +66,7 @@ class Settings_Page {
 	private static function tab_general( array $s ) {
 		echo '<h2>Entreprise</h2><div class="rn-settings-grid">';
 		self::text( 'company', 'Nom affiché', $s['company'] );
-		self::text( 'phone', 'Téléphone public', $s['phone'] );
+		self::text( 'phone', 'Téléphone public', $s['phone'], 'Laissez vide pour n’afficher aucun numéro sur le site ni dans les e-mails.' );
 		self::text( 'public_email', 'E-mail public', $s['public_email'], 'Aussi utilisé comme adresse de réponse des e-mails.', 'email' );
 		self::text( 'address', 'Adresse', $s['address'] );
 		echo '</div><h2>Apparence</h2><div class="rn-settings-grid">';

@@ -9,7 +9,7 @@ Extension WordPress qui fait tourner tout reno360.ch : le site public de demande
    - les tables de données (demandes, artisans, devis, historique, tâches, fichiers, journal de recherche) ;
    - les **60 types de travaux** répartis en 13 catégories, avec 1 555 mots-clés et les questions du formulaire ;
    - 6 pages : Accueil Reno360, Tous les travaux, Demande de devis, Mon espace (client), Espace artisan et Devenir partenaire.
-3. **Reno360 → Réglages → Général** : nom, e-mail public, téléphone, adresse, logo, couleur et e-mails qui reçoivent les alertes.
+3. **Reno360 → Réglages → Général** : nom, e-mail public, téléphone (laissez vide pour n'afficher aucun numéro), adresse, logo, couleur et e-mails qui reçoivent les alertes.
 4. **Réglages → Pages et intégration Divi** : bouton « Définir Accueil Reno360 comme page d'accueil ».
 5. Installez une extension SMTP (WP Mail SMTP, FluentSMTP…) avec le serveur d'envoi de votre hébergeur (Infomaniak : `mail.infomaniak.com`, port 587). Faites ensuite un essai avec **Réglages → Notifications → Envoyer un e-mail de test**.
 6. Recommandé : ajoutez une tâche planifiée côté serveur qui appelle `https://votre-site.ch/wp-cron.php` toutes les 15 minutes. C'est ce qui déclenche les relances automatiques quand le site a peu de visites.

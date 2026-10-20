@@ -110,7 +110,7 @@ class Rest {
 			return new WP_REST_Response( array( 'ok' => true, 'ref' => '', 'message' => Settings::fill( Settings::get( 'success_text' ) ) ) );
 		}
 		if ( ! Util::rate_limit( 'request', 6, HOUR_IN_SECONDS ) ) {
-			return self::error( 'Trop de demandes envoyées depuis votre connexion. Merci de réessayer plus tard ou de nous appeler.', 429 );
+			return self::error( 'Trop de demandes envoyées depuis votre connexion. Merci de réessayer plus tard.', 429 );
 		}
 
 		$errors = array();

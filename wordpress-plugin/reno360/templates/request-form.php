@@ -165,7 +165,7 @@ $rn_max_files = (int) Settings::get( 'max_files', 10 );
 						<label class="rn-field"><span class="rn-label">Prénom <span class="rn-req">*</span></span><input class="rn-input" type="text" name="first_name" autocomplete="given-name"></label>
 						<label class="rn-field"><span class="rn-label">Nom <span class="rn-req">*</span></span><input class="rn-input" type="text" name="last_name" autocomplete="family-name"></label>
 						<label class="rn-field"><span class="rn-label">E-mail <span class="rn-req">*</span></span><input class="rn-input" type="email" name="email" autocomplete="email" placeholder="nom@exemple.ch"></label>
-						<label class="rn-field"><span class="rn-label">Téléphone<?php echo Settings::get( 'require_phone' ) ? ' <span class="rn-req">*</span>' : ''; // phpcs:ignore WordPress.Security.EscapeOutput ?></span><input class="rn-input" type="tel" name="phone" autocomplete="tel" placeholder="+41 79 000 00 00"></label>
+						<label class="rn-field"><span class="rn-label">Téléphone<?php echo Settings::get( 'require_phone' ) ? ' <span class="rn-req">*</span>' : ''; // phpcs:ignore WordPress.Security.EscapeOutput ?></span><input class="rn-input" type="tel" name="phone" autocomplete="tel" placeholder="Votre numéro de mobile"></label>
 					</div>
 					<p class="rn-field-error" data-rn-err="first_name" hidden></p>
 					<p class="rn-field-error" data-rn-err="last_name" hidden></p>

@@ -22,14 +22,18 @@ $rn_mail  = Settings::get( 'public_email' );
 	<div class="rn-container rn-split rn-split--top">
 		<div>
 			<h2 class="rn-h2"><?php echo esc_html( isset( $title ) ? $title : 'Questions fréquentes' ); ?></h2>
-			<p class="rn-lead rn-lead--sm">Une autre question ?
-				<?php if ( $rn_phone ) : ?>
-					Appelez-nous au <a href="tel:<?php echo esc_attr( preg_replace( '/[^\d+]/', '', $rn_phone ) ); ?>"><strong><?php echo esc_html( $rn_phone ); ?></strong></a>
-				<?php endif; ?>
-				<?php if ( $rn_mail ) : ?>
-					ou écrivez à <a href="mailto:<?php echo esc_attr( $rn_mail ); ?>"><strong><?php echo esc_html( $rn_mail ); ?></strong></a>.
-				<?php endif; ?>
-			</p>
+			<?php if ( $rn_phone || $rn_mail ) : ?>
+				<p class="rn-lead rn-lead--sm">Une autre question ?
+					<?php if ( $rn_phone ) : ?>
+						Appelez-nous au <a href="tel:<?php echo esc_attr( preg_replace( '/[^\d+]/', '', $rn_phone ) ); ?>"><strong><?php echo esc_html( $rn_phone ); ?></strong></a><?php echo $rn_mail ? ' ou écrivez' : '.'; ?>
+					<?php else : ?>
+						Écrivez-nous
+					<?php endif; ?>
+					<?php if ( $rn_mail ) : ?>
+						à <a href="mailto:<?php echo esc_attr( $rn_mail ); ?>"><strong><?php echo esc_html( $rn_mail ); ?></strong></a>.
+					<?php endif; ?>
+				</p>
+			<?php endif; ?>
 		</div>
 		<div class="rn-faq">
 			<?php foreach ( $rn_items as $rn_i => $rn_f ) : ?>

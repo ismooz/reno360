@@ -94,7 +94,7 @@ class Notifications {
 				'label'   => 'Client — rappel pour choisir un devis',
 				'to'      => 'client',
 				'subject' => 'Avez-vous pu comparer vos devis ?',
-				'body'    => "Bonjour {prenom},\n\nVos devis pour « {travaux} » sont disponibles depuis quelques jours. Avez-vous besoin d’aide pour faire votre choix ? Répondez simplement à cet e-mail ou appelez-nous au {telephone_societe}.",
+				'body'    => "Bonjour {prenom},\n\nVos devis pour « {travaux} » sont disponibles depuis quelques jours. Avez-vous besoin d’aide pour faire votre choix ? Répondez simplement à cet e-mail, nous vous aidons volontiers.",
 				'cta'     => array( 'Comparer les devis', '{lien_espace}' ),
 			),
 			'client_review'       => array(
