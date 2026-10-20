@@ -1,0 +1,4366 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "slug": "gros-oeuvre",
+      "name": "Gros œuvre et structure",
+      "icon": "bricks",
+      "order": 1
+    },
+    {
+      "slug": "technique",
+      "name": "Installations techniques",
+      "icon": "zap",
+      "order": 2
+    },
+    {
+      "slug": "energie",
+      "name": "Énergie et rénovation énergétique",
+      "icon": "sun",
+      "order": 3
+    },
+    {
+      "slug": "menuiserie",
+      "name": "Menuiserie et ouvertures",
+      "icon": "window",
+      "order": 4
+    },
+    {
+      "slug": "finitions",
+      "name": "Finitions et revêtements",
+      "icon": "paint",
+      "order": 5
+    },
+    {
+      "slug": "pieces",
+      "name": "Rénovation par pièce",
+      "icon": "home",
+      "order": 6
+    },
+    {
+      "slug": "exterieur",
+      "name": "Extérieur et jardin",
+      "icon": "tree",
+      "order": 7
+    },
+    {
+      "slug": "securite",
+      "name": "Sécurité et accessibilité",
+      "icon": "shield",
+      "order": 8
+    },
+    {
+      "slug": "agencement",
+      "name": "Agencement et rangements",
+      "icon": "sofa",
+      "order": 9
+    },
+    {
+      "slug": "services",
+      "name": "Services et petits travaux",
+      "icon": "wrench",
+      "order": 10
+    },
+    {
+      "slug": "conseil",
+      "name": "Conseil et études",
+      "icon": "ruler",
+      "order": 11
+    },
+    {
+      "slug": "traitements",
+      "name": "Traitements spécifiques",
+      "icon": "alert",
+      "order": 12
+    },
+    {
+      "slug": "confort",
+      "name": "Confort et loisirs",
+      "icon": "smartphone",
+      "order": 13
+    }
+  ],
+  "activities": [
+    {
+      "slug": "maconnerie",
+      "name": "Maçonnerie",
+      "category": "gros-oeuvre",
+      "icon": "bricks",
+      "excerpt": "Murs, ouvertures dans un mur porteur, dalles, chapes et reprises en sous-œuvre",
+      "keywords": [
+        "maçon",
+        "mur",
+        "mur porteur",
+        "ouverture dans un mur porteur",
+        "ouvrir un mur porteur",
+        "créer une ouverture",
+        "linteau",
+        "poutre ipn",
+        "béton",
+        "béton armé",
+        "chape",
+        "dalle en béton",
+        "fondations",
+        "fissure",
+        "fissure dans un mur",
+        "brique",
+        "mur en pierre",
+        "ciment",
+        "mortier",
+        "mur de soutènement",
+        "terrassement",
+        "reprise en sous-œuvre",
+        "coffrage",
+        "carottage",
+        "gros œuvre",
+        "construire un mur",
+        "agglo",
+        "entreprise de maçonnerie",
+        "socle en béton"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 10,
+      "questions": [
+        {
+          "label": "Quel type de travaux ?",
+          "type": "single",
+          "options": [
+            "Ouverture dans un mur porteur",
+            "Construction d’un mur ou d’un muret",
+            "Dalle ou chape",
+            "Réparation de fissures",
+            "Fondations ou reprise en sous-œuvre",
+            "Autre"
+          ]
+        },
+        {
+          "label": "Type de bâtiment ?",
+          "type": "single",
+          "options": [
+            "Maison individuelle",
+            "Appartement en PPE",
+            "Immeuble",
+            "Annexe ou garage"
+          ]
+        },
+        {
+          "label": "Un ingénieur a-t-il déjà été consulté ?",
+          "type": "single",
+          "options": [
+            "Oui",
+            "Non",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "charpente",
+      "name": "Charpente",
+      "category": "gros-oeuvre",
+      "icon": "truss",
+      "excerpt": "Réparation, renforcement et remplacement de charpentes et poutres en bois",
+      "keywords": [
+        "charpentier",
+        "charpente bois",
+        "poutre",
+        "poutre apparente",
+        "solive",
+        "renforcement de charpente",
+        "charpente abîmée",
+        "charpente pourrie",
+        "remplacer une poutre",
+        "poutre fendue",
+        "ferme de charpente",
+        "lamellé-collé",
+        "ossature bois",
+        "construction bois",
+        "maison en bois",
+        "chalet",
+        "avant-toit",
+        "sablière",
+        "bois de charpente",
+        "colombage",
+        "abri de jardin",
+        "cabane en bois",
+        "charpente traditionnelle",
+        "charpente métallique",
+        "toit qui s'affaisse",
+        "poutraison"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 20,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous faire ?",
+          "type": "single",
+          "options": [
+            "Réparer ou renforcer",
+            "Remplacer des poutres",
+            "Créer une nouvelle charpente",
+            "Construire un abri ou un couvert",
+            "Diagnostic de l’état"
+          ]
+        },
+        {
+          "label": "Type de charpente ?",
+          "type": "single",
+          "options": [
+            "Bois traditionnelle",
+            "Fermettes industrielles",
+            "Métallique",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Problèmes constatés",
+          "type": "multiple",
+          "options": [
+            "Bois pourri ou humide",
+            "Insectes (capricornes, vrillettes)",
+            "Affaissement",
+            "Poutres fendues",
+            "Aucun, projet d’aménagement"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "toiture-ferblanterie",
+      "name": "Toiture et ferblanterie",
+      "category": "gros-oeuvre",
+      "icon": "roof",
+      "excerpt": "Tuiles, chéneaux, toits plats, étanchéité et fenêtres de toit",
+      "keywords": [
+        "toit",
+        "couvreur",
+        "ferblantier",
+        "tuile",
+        "remplacer des tuiles",
+        "réparation de toiture",
+        "ardoise",
+        "chéneau",
+        "chenaux",
+        "chéneau qui déborde",
+        "gouttière",
+        "descente d'eau pluviale",
+        "toit qui fuit",
+        "fuite de toiture",
+        "infiltration par le toit",
+        "toit plat",
+        "étanchéité de toiture",
+        "étancheur",
+        "sous-toiture",
+        "lattage",
+        "démoussage",
+        "nettoyage de toiture",
+        "velux",
+        "fenêtre de toit",
+        "faîtière",
+        "arrêt de neige",
+        "paratonnerre",
+        "couverture",
+        "zinc",
+        "tôle",
+        "toit végétalisé",
+        "réfection de toiture",
+        "rénovation de toiture",
+        "solin",
+        "couvertine"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 30,
+      "questions": [
+        {
+          "label": "Quel est le besoin ?",
+          "type": "single",
+          "options": [
+            "Fuite ou infiltration",
+            "Réfection complète de la toiture",
+            "Chéneaux et descentes",
+            "Nettoyage ou démoussage",
+            "Pose de fenêtres de toit",
+            "Étanchéité de toit plat"
+          ]
+        },
+        {
+          "label": "Type de toiture ?",
+          "type": "single",
+          "options": [
+            "Tuiles",
+            "Ardoises",
+            "Toit plat",
+            "Tôle ou métal",
+            "Fibrociment (Eternit)",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Surface approximative du toit",
+          "type": "single",
+          "options": [
+            "Moins de 50 m²",
+            "50 à 100 m²",
+            "100 à 200 m²",
+            "Plus de 200 m²",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "demolition",
+      "name": "Démolition",
+      "category": "gros-oeuvre",
+      "icon": "hammer",
+      "excerpt": "Démolition de murs et cloisons, curage intérieur et évacuation des gravats",
+      "keywords": [
+        "démolir",
+        "démolisseur",
+        "démolition intérieure",
+        "abattre un mur",
+        "casser un mur",
+        "abattre une cloison",
+        "supprimer une cloison",
+        "curage",
+        "déconstruction",
+        "gravats",
+        "évacuation des gravats",
+        "benne",
+        "location de benne",
+        "dépose",
+        "démontage",
+        "marteau-piqueur",
+        "sciage de béton",
+        "démolition de maison",
+        "démolir une annexe",
+        "démolir un cabanon",
+        "ouvrir l'espace",
+        "piquage",
+        "mise à nu",
+        "déblaiement"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 40,
+      "questions": [
+        {
+          "label": "Que faut-il démolir ?",
+          "type": "multiple",
+          "options": [
+            "Cloison",
+            "Mur porteur",
+            "Cuisine ou salle de bain",
+            "Revêtements de sol",
+            "Annexe ou garage",
+            "Bâtiment entier"
+          ]
+        },
+        {
+          "label": "Évacuation des gravats nécessaire ?",
+          "type": "single",
+          "options": [
+            "Oui",
+            "Non",
+            "À discuter"
+          ]
+        },
+        {
+          "label": "Année de construction du bâtiment",
+          "type": "single",
+          "options": [
+            "Avant 1990",
+            "Après 1990",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "extension",
+      "name": "Extension",
+      "category": "gros-oeuvre",
+      "icon": "expand",
+      "excerpt": "Agrandissement de maison, annexe ou garage, en maçonnerie ou ossature bois",
+      "keywords": [
+        "agrandissement",
+        "agrandir sa maison",
+        "extension de maison",
+        "annexe",
+        "extension bois",
+        "extension ossature bois",
+        "pièce supplémentaire",
+        "gagner de la surface",
+        "construire un garage",
+        "garage attenant",
+        "extension de plain-pied",
+        "extension à toit plat",
+        "dépendance",
+        "agrandissement du salon",
+        "agrandir la cuisine",
+        "extension cube",
+        "extension maçonnée",
+        "construction annexe",
+        "surface habitable",
+        "agrandir sur le jardin"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 50,
+      "questions": [
+        {
+          "label": "Type d’extension ?",
+          "type": "single",
+          "options": [
+            "Pièce à vivre",
+            "Chambre ou suite",
+            "Garage ou annexe",
+            "Agrandissement de cuisine",
+            "Autre"
+          ]
+        },
+        {
+          "label": "Surface envisagée",
+          "type": "single",
+          "options": [
+            "Moins de 15 m²",
+            "15 à 30 m²",
+            "30 à 50 m²",
+            "Plus de 50 m²",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Mode de construction souhaité",
+          "type": "single",
+          "options": [
+            "Maçonnerie",
+            "Ossature bois",
+            "Structure vitrée",
+            "Pas de préférence"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "surelevation",
+      "name": "Surélévation",
+      "category": "gros-oeuvre",
+      "icon": "arrowup",
+      "excerpt": "Ajout d’un étage ou d’un attique pour gagner de la surface habitable",
+      "keywords": [
+        "surélever",
+        "rehausse",
+        "rehaussement",
+        "ajouter un étage",
+        "étage supplémentaire",
+        "gagner un étage",
+        "étage en plus",
+        "attique",
+        "surélévation bois",
+        "rehausse de toiture",
+        "relever la toiture",
+        "transformer un toit plat",
+        "agrandissement vertical",
+        "densification",
+        "surélévation d'immeuble",
+        "surélévation de maison",
+        "droits à bâtir",
+        "indice d'utilisation",
+        "construire au-dessus",
+        "nouvel étage"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 60,
+      "questions": [
+        {
+          "label": "Type de bâtiment ?",
+          "type": "single",
+          "options": [
+            "Maison individuelle",
+            "Immeuble",
+            "Garage ou annexe",
+            "Autre"
+          ]
+        },
+        {
+          "label": "Surface à créer",
+          "type": "single",
+          "options": [
+            "Moins de 50 m²",
+            "50 à 100 m²",
+            "Plus de 100 m²",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Où en est votre projet ?",
+          "type": "single",
+          "options": [
+            "Simple idée",
+            "Étude de faisabilité faite",
+            "Plans en cours",
+            "Permis obtenu"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "electricite",
+      "name": "Électricité",
+      "category": "technique",
+      "icon": "zap",
+      "excerpt": "Installations, tableaux électriques, mise en conformité et contrôle OIBT",
+      "keywords": [
+        "électricien",
+        "tableau électrique",
+        "disjoncteur",
+        "disjoncteur qui saute",
+        "fusible",
+        "interrupteur différentiel",
+        "prise",
+        "prise électrique",
+        "ajouter une prise",
+        "interrupteur",
+        "changer un interrupteur",
+        "réparer une prise",
+        "câblage",
+        "tirer des câbles",
+        "câble électrique",
+        "gaine électrique",
+        "mise en conformité électrique",
+        "mise aux normes électrique",
+        "contrôle oibt",
+        "oibt",
+        "rapport de sécurité",
+        "court-circuit",
+        "pas de courant",
+        "panne de courant",
+        "panne électrique",
+        "éclairage",
+        "luminaire",
+        "spots led",
+        "plafonnier",
+        "lampe",
+        "point lumineux",
+        "raccordement électrique",
+        "installation électrique",
+        "prise extérieure",
+        "électricité ancienne"
+      ],
+      "popular": true,
+      "featured": true,
+      "image": "electricite.jpg",
+      "order": 10,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous faire ?",
+          "type": "single",
+          "options": [
+            "Panne ou dépannage",
+            "Ajouter des prises ou des points lumineux",
+            "Remplacer le tableau électrique",
+            "Refaire toute l’installation",
+            "Contrôle OIBT",
+            "Autre"
+          ]
+        },
+        {
+          "label": "Type de logement ?",
+          "type": "single",
+          "options": [
+            "Appartement",
+            "Maison",
+            "Local commercial"
+          ]
+        },
+        {
+          "label": "Âge de l’installation",
+          "type": "single",
+          "options": [
+            "Moins de 20 ans",
+            "20 à 40 ans",
+            "Plus de 40 ans",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "plomberie",
+      "name": "Plomberie",
+      "category": "technique",
+      "icon": "droplet",
+      "excerpt": "Fuites, conduites, boilers, WC et installations sanitaires",
+      "keywords": [
+        "plombier",
+        "installateur sanitaire",
+        "sanitaire",
+        "fuite",
+        "fuite d'eau",
+        "réparer une fuite",
+        "dégât d'eau",
+        "canalisation",
+        "tuyau",
+        "conduite d'eau",
+        "écoulement bouché",
+        "wc bouché",
+        "évier bouché",
+        "débouchage",
+        "robinet",
+        "changer un robinet",
+        "mitigeur",
+        "robinet qui goutte",
+        "chasse d'eau",
+        "wc",
+        "toilettes",
+        "lavabo",
+        "boiler",
+        "remplacer le boiler",
+        "chauffe-eau",
+        "plus d'eau chaude",
+        "détartrage du boiler",
+        "colonne de chute",
+        "raccordement machine à laver",
+        "lave-linge",
+        "pression d'eau",
+        "odeur d'égout",
+        "siphon",
+        "eaux usées",
+        "vanne d'arrêt"
+      ],
+      "popular": true,
+      "featured": true,
+      "image": "plomberie.jpg",
+      "order": 20,
+      "questions": [
+        {
+          "label": "Quel est le problème ou le besoin ?",
+          "type": "single",
+          "options": [
+            "Fuite d’eau",
+            "Écoulement bouché",
+            "Boiler ou eau chaude",
+            "Remplacer un équipement (WC, lavabo, robinet)",
+            "Nouvelle installation",
+            "Remplacement des conduites"
+          ]
+        },
+        {
+          "label": "Quel est le degré d’urgence ?",
+          "type": "single",
+          "options": [
+            "Urgent (sous 48 h)",
+            "Dans la semaine",
+            "Dans le mois",
+            "Pas pressé"
+          ]
+        },
+        {
+          "label": "Pièces concernées",
+          "type": "multiple",
+          "options": [
+            "Salle de bain",
+            "WC",
+            "Cuisine",
+            "Buanderie",
+            "Cave ou sous-sol",
+            "Extérieur"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "chauffage",
+      "name": "Chauffage",
+      "category": "technique",
+      "icon": "flame",
+      "excerpt": "Radiateurs, chaudières, chauffage au sol, poêles et entretien",
+      "keywords": [
+        "chauffagiste",
+        "radiateur",
+        "remplacer un radiateur",
+        "chaudière",
+        "changer la chaudière",
+        "chaudière à mazout",
+        "chaudière à gaz",
+        "chauffage au gaz",
+        "mazout",
+        "citerne",
+        "révision de citerne",
+        "brûleur",
+        "chauffage au sol",
+        "plancher chauffant",
+        "thermostat",
+        "vanne thermostatique",
+        "purger un radiateur",
+        "désembouage",
+        "poêle",
+        "poêle à bois",
+        "poêle à pellets",
+        "pellets",
+        "chauffage au bois",
+        "cheminée de salon",
+        "cheminée",
+        "insert de cheminée",
+        "ramonage",
+        "ramoneur",
+        "chauffage à distance",
+        "radiateur froid",
+        "chauffage en panne",
+        "entretien de chaudière",
+        "chauffage électrique",
+        "radiateur électrique",
+        "chaudière à condensation"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 30,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous faire ?",
+          "type": "single",
+          "options": [
+            "Panne ou dépannage",
+            "Entretien ou révision",
+            "Remplacer le système de chauffage",
+            "Ajouter ou remplacer des radiateurs",
+            "Installer un chauffage au sol",
+            "Poêle ou cheminée"
+          ]
+        },
+        {
+          "label": "Chauffage actuel",
+          "type": "single",
+          "options": [
+            "Mazout",
+            "Gaz",
+            "Électrique",
+            "Bois ou pellets",
+            "Pompe à chaleur",
+            "Chauffage à distance",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Surface chauffée",
+          "type": "single",
+          "options": [
+            "Moins de 100 m²",
+            "100 à 200 m²",
+            "Plus de 200 m²",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "ventilation-vmc",
+      "name": "Ventilation et VMC",
+      "category": "technique",
+      "icon": "fan",
+      "excerpt": "Ventilation double flux, aération douce et extraction d’air",
+      "keywords": [
+        "vmc",
+        "ventilation double flux",
+        "ventilation simple flux",
+        "double flux",
+        "aération",
+        "aération douce",
+        "extracteur d'air",
+        "aérateur",
+        "bouche d'aération",
+        "ventilation mécanique",
+        "renouvellement d'air",
+        "qualité de l'air",
+        "air vicié",
+        "buée",
+        "buée sur les fenêtres",
+        "ventilation salle de bain",
+        "ventilateur",
+        "gaine de ventilation",
+        "nettoyage des gaines",
+        "filtre vmc",
+        "récupération de chaleur",
+        "ventilation contrôlée",
+        "manque d'air",
+        "air confiné"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 40,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous faire ?",
+          "type": "single",
+          "options": [
+            "Nouvelle installation",
+            "Remplacement d’une VMC",
+            "Entretien ou nettoyage",
+            "Ventiler une pièce humide",
+            "Diagnostic d’un problème"
+          ]
+        },
+        {
+          "label": "Type de système souhaité",
+          "type": "single",
+          "options": [
+            "Double flux",
+            "Simple flux",
+            "Extracteur ponctuel",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Type de logement ?",
+          "type": "single",
+          "options": [
+            "Appartement",
+            "Maison",
+            "Local professionnel"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "climatisation",
+      "name": "Climatisation",
+      "category": "technique",
+      "icon": "snowflake",
+      "excerpt": "Climatiseurs fixes et réversibles, split et multi-split",
+      "keywords": [
+        "clim",
+        "climatiseur",
+        "climatisation réversible",
+        "clim réversible",
+        "split",
+        "multi-split",
+        "climatiseur mobile",
+        "climatiseur fixe",
+        "rafraîchir",
+        "rafraîchissement",
+        "trop chaud",
+        "canicule",
+        "chaleur en été",
+        "frigoriste",
+        "unité extérieure",
+        "entretien de clim",
+        "recharge de gaz",
+        "air conditionné",
+        "climatisation gainable",
+        "autorisation de climatisation",
+        "fraîcheur",
+        "climatiser une chambre"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 50,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous ?",
+          "type": "single",
+          "options": [
+            "Nouvelle installation",
+            "Remplacement",
+            "Entretien ou recharge",
+            "Dépannage"
+          ]
+        },
+        {
+          "label": "Nombre de pièces à climatiser",
+          "type": "single",
+          "options": [
+            "1 pièce",
+            "2 à 3 pièces",
+            "4 pièces ou plus",
+            "Tout le logement"
+          ]
+        },
+        {
+          "label": "Type d’appareil",
+          "type": "single",
+          "options": [
+            "Split mural",
+            "Multi-split",
+            "Gainable",
+            "Mobile",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "adoucisseur-eau",
+      "name": "Adoucisseur d’eau",
+      "category": "technique",
+      "icon": "filter",
+      "excerpt": "Adoucisseurs, filtres anti-calcaire et traitement de l’eau",
+      "keywords": [
+        "adoucisseur",
+        "anti-calcaire",
+        "calcaire",
+        "eau calcaire",
+        "eau dure",
+        "dureté de l'eau",
+        "traces de calcaire",
+        "tartre",
+        "anti-tartre",
+        "filtre à eau",
+        "filtre anti-calcaire",
+        "osmose inverse",
+        "osmoseur",
+        "traitement de l'eau",
+        "sel régénérant",
+        "sel pour adoucisseur",
+        "régénération",
+        "entretien d'adoucisseur",
+        "filtration de l'eau",
+        "eau potable",
+        "degré de dureté",
+        "appareils entartrés"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 60,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous ?",
+          "type": "single",
+          "options": [
+            "Installer un adoucisseur",
+            "Remplacer un appareil existant",
+            "Entretien ou révision",
+            "Filtre ou osmose pour l’eau potable"
+          ]
+        },
+        {
+          "label": "Type de logement ?",
+          "type": "single",
+          "options": [
+            "Appartement",
+            "Maison individuelle",
+            "Immeuble"
+          ]
+        },
+        {
+          "label": "Connaissez-vous la dureté de votre eau ?",
+          "type": "single",
+          "options": [
+            "Eau douce",
+            "Moyennement dure",
+            "Très dure",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "panneaux-solaires",
+      "name": "Panneaux solaires",
+      "category": "energie",
+      "icon": "sun",
+      "excerpt": "Photovoltaïque, solaire thermique, batteries et autoconsommation",
+      "keywords": [
+        "panneau solaire",
+        "photovoltaïque",
+        "panneaux photovoltaïques",
+        "pv",
+        "installation photovoltaïque",
+        "solaire thermique",
+        "capteur solaire",
+        "toit solaire",
+        "onduleur",
+        "batterie solaire",
+        "stockage d'énergie",
+        "autoconsommation",
+        "produire son électricité",
+        "électricité solaire",
+        "énergie solaire",
+        "installateur solaire",
+        "pronovo",
+        "rétribution unique",
+        "subvention photovoltaïque",
+        "centrale solaire",
+        "solaire en façade",
+        "tuiles solaires",
+        "solaire de balcon",
+        "chauffe-eau solaire",
+        "revente d'électricité",
+        "module solaire"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 10,
+      "questions": [
+        {
+          "label": "Type d’installation",
+          "type": "single",
+          "options": [
+            "Photovoltaïque (électricité)",
+            "Thermique (eau chaude)",
+            "Les deux",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Type de toit ?",
+          "type": "single",
+          "options": [
+            "Toit en pente",
+            "Toit plat",
+            "Façade ou pergola",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Options souhaitées",
+          "type": "multiple",
+          "options": [
+            "Batterie de stockage",
+            "Borne de recharge",
+            "Couplage avec une pompe à chaleur",
+            "Suivi de production",
+            "Aide pour les subventions"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "pompe-a-chaleur",
+      "name": "Pompe à chaleur (PAC)",
+      "category": "energie",
+      "icon": "thermometer",
+      "excerpt": "PAC air-eau, géothermique ou air-air, remplacement du mazout",
+      "keywords": [
+        "pac",
+        "pompe à chaleur air-eau",
+        "pac air-eau",
+        "pompe à chaleur géothermique",
+        "géothermie",
+        "sonde géothermique",
+        "forage géothermique",
+        "pac air-air",
+        "pompe à chaleur air-air",
+        "pac eau-eau",
+        "remplacer le mazout",
+        "sortir du mazout",
+        "chauffage renouvelable",
+        "chauffage écologique",
+        "boiler thermodynamique",
+        "boiler pompe à chaleur",
+        "installateur pac",
+        "subvention pac",
+        "entretien de pac",
+        "pac bruyante",
+        "bruit de pompe à chaleur",
+        "pac en panne",
+        "pompe à chaleur split",
+        "pompe à chaleur monobloc",
+        "dimensionnement pac"
+      ],
+      "popular": true,
+      "featured": false,
+      "image": "",
+      "order": 20,
+      "questions": [
+        {
+          "label": "Chauffage actuel",
+          "type": "single",
+          "options": [
+            "Mazout",
+            "Gaz",
+            "Électrique",
+            "Bois",
+            "Construction neuve",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Type de PAC envisagé",
+          "type": "single",
+          "options": [
+            "Air-eau",
+            "Géothermique (sonde)",
+            "Air-air",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Surface habitable",
+          "type": "single",
+          "options": [
+            "Moins de 120 m²",
+            "120 à 200 m²",
+            "200 à 300 m²",
+            "Plus de 300 m²"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "isolation",
+      "name": "Isolation",
+      "category": "energie",
+      "icon": "layers",
+      "excerpt": "Isolation thermique et phonique : façades, toiture, combles, plafond de cave",
+      "keywords": [
+        "isolation thermique",
+        "isolation phonique",
+        "isolation acoustique",
+        "insonorisation",
+        "bruit",
+        "bruit des voisins",
+        "ite",
+        "iti",
+        "isolation extérieure",
+        "isolation intérieure",
+        "isolation périphérique",
+        "isolation des combles",
+        "isolation de toiture",
+        "isolation du plafond de cave",
+        "isolation de dalle",
+        "isolation des murs",
+        "laine de verre",
+        "laine de roche",
+        "laine minérale",
+        "polystyrène",
+        "fibre de bois",
+        "ouate de cellulose",
+        "insufflation",
+        "pont thermique",
+        "maison froide",
+        "perte de chaleur",
+        "passoire thermique",
+        "isolant",
+        "isoler",
+        "subvention isolation"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 30,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous isoler ?",
+          "type": "multiple",
+          "options": [
+            "Façades",
+            "Toiture ou combles",
+            "Plafond de cave",
+            "Sols",
+            "Murs intérieurs",
+            "Isolation phonique"
+          ]
+        },
+        {
+          "label": "Type d’isolation",
+          "type": "single",
+          "options": [
+            "Par l’extérieur",
+            "Par l’intérieur",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Surface approximative",
+          "type": "single",
+          "options": [
+            "Moins de 50 m²",
+            "50 à 100 m²",
+            "100 à 200 m²",
+            "Plus de 200 m²",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "borne-de-recharge",
+      "name": "Borne de recharge",
+      "category": "energie",
+      "icon": "car",
+      "excerpt": "Borne de recharge ou wallbox pour voiture électrique, en villa ou en PPE",
+      "keywords": [
+        "wallbox",
+        "borne",
+        "installation de borne",
+        "voiture électrique",
+        "véhicule électrique",
+        "recharger sa voiture",
+        "station de recharge",
+        "prise renforcée",
+        "recharge à domicile",
+        "tesla",
+        "hybride rechargeable",
+        "borne en ppe",
+        "recharge en copropriété",
+        "borne murale",
+        "câble de recharge",
+        "charge rapide",
+        "borne intelligente",
+        "gestion de charge",
+        "recharge solaire",
+        "borne 11 kw",
+        "borne 22 kw",
+        "électromobilité",
+        "chargeur de voiture"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 40,
+      "questions": [
+        {
+          "label": "Lieu d’installation",
+          "type": "single",
+          "options": [
+            "Garage privé",
+            "Place extérieure",
+            "Parking de PPE ou d’immeuble",
+            "Local professionnel"
+          ]
+        },
+        {
+          "label": "Distance approximative du tableau électrique",
+          "type": "single",
+          "options": [
+            "Moins de 10 m",
+            "10 à 30 m",
+            "Plus de 30 m",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Avez-vous déjà un véhicule électrique ?",
+          "type": "single",
+          "options": [
+            "Oui",
+            "Commande en cours",
+            "Pas encore"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "audit-energetique",
+      "name": "Audit énergétique",
+      "category": "energie",
+      "icon": "chart",
+      "excerpt": "Certificat CECB, bilan énergétique et aide aux subventions (Programme Bâtiments)",
+      "keywords": [
+        "cecb",
+        "certificat cecb",
+        "certificat énergétique",
+        "bilan énergétique",
+        "diagnostic énergétique",
+        "expert cecb",
+        "conseiller en énergie",
+        "conseil énergétique",
+        "programme bâtiments",
+        "subvention",
+        "subventions énergie",
+        "aide financière",
+        "thermographie",
+        "caméra thermique",
+        "classe énergétique",
+        "étiquette énergie",
+        "déperditions",
+        "consommation d'énergie",
+        "efficacité énergétique",
+        "assainissement énergétique",
+        "rénovation énergétique",
+        "minergie",
+        "plan de rénovation",
+        "économies d'énergie",
+        "facture de chauffage",
+        "étude énergétique",
+        "test d'étanchéité à l'air",
+        "blower door"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 50,
+      "questions": [
+        {
+          "label": "Que recherchez-vous ?",
+          "type": "single",
+          "options": [
+            "CECB",
+            "CECB Plus avec plan de rénovation",
+            "Conseil pour les subventions",
+            "Thermographie",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Type de bâtiment ?",
+          "type": "single",
+          "options": [
+            "Maison individuelle",
+            "Appartement en PPE",
+            "Immeuble locatif",
+            "Bâtiment commercial"
+          ]
+        },
+        {
+          "label": "Année de construction",
+          "type": "single",
+          "options": [
+            "Avant 1960",
+            "1960 à 1990",
+            "1990 à 2010",
+            "Après 2010",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "menuiserie-generale",
+      "name": "Menuiserie générale",
+      "category": "menuiserie",
+      "icon": "ruler",
+      "excerpt": "Travaux bois sur mesure, plinthes, habillages et petites menuiseries",
+      "keywords": [
+        "menuisier",
+        "ébéniste",
+        "travaux bois",
+        "plinthes",
+        "plinthes en bois",
+        "boiseries",
+        "lambris",
+        "habillage bois",
+        "bois massif",
+        "tablette de fenêtre",
+        "cache-radiateur",
+        "habillage de radiateur",
+        "meuble en bois",
+        "restauration de meuble",
+        "chambranle",
+        "moulure bois",
+        "banc en bois",
+        "menuiserie intérieure",
+        "menuiserie sur mesure",
+        "panneaux bois",
+        "trappe de visite",
+        "coffrage de tuyaux",
+        "habillage de poutre",
+        "marqueterie"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 10,
+      "questions": [
+        {
+          "label": "Type de travaux",
+          "type": "single",
+          "options": [
+            "Meuble ou élément sur mesure",
+            "Plinthes et moulures",
+            "Habillage bois",
+            "Réparation d’un élément en bois",
+            "Autre"
+          ]
+        },
+        {
+          "label": "Matériau souhaité",
+          "type": "single",
+          "options": [
+            "Bois massif",
+            "Panneau plaqué",
+            "Panneau laqué",
+            "Pas de préférence"
+          ]
+        },
+        {
+          "label": "Décrivez brièvement votre projet",
+          "type": "text",
+          "options": []
+        }
+      ]
+    },
+    {
+      "slug": "fenetres-vitrerie",
+      "name": "Fenêtres et vitrerie",
+      "category": "menuiserie",
+      "icon": "window",
+      "excerpt": "Remplacement de fenêtres PVC, bois-métal ou alu, vitrages et baies vitrées",
+      "keywords": [
+        "fenêtre",
+        "vitrier",
+        "vitre",
+        "vitre cassée",
+        "vitrage",
+        "double vitrage",
+        "triple vitrage",
+        "fenêtre pvc",
+        "fenêtre bois-métal",
+        "fenêtre bois",
+        "fenêtre alu",
+        "changer les fenêtres",
+        "remplacement de fenêtres",
+        "baie vitrée",
+        "porte-fenêtre",
+        "fenêtre coulissante",
+        "fenêtre oscillo-battante",
+        "joint de fenêtre",
+        "courant d'air",
+        "fenêtre qui ferme mal",
+        "réglage de fenêtre",
+        "réparation de fenêtre",
+        "pose de fenêtres",
+        "poignée de fenêtre",
+        "verre feuilleté",
+        "verre sécurit",
+        "miroir sur mesure",
+        "vitrage isolant",
+        "menuiserie extérieure",
+        "buée entre les vitres"
+      ],
+      "popular": true,
+      "featured": false,
+      "image": "",
+      "order": 20,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous faire ?",
+          "type": "single",
+          "options": [
+            "Remplacer des fenêtres",
+            "Remplacer une vitre",
+            "Poser une baie vitrée",
+            "Réparer ou régler",
+            "Créer de nouvelles ouvertures"
+          ]
+        },
+        {
+          "label": "Nombre de fenêtres",
+          "type": "single",
+          "options": [
+            "1 à 2",
+            "3 à 5",
+            "6 à 10",
+            "Plus de 10"
+          ]
+        },
+        {
+          "label": "Matériau souhaité",
+          "type": "single",
+          "options": [
+            "PVC",
+            "Bois",
+            "Bois-métal",
+            "Aluminium",
+            "Pas de préférence"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "stores-volets",
+      "name": "Stores et volets",
+      "category": "menuiserie",
+      "icon": "blinds",
+      "excerpt": "Stores à lamelles, volets roulants, tentes solaires et motorisation",
+      "keywords": [
+        "store",
+        "volet",
+        "volet roulant",
+        "volet battant",
+        "store à lamelles",
+        "lamelles",
+        "tente solaire",
+        "store banne",
+        "storiste",
+        "store motorisé",
+        "motorisation de store",
+        "sangle de store",
+        "store bloqué",
+        "store cassé",
+        "réparation de store",
+        "remplacement de volets",
+        "manivelle",
+        "moustiquaire",
+        "store intérieur",
+        "store vénitien",
+        "brise-soleil",
+        "protection solaire",
+        "store en toile",
+        "jalousie",
+        "store screen",
+        "toile de tente solaire",
+        "volet en bois",
+        "volet alu",
+        "store électrique"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 30,
+      "questions": [
+        {
+          "label": "Type de produit",
+          "type": "multiple",
+          "options": [
+            "Stores à lamelles",
+            "Volets roulants",
+            "Volets battants",
+            "Tente solaire",
+            "Store intérieur",
+            "Moustiquaire"
+          ]
+        },
+        {
+          "label": "Que souhaitez-vous faire ?",
+          "type": "single",
+          "options": [
+            "Nouvelle installation",
+            "Remplacement",
+            "Motorisation",
+            "Réparation"
+          ]
+        },
+        {
+          "label": "Nombre d’éléments",
+          "type": "single",
+          "options": [
+            "1 à 2",
+            "3 à 5",
+            "6 à 10",
+            "Plus de 10"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "portes",
+      "name": "Portes",
+      "category": "menuiserie",
+      "icon": "door",
+      "excerpt": "Portes d’entrée, intérieures, blindées, coulissantes et de garage",
+      "keywords": [
+        "porte",
+        "porte d'entrée",
+        "changer la porte d'entrée",
+        "pose de porte",
+        "porte intérieure",
+        "porte blindée",
+        "porte coulissante",
+        "porte de garage",
+        "porte de garage motorisée",
+        "porte sectionnelle",
+        "porte palière",
+        "porte coupe-feu",
+        "porte vitrée",
+        "porte à galandage",
+        "bloc-porte",
+        "huisserie",
+        "cadre de porte",
+        "porte qui frotte",
+        "porte qui ferme mal",
+        "poignée de porte",
+        "seuil de porte",
+        "porte acoustique",
+        "porte de cave",
+        "porte en bois",
+        "porte d'appartement",
+        "porte battante",
+        "porte pliante",
+        "porte de service"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 40,
+      "questions": [
+        {
+          "label": "Type de porte",
+          "type": "multiple",
+          "options": [
+            "Porte d’entrée",
+            "Porte intérieure",
+            "Porte palière",
+            "Porte coulissante",
+            "Porte de garage",
+            "Porte blindée"
+          ]
+        },
+        {
+          "label": "Que souhaitez-vous faire ?",
+          "type": "single",
+          "options": [
+            "Remplacement",
+            "Nouvelle pose",
+            "Réparation ou réglage"
+          ]
+        },
+        {
+          "label": "Nombre de portes",
+          "type": "single",
+          "options": [
+            "1",
+            "2 à 3",
+            "4 à 6",
+            "Plus de 6"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "escaliers",
+      "name": "Escaliers",
+      "category": "menuiserie",
+      "icon": "stairs",
+      "excerpt": "Création, rénovation et habillage d’escaliers, garde-corps et mains courantes",
+      "keywords": [
+        "escalier",
+        "marche",
+        "contremarche",
+        "nez de marche",
+        "rampe d'escalier",
+        "main courante",
+        "garde-corps",
+        "balustrade",
+        "escalier hélicoïdal",
+        "escalier en colimaçon",
+        "escalier quart tournant",
+        "escalier droit",
+        "escalier en bois",
+        "escalier en béton",
+        "escalier métallique",
+        "escalier suspendu",
+        "habillage d'escalier",
+        "recouvrir un escalier",
+        "escalier escamotable",
+        "escalier qui grince",
+        "limon",
+        "trémie",
+        "échelle de meunier",
+        "escalier extérieur",
+        "escalier sur mesure"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 50,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous faire ?",
+          "type": "single",
+          "options": [
+            "Créer un escalier",
+            "Rénover ou habiller un escalier",
+            "Garde-corps ou main courante",
+            "Réparation"
+          ]
+        },
+        {
+          "label": "Type d’escalier",
+          "type": "single",
+          "options": [
+            "Droit",
+            "Quart ou demi-tournant",
+            "Hélicoïdal",
+            "Je ne sais pas encore"
+          ]
+        },
+        {
+          "label": "Matériau souhaité",
+          "type": "single",
+          "options": [
+            "Bois",
+            "Métal",
+            "Béton",
+            "Verre",
+            "Mixte",
+            "Pas de préférence"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "peinture",
+      "name": "Peinture",
+      "category": "finitions",
+      "icon": "paint",
+      "excerpt": "Murs, plafonds, boiseries et façades, en intérieur comme en extérieur",
+      "keywords": [
+        "peintre",
+        "peintre en bâtiment",
+        "repeindre",
+        "repeindre une chambre",
+        "peindre",
+        "peinture murale",
+        "peinture de plafond",
+        "peindre les murs",
+        "peinture intérieure",
+        "peinture extérieure",
+        "peinture des boiseries",
+        "laque",
+        "lasure",
+        "sous-couche",
+        "couleur des murs",
+        "murs jaunis",
+        "nicotine",
+        "peinture d'appartement",
+        "peinture de cage d'escalier",
+        "peinture de radiateur",
+        "peinture des volets",
+        "peinture fin de bail",
+        "rafraîchir les peintures",
+        "peinture au pistolet",
+        "airless",
+        "peinture écologique",
+        "peinture mate",
+        "peinture satinée",
+        "peinture acrylique",
+        "poncer les murs"
+      ],
+      "popular": true,
+      "featured": true,
+      "image": "peinture.jpg",
+      "order": 10,
+      "questions": [
+        {
+          "label": "Que faut-il peindre ?",
+          "type": "multiple",
+          "options": [
+            "Murs",
+            "Plafonds",
+            "Boiseries et portes",
+            "Radiateurs",
+            "Façade",
+            "Volets"
+          ]
+        },
+        {
+          "label": "Nombre de pièces",
+          "type": "single",
+          "options": [
+            "1 pièce",
+            "2 à 3 pièces",
+            "4 à 5 pièces",
+            "Plus de 5 pièces",
+            "Logement entier"
+          ]
+        },
+        {
+          "label": "Contexte des travaux",
+          "type": "single",
+          "options": [
+            "Fin de bail",
+            "Rafraîchissement",
+            "Après travaux",
+            "Changement de couleur"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "papier-peint-deco",
+      "name": "Papier peint et déco",
+      "category": "finitions",
+      "icon": "brush",
+      "excerpt": "Papiers peints, toiles de verre, panoramiques et enduits décoratifs",
+      "keywords": [
+        "papier peint",
+        "tapisserie",
+        "poser du papier peint",
+        "décoller du papier peint",
+        "papier intissé",
+        "toile de verre",
+        "panoramique",
+        "papier peint panoramique",
+        "revêtement mural",
+        "frise",
+        "enduit décoratif",
+        "stuc vénitien",
+        "badigeon à la chaux",
+        "pochoir",
+        "fresque",
+        "trompe-l'œil",
+        "décoration murale",
+        "tissu mural",
+        "liège mural",
+        "papier peint lessivable",
+        "mur décoratif",
+        "tapissier décorateur"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 20,
+      "questions": [
+        {
+          "label": "Type de revêtement",
+          "type": "multiple",
+          "options": [
+            "Papier peint",
+            "Papier peint panoramique",
+            "Toile de verre",
+            "Enduit décoratif",
+            "Tissu ou liège mural"
+          ]
+        },
+        {
+          "label": "Faut-il retirer un ancien revêtement ?",
+          "type": "single",
+          "options": [
+            "Oui",
+            "Non",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Étendue des travaux",
+          "type": "single",
+          "options": [
+            "Un seul mur",
+            "Une pièce",
+            "Plusieurs pièces"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "carrelage-faience",
+      "name": "Carrelage et faïence",
+      "category": "finitions",
+      "icon": "grid",
+      "excerpt": "Pose de carrelage sol et mural, faïence, mosaïque et grands formats",
+      "keywords": [
+        "carrelage",
+        "carreleur",
+        "faïence",
+        "mosaïque",
+        "carreau",
+        "grès cérame",
+        "carrelage de sol",
+        "carrelage mural",
+        "carrelage grand format",
+        "carreau de ciment",
+        "pierre naturelle",
+        "marbre",
+        "travertin",
+        "joint de carrelage",
+        "refaire les joints",
+        "joints de douche",
+        "carreau cassé",
+        "crédence carrelée",
+        "poser du carrelage",
+        "changer le carrelage",
+        "carrelage salle de bain",
+        "carrelage cuisine",
+        "terre cuite",
+        "tomette",
+        "carrelage extérieur",
+        "plinthe carrelée",
+        "carrelage antidérapant",
+        "carrelage imitation bois",
+        "zellige",
+        "recouvrir le carrelage"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 30,
+      "questions": [
+        {
+          "label": "Où poser le carrelage ?",
+          "type": "multiple",
+          "options": [
+            "Sol intérieur",
+            "Murs de salle de bain",
+            "Crédence de cuisine",
+            "Terrasse ou extérieur",
+            "Escalier"
+          ]
+        },
+        {
+          "label": "Surface approximative",
+          "type": "single",
+          "options": [
+            "Moins de 10 m²",
+            "10 à 30 m²",
+            "30 à 60 m²",
+            "Plus de 60 m²",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Faut-il retirer l’ancien revêtement ?",
+          "type": "single",
+          "options": [
+            "Oui",
+            "Non",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "parquet",
+      "name": "Parquet",
+      "category": "finitions",
+      "icon": "layers",
+      "excerpt": "Pose, ponçage, vitrification et huilage de parquets",
+      "keywords": [
+        "parqueteur",
+        "ponçage de parquet",
+        "poncer le parquet",
+        "vitrification",
+        "vitrifier",
+        "huiler le parquet",
+        "parquet massif",
+        "parquet contrecollé",
+        "parquet flottant",
+        "stratifié",
+        "parquet en chêne",
+        "point de hongrie",
+        "parquet à chevrons",
+        "lame de parquet",
+        "parquet qui grince",
+        "parquet rayé",
+        "parquet abîmé",
+        "plancher",
+        "sol en bois",
+        "parquet mosaïque",
+        "parquet collé",
+        "parquet cloué",
+        "teinter le parquet",
+        "remplacer la moquette par du parquet",
+        "parquet ancien",
+        "pose de parquet",
+        "rénovation de parquet"
+      ],
+      "popular": true,
+      "featured": true,
+      "image": "parquet.jpg",
+      "order": 40,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous faire ?",
+          "type": "single",
+          "options": [
+            "Pose d’un nouveau parquet",
+            "Ponçage et vitrification",
+            "Huilage ou entretien",
+            "Réparation de lames"
+          ]
+        },
+        {
+          "label": "Surface approximative",
+          "type": "single",
+          "options": [
+            "Moins de 20 m²",
+            "20 à 50 m²",
+            "50 à 100 m²",
+            "Plus de 100 m²"
+          ]
+        },
+        {
+          "label": "Type de parquet",
+          "type": "single",
+          "options": [
+            "Massif",
+            "Contrecollé",
+            "Stratifié",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "sols-souples",
+      "name": "Sols souples",
+      "category": "finitions",
+      "icon": "grid",
+      "excerpt": "Lino, vinyle, moquette et revêtements de sol PVC",
+      "keywords": [
+        "sol souple",
+        "lino",
+        "linoléum",
+        "vinyle",
+        "sol vinyle",
+        "sol pvc",
+        "moquette",
+        "tapis tendu",
+        "lame vinyle",
+        "vinyle clipsable",
+        "lvt",
+        "sol en caoutchouc",
+        "marmoleum",
+        "jonc de mer",
+        "sisal",
+        "dalle de moquette",
+        "ragréage",
+        "revêtement de sol",
+        "changer la moquette",
+        "enlever la moquette",
+        "poser de la moquette",
+        "poser du vinyle",
+        "dalle vinyle",
+        "sol plastique",
+        "sol antidérapant",
+        "sol en liège",
+        "moquette d'escalier",
+        "vinyle adhésif"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 50,
+      "questions": [
+        {
+          "label": "Revêtement souhaité",
+          "type": "single",
+          "options": [
+            "Vinyle ou LVT",
+            "Lino",
+            "Moquette",
+            "Caoutchouc",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Surface approximative",
+          "type": "single",
+          "options": [
+            "Moins de 20 m²",
+            "20 à 50 m²",
+            "50 à 100 m²",
+            "Plus de 100 m²"
+          ]
+        },
+        {
+          "label": "Revêtement actuel",
+          "type": "single",
+          "options": [
+            "Moquette",
+            "Carrelage",
+            "Parquet",
+            "Vinyle ou lino",
+            "Chape brute"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "beton-cire",
+      "name": "Béton ciré",
+      "category": "finitions",
+      "icon": "brush",
+      "excerpt": "Béton ciré, microciment et résine pour sols, murs et douches",
+      "keywords": [
+        "microciment",
+        "micro-béton",
+        "résine",
+        "sol en résine",
+        "résine époxy",
+        "sol coulé",
+        "tadelakt",
+        "enduit minéral",
+        "béton lissé",
+        "sol continu",
+        "douche en béton ciré",
+        "plan de travail en béton ciré",
+        "mur en béton ciré",
+        "béton ciré salle de bain",
+        "béton ciré cuisine",
+        "sol industriel",
+        "effet béton",
+        "béton poli",
+        "chape décorative",
+        "terrazzo",
+        "quartz-résine"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 60,
+      "questions": [
+        {
+          "label": "Où appliquer le béton ciré ?",
+          "type": "multiple",
+          "options": [
+            "Sol",
+            "Murs",
+            "Douche",
+            "Plan de travail",
+            "Escalier"
+          ]
+        },
+        {
+          "label": "Surface approximative",
+          "type": "single",
+          "options": [
+            "Moins de 10 m²",
+            "10 à 30 m²",
+            "30 à 60 m²",
+            "Plus de 60 m²"
+          ]
+        },
+        {
+          "label": "Support actuel",
+          "type": "single",
+          "options": [
+            "Carrelage",
+            "Chape",
+            "Plâtre",
+            "Bois",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "platrerie-cloisons",
+      "name": "Plâtrerie et cloisons",
+      "category": "finitions",
+      "icon": "bricks",
+      "excerpt": "Cloisons sèches, faux-plafonds, lissage et gypserie",
+      "keywords": [
+        "plâtrier",
+        "plâtrier-peintre",
+        "gypseur",
+        "gypserie",
+        "plâtre",
+        "placo",
+        "plaque de plâtre",
+        "rigips",
+        "faux plafond",
+        "plafond suspendu",
+        "plafond abaissé",
+        "cloison",
+        "créer une cloison",
+        "cloison sèche",
+        "cloison légère",
+        "cloison phonique",
+        "doublage",
+        "lissage",
+        "enduit de lissage",
+        "fissure au plafond",
+        "trou dans le mur",
+        "reboucher un trou",
+        "staff",
+        "corniche",
+        "moulure en plâtre",
+        "rosace",
+        "séparer une pièce",
+        "plafond qui s'effrite",
+        "plâtre projeté"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 70,
+      "questions": [
+        {
+          "label": "Type de travaux",
+          "type": "multiple",
+          "options": [
+            "Cloison sèche",
+            "Faux-plafond",
+            "Lissage de murs",
+            "Réparation de fissures",
+            "Doublage isolant",
+            "Moulures ou staff"
+          ]
+        },
+        {
+          "label": "Surface approximative",
+          "type": "single",
+          "options": [
+            "Moins de 20 m²",
+            "20 à 50 m²",
+            "50 à 100 m²",
+            "Plus de 100 m²",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "salle-de-bain",
+      "name": "Salle de bain",
+      "category": "pieces",
+      "icon": "bath",
+      "excerpt": "Rénovation clé en main, douche à l’italienne, adaptation PMR",
+      "keywords": [
+        "sdb",
+        "bain",
+        "salle d'eau",
+        "salle de douche",
+        "douche",
+        "douche à l'italienne",
+        "douche de plain-pied",
+        "douche walk-in",
+        "baignoire",
+        "remplacer la baignoire",
+        "baignoire par une douche",
+        "receveur de douche",
+        "paroi de douche",
+        "cabine de douche",
+        "colonne de douche",
+        "vasque",
+        "double vasque",
+        "meuble vasque",
+        "meuble de salle de bain",
+        "wc suspendu",
+        "sèche-serviettes",
+        "miroir de salle de bain",
+        "baignoire îlot",
+        "baignoire balnéo",
+        "petite salle de bain",
+        "salle de bain clé en main",
+        "rénover la salle de bain",
+        "lave-mains"
+      ],
+      "popular": true,
+      "featured": true,
+      "image": "salle-de-bain.jpg",
+      "order": 10,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous faire ?",
+          "type": "single",
+          "options": [
+            "Rénovation complète",
+            "Baignoire remplacée par une douche",
+            "Remplacer des équipements",
+            "Carrelage uniquement"
+          ]
+        },
+        {
+          "label": "Surface approximative",
+          "type": "single",
+          "options": [
+            "Moins de 4 m²",
+            "4 à 8 m²",
+            "8 à 12 m²",
+            "Plus de 12 m²",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Équipements souhaités",
+          "type": "multiple",
+          "options": [
+            "Douche à l’italienne",
+            "Baignoire",
+            "Double vasque",
+            "WC suspendu",
+            "Meuble sur mesure",
+            "Sèche-serviettes"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "cuisine",
+      "name": "Cuisine",
+      "category": "pieces",
+      "icon": "kitchen",
+      "excerpt": "Cuisine agencée sur mesure, plans de travail, électroménager et pose",
+      "keywords": [
+        "cuisiniste",
+        "changer la cuisine",
+        "cuisine équipée",
+        "cuisine agencée",
+        "agencement de cuisine",
+        "cuisine sur mesure",
+        "plan de travail",
+        "îlot central",
+        "crédence",
+        "évier",
+        "hotte",
+        "plaque de cuisson",
+        "plaque à induction",
+        "vitrocéramique",
+        "four",
+        "four vapeur",
+        "steamer",
+        "lave-vaisselle",
+        "frigo",
+        "réfrigérateur",
+        "électroménager",
+        "façades de cuisine",
+        "meubles de cuisine",
+        "armoires de cuisine",
+        "cuisine ouverte",
+        "cuisine en angle",
+        "cuisine linéaire",
+        "montage de cuisine ikea",
+        "kitchenette",
+        "plan de travail en granit"
+      ],
+      "popular": true,
+      "featured": true,
+      "image": "cuisine.jpg",
+      "order": 20,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous faire ?",
+          "type": "single",
+          "options": [
+            "Nouvelle cuisine complète",
+            "Changer les façades",
+            "Changer le plan de travail",
+            "Remplacer l’électroménager",
+            "Monter une cuisine déjà achetée"
+          ]
+        },
+        {
+          "label": "Configuration",
+          "type": "single",
+          "options": [
+            "Linéaire",
+            "En L",
+            "En U",
+            "Avec îlot",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Éléments souhaités",
+          "type": "multiple",
+          "options": [
+            "Îlot central",
+            "Plaque à induction",
+            "Four vapeur (steamer)",
+            "Lave-vaisselle",
+            "Hotte",
+            "Plan de travail en pierre"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "renovation-complete",
+      "name": "Rénovation complète",
+      "category": "pieces",
+      "icon": "hardhat",
+      "excerpt": "Plusieurs corps de métier coordonnés : appartement, maison, transformation",
+      "keywords": [
+        "appartement",
+        "maison",
+        "rénovation totale",
+        "rénovation globale",
+        "rénovation intégrale",
+        "transformation",
+        "transformation d'appartement",
+        "rénovation d'appartement",
+        "rénovation de maison",
+        "maison à rénover",
+        "remise à neuf",
+        "clé en main",
+        "entrepreneur général",
+        "corps de métier",
+        "coordination des travaux",
+        "plusieurs artisans",
+        "gros travaux",
+        "maison ancienne",
+        "rénovation lourde",
+        "appartement en ppe",
+        "réaménagement complet",
+        "rénovation de chalet",
+        "rénovation de villa",
+        "rénovation de ferme",
+        "bien à rénover",
+        "rénovation après achat",
+        "rafraîchissement complet",
+        "restructuration",
+        "pilotage de chantier"
+      ],
+      "popular": true,
+      "featured": false,
+      "image": "renovation-complete.jpg",
+      "order": 30,
+      "questions": [
+        {
+          "label": "Type de bien",
+          "type": "single",
+          "options": [
+            "Appartement",
+            "Maison individuelle",
+            "Chalet",
+            "Immeuble",
+            "Local commercial"
+          ]
+        },
+        {
+          "label": "Surface approximative",
+          "type": "single",
+          "options": [
+            "Moins de 60 m²",
+            "60 à 100 m²",
+            "100 à 150 m²",
+            "150 à 250 m²",
+            "Plus de 250 m²"
+          ]
+        },
+        {
+          "label": "Travaux envisagés",
+          "type": "multiple",
+          "options": [
+            "Cuisine",
+            "Salle de bain",
+            "Sols",
+            "Peinture",
+            "Électricité",
+            "Chauffage",
+            "Redistribution des pièces"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "combles-grenier",
+      "name": "Combles et grenier",
+      "category": "pieces",
+      "icon": "attic",
+      "excerpt": "Aménagement et isolation de combles et galetas habitables",
+      "keywords": [
+        "combles",
+        "grenier",
+        "galetas",
+        "aménagement des combles",
+        "combles aménageables",
+        "isolation des combles",
+        "mansarde",
+        "pièce mansardée",
+        "chambre sous les toits",
+        "comble perdu",
+        "rampant",
+        "lucarne",
+        "chien assis",
+        "trappe de grenier",
+        "plancher des combles",
+        "transformer le grenier",
+        "aménager le galetas",
+        "suite parentale sous combles",
+        "hauteur sous plafond",
+        "surface sous toiture"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 40,
+      "questions": [
+        {
+          "label": "Quel est votre projet ?",
+          "type": "single",
+          "options": [
+            "Aménagement en pièce habitable",
+            "Isolation uniquement",
+            "Rangement ou galetas",
+            "Création de lucarnes ou de fenêtres de toit"
+          ]
+        },
+        {
+          "label": "Surface au sol",
+          "type": "single",
+          "options": [
+            "Moins de 20 m²",
+            "20 à 40 m²",
+            "40 à 70 m²",
+            "Plus de 70 m²"
+          ]
+        },
+        {
+          "label": "Hauteur sous le faîte",
+          "type": "single",
+          "options": [
+            "Moins de 1,80 m",
+            "1,80 à 2,50 m",
+            "Plus de 2,50 m",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "cave-sous-sol",
+      "name": "Cave et sous-sol",
+      "category": "pieces",
+      "icon": "basement",
+      "excerpt": "Assainissement et aménagement de caves, sous-sols et carnotzets",
+      "keywords": [
+        "cave",
+        "sous-sol",
+        "carnotzet",
+        "aménager la cave",
+        "aménagement du sous-sol",
+        "assainissement de cave",
+        "sous-sol aménagé",
+        "buanderie",
+        "local technique",
+        "abri pc",
+        "abri antiatomique",
+        "transformer l'abri",
+        "salle de jeux",
+        "salle de sport",
+        "cave en pièce habitable",
+        "soupirail",
+        "cuvelage",
+        "étanchéité du sous-sol",
+        "local de rangement",
+        "atelier au sous-sol",
+        "chambre au sous-sol",
+        "cave voûtée"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 50,
+      "questions": [
+        {
+          "label": "Quel est votre projet ?",
+          "type": "single",
+          "options": [
+            "Assainir une cave humide",
+            "Aménager une pièce",
+            "Carnotzet",
+            "Buanderie ou local technique",
+            "Transformer un abri PC"
+          ]
+        },
+        {
+          "label": "Surface approximative",
+          "type": "single",
+          "options": [
+            "Moins de 15 m²",
+            "15 à 30 m²",
+            "30 à 60 m²",
+            "Plus de 60 m²"
+          ]
+        },
+        {
+          "label": "Problèmes constatés",
+          "type": "multiple",
+          "options": [
+            "Humidité",
+            "Odeur de moisi",
+            "Manque de lumière",
+            "Pas de chauffage",
+            "Aucun"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "bureau-teletravail",
+      "name": "Bureau et télétravail",
+      "category": "pieces",
+      "icon": "monitor",
+      "excerpt": "Bureau à domicile et espace de télétravail optimisé et sur mesure",
+      "keywords": [
+        "bureau",
+        "télétravail",
+        "home office",
+        "espace bureau",
+        "bureau à domicile",
+        "coin bureau",
+        "bureau sur mesure",
+        "bureau intégré",
+        "bureau à la maison",
+        "bureau dans un placard",
+        "aménager un bureau",
+        "bureau de jardin",
+        "ergonomie",
+        "bureau assis-debout",
+        "éclairage de bureau",
+        "rangement de bureau",
+        "bureau en mezzanine",
+        "visioconférence",
+        "bureau dans le salon",
+        "bureau indépendant",
+        "atelier"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 60,
+      "questions": [
+        {
+          "label": "Type d’espace",
+          "type": "single",
+          "options": [
+            "Pièce dédiée",
+            "Coin bureau dans une pièce",
+            "Bureau dans un placard",
+            "Bureau de jardin"
+          ]
+        },
+        {
+          "label": "Besoins",
+          "type": "multiple",
+          "options": [
+            "Mobilier sur mesure",
+            "Rangements",
+            "Éclairage",
+            "Prises et réseau",
+            "Isolation phonique"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "paysagisme",
+      "name": "Paysagisme",
+      "category": "exterieur",
+      "icon": "tree",
+      "excerpt": "Création et entretien de jardins, pelouses, haies et plantations",
+      "keywords": [
+        "paysagiste",
+        "jardinier",
+        "jardin",
+        "aménagement extérieur",
+        "création de jardin",
+        "créer un jardin",
+        "pelouse",
+        "gazon",
+        "gazon en rouleau",
+        "plantation",
+        "haie",
+        "taille de haie",
+        "élagage",
+        "abattage d'arbre",
+        "arbre",
+        "arbuste",
+        "massif",
+        "arrosage automatique",
+        "robot tondeuse",
+        "entretien de jardin",
+        "potager",
+        "bassin de jardin",
+        "étang",
+        "rocaille",
+        "enrochement",
+        "muret de jardin",
+        "talus",
+        "engazonnement",
+        "débroussaillage",
+        "tonte",
+        "éclairage de jardin"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 10,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous ?",
+          "type": "multiple",
+          "options": [
+            "Création de jardin",
+            "Entretien régulier",
+            "Pelouse ou gazon",
+            "Haies et plantations",
+            "Taille ou abattage d’arbres",
+            "Arrosage automatique"
+          ]
+        },
+        {
+          "label": "Surface du jardin",
+          "type": "single",
+          "options": [
+            "Moins de 200 m²",
+            "200 à 500 m²",
+            "500 à 1000 m²",
+            "Plus de 1000 m²"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "terrasse",
+      "name": "Terrasse",
+      "category": "exterieur",
+      "icon": "sun",
+      "excerpt": "Construction de terrasses en bois, composite ou dalles sur plots, balcons",
+      "keywords": [
+        "terrasse en bois",
+        "terrasse composite",
+        "construire une terrasse",
+        "deck",
+        "lame de terrasse",
+        "dalles sur plots",
+        "plots",
+        "platelage",
+        "balcon",
+        "étanchéité de balcon",
+        "mélèze",
+        "pin traité",
+        "bois exotique",
+        "ipé",
+        "terrasse sur pilotis",
+        "terrasse en pierre",
+        "terrasse en dalles",
+        "terrasse surélevée",
+        "huile de terrasse",
+        "nettoyage de terrasse",
+        "agrandir la terrasse",
+        "lambourde",
+        "sol extérieur",
+        "caillebotis"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 20,
+      "questions": [
+        {
+          "label": "Matériau souhaité",
+          "type": "single",
+          "options": [
+            "Bois",
+            "Composite",
+            "Dalles sur plots",
+            "Pierre ou carrelage",
+            "Pas de préférence"
+          ]
+        },
+        {
+          "label": "Surface approximative",
+          "type": "single",
+          "options": [
+            "Moins de 15 m²",
+            "15 à 30 m²",
+            "30 à 50 m²",
+            "Plus de 50 m²"
+          ]
+        },
+        {
+          "label": "Type de support",
+          "type": "single",
+          "options": [
+            "Terre ou gazon",
+            "Dalle en béton existante",
+            "Balcon ou toit plat",
+            "Terrain en pente"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "clotures-portails",
+      "name": "Clôtures et portails",
+      "category": "exterieur",
+      "icon": "fence",
+      "excerpt": "Clôtures, brise-vue, portails coulissants ou battants et motorisation",
+      "keywords": [
+        "clôture",
+        "pose de clôture",
+        "portail",
+        "portail automatique",
+        "portail coulissant",
+        "portail battant",
+        "motorisation de portail",
+        "portail électrique",
+        "grillage",
+        "treillis soudé",
+        "panneau rigide",
+        "palissade",
+        "brise-vue",
+        "clôture en bois",
+        "clôture alu",
+        "gabion",
+        "portillon",
+        "barrière",
+        "limite de propriété",
+        "mur de clôture",
+        "piquet",
+        "brise-vent",
+        "occultation",
+        "clôture pour chien",
+        "portail en fer forgé",
+        "haie artificielle",
+        "clôture de jardin"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 30,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous installer ?",
+          "type": "multiple",
+          "options": [
+            "Clôture",
+            "Brise-vue",
+            "Portail",
+            "Portillon",
+            "Motorisation de portail"
+          ]
+        },
+        {
+          "label": "Longueur de clôture",
+          "type": "single",
+          "options": [
+            "Moins de 20 m",
+            "20 à 50 m",
+            "50 à 100 m",
+            "Plus de 100 m",
+            "Pas de clôture"
+          ]
+        },
+        {
+          "label": "Matériau souhaité",
+          "type": "single",
+          "options": [
+            "Bois",
+            "Métal ou alu",
+            "Grillage",
+            "Gabions",
+            "Pas de préférence"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "piscine-spa",
+      "name": "Piscine et spa",
+      "category": "exterieur",
+      "icon": "waves",
+      "excerpt": "Construction, rénovation et entretien de piscines, spas et saunas",
+      "keywords": [
+        "piscine",
+        "spa",
+        "jacuzzi",
+        "bain à remous",
+        "piscine enterrée",
+        "piscine hors-sol",
+        "piscine coque",
+        "liner",
+        "pisciniste",
+        "filtration de piscine",
+        "pompe de piscine",
+        "chauffage de piscine",
+        "couverture de piscine",
+        "abri de piscine",
+        "volet de piscine",
+        "sauna",
+        "hammam",
+        "bain nordique",
+        "hot tub",
+        "nage à contre-courant",
+        "électrolyseur",
+        "traitement de l'eau de piscine",
+        "fuite de piscine",
+        "bassin de nage",
+        "piscine naturelle",
+        "hivernage",
+        "plage de piscine"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 40,
+      "questions": [
+        {
+          "label": "Quel est votre projet ?",
+          "type": "single",
+          "options": [
+            "Construction de piscine",
+            "Rénovation de piscine",
+            "Spa ou jacuzzi",
+            "Sauna ou hammam",
+            "Entretien ou dépannage"
+          ]
+        },
+        {
+          "label": "Type de piscine",
+          "type": "single",
+          "options": [
+            "Enterrée",
+            "Semi-enterrée",
+            "Hors-sol",
+            "Naturelle",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Options souhaitées",
+          "type": "multiple",
+          "options": [
+            "Couverture ou volet",
+            "Chauffage",
+            "Nage à contre-courant",
+            "Éclairage",
+            "Abri"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "pavage-dallage",
+      "name": "Pavage et dallage",
+      "category": "exterieur",
+      "icon": "pavers",
+      "excerpt": "Allées, places de parc, cours et chemins en pavés, dalles ou enrobé",
+      "keywords": [
+        "pavé",
+        "paveur",
+        "allée",
+        "allée de garage",
+        "accès au garage",
+        "place de parc",
+        "parking",
+        "cour pavée",
+        "chemin d'accès",
+        "enrobé",
+        "goudron",
+        "goudronnage",
+        "bitume",
+        "gravier",
+        "gravillon",
+        "pavé autobloquant",
+        "pavé drainant",
+        "bordure",
+        "béton désactivé",
+        "stabilisé",
+        "pavé en granit",
+        "dalle extérieure",
+        "nid de poule",
+        "chemin de jardin",
+        "pavés qui s'affaissent"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 50,
+      "questions": [
+        {
+          "label": "Zone à aménager",
+          "type": "multiple",
+          "options": [
+            "Allée de garage",
+            "Place de parc",
+            "Cour",
+            "Chemin piéton",
+            "Abords de la maison"
+          ]
+        },
+        {
+          "label": "Revêtement souhaité",
+          "type": "single",
+          "options": [
+            "Pavés",
+            "Dalles",
+            "Enrobé",
+            "Gravier",
+            "Béton désactivé",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Surface approximative",
+          "type": "single",
+          "options": [
+            "Moins de 30 m²",
+            "30 à 80 m²",
+            "80 à 150 m²",
+            "Plus de 150 m²"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "veranda-pergola",
+      "name": "Véranda et pergola",
+      "category": "exterieur",
+      "icon": "pergola",
+      "excerpt": "Vérandas, jardins d’hiver, pergolas bioclimatiques et couverts",
+      "keywords": [
+        "véranda",
+        "construction de véranda",
+        "pergola",
+        "pergola bioclimatique",
+        "jardin d'hiver",
+        "extension vitrée",
+        "couvert",
+        "couvert de terrasse",
+        "abri de terrasse",
+        "toit de terrasse",
+        "lames orientables",
+        "carport",
+        "couvert à voiture",
+        "abri voiture",
+        "pergola alu",
+        "pergola en bois",
+        "véranda alu",
+        "toiture vitrée",
+        "polycarbonate",
+        "auvent",
+        "marquise",
+        "tonnelle",
+        "pièce vitrée",
+        "sas d'entrée"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 60,
+      "questions": [
+        {
+          "label": "Type de projet",
+          "type": "single",
+          "options": [
+            "Véranda",
+            "Pergola bioclimatique",
+            "Pergola avec toile",
+            "Couvert de terrasse",
+            "Carport"
+          ]
+        },
+        {
+          "label": "Surface approximative",
+          "type": "single",
+          "options": [
+            "Moins de 15 m²",
+            "15 à 25 m²",
+            "25 à 40 m²",
+            "Plus de 40 m²"
+          ]
+        },
+        {
+          "label": "Structure souhaitée",
+          "type": "single",
+          "options": [
+            "Aluminium",
+            "Bois",
+            "Acier",
+            "Pas de préférence"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "facade",
+      "name": "Façade",
+      "category": "exterieur",
+      "icon": "building",
+      "excerpt": "Nettoyage, crépi, peinture et réparation de façades",
+      "keywords": [
+        "ravalement",
+        "ravalement de façade",
+        "rénover la façade",
+        "crépi",
+        "crépissage",
+        "enduit de façade",
+        "façadier",
+        "peinture de façade",
+        "nettoyage de façade",
+        "façade sale",
+        "fissure de façade",
+        "lavage haute pression",
+        "hydrofuge",
+        "anti-mousse",
+        "algues",
+        "bardage",
+        "bardage bois",
+        "revêtement de façade",
+        "échafaudage",
+        "mur extérieur",
+        "sablage",
+        "rejointoiement",
+        "graffiti",
+        "façade ventilée",
+        "pierre de taille",
+        "façade décrépie"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 70,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous faire ?",
+          "type": "multiple",
+          "options": [
+            "Nettoyage",
+            "Peinture",
+            "Nouveau crépi",
+            "Réparation de fissures",
+            "Bardage",
+            "Traitement hydrofuge"
+          ]
+        },
+        {
+          "label": "Type de bâtiment ?",
+          "type": "single",
+          "options": [
+            "Maison individuelle",
+            "Maison mitoyenne",
+            "Immeuble"
+          ]
+        },
+        {
+          "label": "Surface de façade",
+          "type": "single",
+          "options": [
+            "Moins de 100 m²",
+            "100 à 200 m²",
+            "200 à 400 m²",
+            "Plus de 400 m²",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "systemes-de-securite",
+      "name": "Systèmes de sécurité",
+      "category": "securite",
+      "icon": "camera",
+      "excerpt": "Alarmes, vidéosurveillance, interphones et contrôle d’accès",
+      "keywords": [
+        "alarme",
+        "installation d'alarme",
+        "système d'alarme",
+        "alarme maison",
+        "alarme sans fil",
+        "vidéosurveillance",
+        "caméra de surveillance",
+        "caméra",
+        "caméra extérieure",
+        "détecteur de mouvement",
+        "détecteur de fumée",
+        "détecteur d'ouverture",
+        "contrôle d'accès",
+        "interphone",
+        "visiophone",
+        "digicode",
+        "badge",
+        "télésurveillance",
+        "cambriolage",
+        "anti-cambriolage",
+        "sirène",
+        "sécurité de la maison",
+        "protection contre le vol"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 10,
+      "questions": [
+        {
+          "label": "Équipements souhaités",
+          "type": "multiple",
+          "options": [
+            "Alarme",
+            "Caméras de surveillance",
+            "Interphone ou visiophone",
+            "Contrôle d’accès",
+            "Détecteurs de fumée",
+            "Télésurveillance"
+          ]
+        },
+        {
+          "label": "Type de bien",
+          "type": "single",
+          "options": [
+            "Appartement",
+            "Maison",
+            "Commerce ou bureau",
+            "Immeuble"
+          ]
+        },
+        {
+          "label": "Système existant",
+          "type": "single",
+          "options": [
+            "Aucun",
+            "À compléter",
+            "À remplacer"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "serrurerie",
+      "name": "Serrurerie",
+      "category": "securite",
+      "icon": "key",
+      "excerpt": "Changement de serrures et cylindres, blindage, ouverture de porte",
+      "keywords": [
+        "serrurier",
+        "serrure",
+        "changer la serrure",
+        "serrure bloquée",
+        "cylindre",
+        "barillet",
+        "clé",
+        "copie de clé",
+        "clé perdue",
+        "clé cassée",
+        "porte claquée",
+        "ouverture de porte",
+        "porte bloquée",
+        "enfermé dehors",
+        "serrure multipoints",
+        "serrure de sécurité",
+        "serrure connectée",
+        "blindage de porte",
+        "cornière anti-pince",
+        "coffre-fort",
+        "verrou",
+        "kaba",
+        "boîte aux lettres",
+        "métallerie",
+        "grille de défense",
+        "ferronnerie",
+        "clé de sécurité"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 20,
+      "questions": [
+        {
+          "label": "Quel est le besoin ?",
+          "type": "single",
+          "options": [
+            "Ouverture de porte (urgence)",
+            "Changer une serrure ou un cylindre",
+            "Blinder une porte",
+            "Copie de clés",
+            "Coffre-fort",
+            "Métallerie (grille, garde-corps)"
+          ]
+        },
+        {
+          "label": "Type de porte",
+          "type": "single",
+          "options": [
+            "Porte d’entrée de maison",
+            "Porte palière d’appartement",
+            "Porte de garage",
+            "Autre"
+          ]
+        },
+        {
+          "label": "Quel est le degré d’urgence ?",
+          "type": "single",
+          "options": [
+            "Immédiat",
+            "Sous 48 h",
+            "Pas pressé"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "accessibilite-pmr",
+      "name": "Accessibilité PMR",
+      "category": "securite",
+      "icon": "accessibility",
+      "excerpt": "Adaptation du logement : douche sans seuil, rampes, monte-escalier",
+      "keywords": [
+        "pmr",
+        "accessibilité",
+        "handicap",
+        "mobilité réduite",
+        "fauteuil roulant",
+        "personne âgée",
+        "senior",
+        "maintien à domicile",
+        "adaptation du logement",
+        "logement adapté",
+        "monte-escalier",
+        "rampe d'accès",
+        "barre d'appui",
+        "douche accessible",
+        "douche sans seuil",
+        "siège de douche",
+        "wc surélevé",
+        "élargir une porte",
+        "suppression de seuil",
+        "plateforme élévatrice",
+        "ascenseur privatif",
+        "salle de bain adaptée",
+        "ergothérapeute",
+        "sans obstacles",
+        "baignoire à porte",
+        "vieillir chez soi"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 30,
+      "questions": [
+        {
+          "label": "Aménagements souhaités",
+          "type": "multiple",
+          "options": [
+            "Douche sans seuil",
+            "WC surélevé et barres d’appui",
+            "Rampe d’accès",
+            "Monte-escalier",
+            "Élargissement de portes",
+            "Plateforme élévatrice"
+          ]
+        },
+        {
+          "label": "Pour qui ?",
+          "type": "single",
+          "options": [
+            "Personne âgée",
+            "Personne en fauteuil roulant",
+            "Mobilité réduite temporaire",
+            "Prévention"
+          ]
+        },
+        {
+          "label": "Une prise en charge (AI, assurance) est-elle prévue ?",
+          "type": "single",
+          "options": [
+            "Oui",
+            "Non",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dressing-placards",
+      "name": "Dressing et placards",
+      "category": "agencement",
+      "icon": "shirt",
+      "excerpt": "Dressings, placards et penderies sur mesure, rangements sous pente",
+      "keywords": [
+        "dressing",
+        "créer un dressing",
+        "placard",
+        "installation de placards",
+        "placard sur mesure",
+        "armoire",
+        "armoire encastrée",
+        "armoire murale",
+        "penderie",
+        "rangement",
+        "rangement sur mesure",
+        "porte de placard",
+        "portes coulissantes de placard",
+        "garde-robe",
+        "walk-in",
+        "rangement sous pente",
+        "rangement sous escalier",
+        "réduit",
+        "aménagement de placard",
+        "tiroirs",
+        "dressing sur mesure",
+        "dressing ouvert",
+        "dressing d'angle",
+        "vestiaire",
+        "meuble d'entrée",
+        "range-chaussures"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 10,
+      "questions": [
+        {
+          "label": "Type de rangement",
+          "type": "single",
+          "options": [
+            "Dressing ouvert",
+            "Placard avec portes",
+            "Armoire encastrée",
+            "Rangement sous pente",
+            "Aménagement de réduit"
+          ]
+        },
+        {
+          "label": "Largeur approximative",
+          "type": "single",
+          "options": [
+            "Moins de 1,5 m",
+            "1,5 à 3 m",
+            "3 à 5 m",
+            "Plus de 5 m"
+          ]
+        },
+        {
+          "label": "Portes souhaitées",
+          "type": "single",
+          "options": [
+            "Coulissantes",
+            "Battantes",
+            "Sans portes",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "bibliotheque",
+      "name": "Bibliothèque",
+      "category": "agencement",
+      "icon": "book",
+      "excerpt": "Bibliothèques, meubles TV et rangements muraux sur mesure",
+      "keywords": [
+        "bibliothèque sur mesure",
+        "bibliothèque murale",
+        "bibliothèque en bois",
+        "meuble tv",
+        "meuble télé",
+        "mur tv",
+        "habillage de mur tv",
+        "meuble de salon",
+        "étagère",
+        "étagère murale",
+        "rayonnage",
+        "meuble sur mesure",
+        "niche",
+        "meuble bas",
+        "banquette",
+        "meuble hi-fi",
+        "vitrine",
+        "livres",
+        "meuble encastré",
+        "mur de rangement"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 20,
+      "questions": [
+        {
+          "label": "Type de meuble",
+          "type": "multiple",
+          "options": [
+            "Bibliothèque",
+            "Meuble TV",
+            "Mur de rangement",
+            "Banquette",
+            "Bureau intégré"
+          ]
+        },
+        {
+          "label": "Largeur approximative",
+          "type": "single",
+          "options": [
+            "Moins de 2 m",
+            "2 à 4 m",
+            "Plus de 4 m"
+          ]
+        },
+        {
+          "label": "Finition souhaitée",
+          "type": "single",
+          "options": [
+            "Bois naturel",
+            "Laqué",
+            "Mélaminé",
+            "Pas de préférence"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "agencement-interieur",
+      "name": "Agencement intérieur",
+      "category": "agencement",
+      "icon": "home",
+      "excerpt": "Optimisation de l’espace, cloisons amovibles, verrières et mezzanines",
+      "keywords": [
+        "agencement",
+        "optimisation de l'espace",
+        "aménagement intérieur",
+        "cloison amovible",
+        "cloison mobile",
+        "cloison japonaise",
+        "verrière",
+        "verrière d'atelier",
+        "verrière intérieure",
+        "mezzanine",
+        "lit escamotable",
+        "lit mezzanine",
+        "petit espace",
+        "studio",
+        "aménager un studio",
+        "plan d'aménagement",
+        "redistribution des pièces",
+        "créer une chambre",
+        "claustra",
+        "paravent",
+        "meuble modulable",
+        "gain de place",
+        "coin nuit",
+        "chambre d'enfant",
+        "space planning"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 30,
+      "questions": [
+        {
+          "label": "Quel est votre objectif ?",
+          "type": "single",
+          "options": [
+            "Créer une pièce supplémentaire",
+            "Gagner de la place",
+            "Ouvrir l’espace",
+            "Réorganiser un studio"
+          ]
+        },
+        {
+          "label": "Solutions envisagées",
+          "type": "multiple",
+          "options": [
+            "Verrière",
+            "Cloison amovible",
+            "Mezzanine",
+            "Lit escamotable",
+            "Rangements intégrés"
+          ]
+        },
+        {
+          "label": "Surface du logement",
+          "type": "single",
+          "options": [
+            "Moins de 40 m²",
+            "40 à 80 m²",
+            "80 à 120 m²",
+            "Plus de 120 m²"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "homme-a-tout-faire",
+      "name": "Homme à tout faire",
+      "category": "services",
+      "icon": "wrench",
+      "excerpt": "Petits travaux : montage de meubles, fixations, petites réparations",
+      "keywords": [
+        "bricoleur",
+        "bricolage",
+        "petits travaux",
+        "montage de meubles",
+        "montage de meubles ikea",
+        "ikea",
+        "fixation",
+        "fixer un tableau",
+        "accrocher un cadre",
+        "percer",
+        "perçage",
+        "tringle à rideaux",
+        "poser une étagère",
+        "joint silicone",
+        "petites réparations",
+        "dépannage à domicile",
+        "multiservice",
+        "handyman",
+        "factotum",
+        "rideaux",
+        "poser un miroir",
+        "monter un lit",
+        "suspendre une lampe",
+        "changer une ampoule",
+        "porte qui grince",
+        "cheville",
+        "conciergerie"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 10,
+      "questions": [
+        {
+          "label": "Type de travaux",
+          "type": "multiple",
+          "options": [
+            "Montage de meubles",
+            "Fixations (tableaux, étagères, rideaux)",
+            "Petites réparations",
+            "Joints silicone",
+            "Remplacement de luminaires"
+          ]
+        },
+        {
+          "label": "Durée estimée",
+          "type": "single",
+          "options": [
+            "Moins de 2 heures",
+            "Une demi-journée",
+            "Une journée",
+            "Plusieurs jours"
+          ]
+        },
+        {
+          "label": "Décrivez les tâches à réaliser",
+          "type": "text",
+          "options": []
+        }
+      ]
+    },
+    {
+      "slug": "nettoyage-fin-de-chantier",
+      "name": "Nettoyage de fin de chantier",
+      "category": "services",
+      "icon": "broom",
+      "excerpt": "Nettoyage après travaux et de fin de bail, remise en état",
+      "keywords": [
+        "nettoyage",
+        "nettoyage après travaux",
+        "nettoyage de chantier",
+        "nettoyage de fin de bail",
+        "fin de bail",
+        "nettoyage avec garantie",
+        "état des lieux",
+        "remise en état",
+        "remise des clés",
+        "poussière",
+        "nettoyage des vitres",
+        "lavage de vitres",
+        "décapage des sols",
+        "shampoing de moquette",
+        "désinfection",
+        "évacuation des déchets",
+        "nettoyage d'appartement",
+        "nettoyage de maison",
+        "dépoussiérage",
+        "société de nettoyage",
+        "nettoyage de déménagement",
+        "nettoyage après rénovation"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 20,
+      "questions": [
+        {
+          "label": "Type de nettoyage",
+          "type": "single",
+          "options": [
+            "Fin de chantier",
+            "Fin de bail avec garantie",
+            "Remise en état",
+            "Vitres uniquement"
+          ]
+        },
+        {
+          "label": "Taille du logement",
+          "type": "single",
+          "options": [
+            "Studio ou 1,5 pièce",
+            "2,5 à 3,5 pièces",
+            "4,5 à 5,5 pièces",
+            "Plus de 5,5 pièces",
+            "Maison"
+          ]
+        },
+        {
+          "label": "Date souhaitée ou date de remise des clés",
+          "type": "text",
+          "options": []
+        }
+      ]
+    },
+    {
+      "slug": "aide-au-demenagement",
+      "name": "Aide au déménagement",
+      "category": "services",
+      "icon": "box",
+      "excerpt": "Manutention, transport, débarras et garde-meubles pendant les travaux",
+      "keywords": [
+        "déménagement",
+        "déménageur",
+        "déménager",
+        "manutention",
+        "transport de meubles",
+        "camion de déménagement",
+        "monte-meubles",
+        "carton",
+        "garde-meubles",
+        "stockage",
+        "box de stockage",
+        "débarras",
+        "vide-maison",
+        "évacuation d'encombrants",
+        "encombrants",
+        "transport de piano",
+        "emballage",
+        "démontage de meubles",
+        "déménagement pendant les travaux",
+        "petit déménagement",
+        "porter des meubles",
+        "vider la cave"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 30,
+      "questions": [
+        {
+          "label": "Type de prestation",
+          "type": "multiple",
+          "options": [
+            "Transport",
+            "Manutention et portage",
+            "Emballage",
+            "Démontage et remontage",
+            "Garde-meubles",
+            "Débarras"
+          ]
+        },
+        {
+          "label": "Volume à déplacer",
+          "type": "single",
+          "options": [
+            "Quelques meubles",
+            "Studio ou 1,5 pièce",
+            "2,5 à 3,5 pièces",
+            "4,5 pièces ou plus"
+          ]
+        },
+        {
+          "label": "Distance",
+          "type": "single",
+          "options": [
+            "Même bâtiment",
+            "Même localité",
+            "Moins de 50 km",
+            "Plus de 50 km"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "home-staging",
+      "name": "Home staging",
+      "category": "conseil",
+      "icon": "star",
+      "excerpt": "Mise en valeur de votre bien pour le vendre ou le louer plus vite",
+      "keywords": [
+        "home stager",
+        "valorisation immobilière",
+        "vente immobilière",
+        "vendre sa maison",
+        "vendre son appartement",
+        "mise en valeur",
+        "décoration pour la vente",
+        "photos immobilières",
+        "dépersonnalisation",
+        "désencombrement",
+        "mise en scène",
+        "maison témoin",
+        "relooking avant vente",
+        "location de mobilier",
+        "staging virtuel",
+        "louer plus vite",
+        "vendre plus vite",
+        "valoriser un bien",
+        "courtier",
+        "visite immobilière"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 10,
+      "questions": [
+        {
+          "label": "Objectif",
+          "type": "single",
+          "options": [
+            "Vente",
+            "Location",
+            "Photos d’annonce"
+          ]
+        },
+        {
+          "label": "Type de bien",
+          "type": "single",
+          "options": [
+            "Appartement",
+            "Maison",
+            "Chalet",
+            "Local commercial"
+          ]
+        },
+        {
+          "label": "Le bien est-il meublé ?",
+          "type": "single",
+          "options": [
+            "Oui, habité",
+            "Partiellement",
+            "Vide"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "architecte-ingenieur",
+      "name": "Architecte / ingénieur",
+      "category": "conseil",
+      "icon": "ruler",
+      "excerpt": "Plans, mise à l’enquête, permis de construire et direction des travaux",
+      "keywords": [
+        "architecte",
+        "ingénieur",
+        "ingénieur civil",
+        "plans de maison",
+        "plans d'architecte",
+        "plan 3d",
+        "permis",
+        "permis de construire",
+        "demande de permis",
+        "mise à l'enquête",
+        "autorisation de construire",
+        "dossier d'enquête",
+        "direction des travaux",
+        "maître d'œuvre",
+        "bureau d'architecture",
+        "dessinateur en bâtiment",
+        "étude de faisabilité",
+        "relevé",
+        "avant-projet",
+        "ingénieur structure",
+        "calcul statique",
+        "statique",
+        "géomètre",
+        "suivi de chantier",
+        "appel d'offres",
+        "soumission",
+        "construction neuve",
+        "construire une maison",
+        "estimation des coûts",
+        "conception"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 20,
+      "questions": [
+        {
+          "label": "Besoin principal",
+          "type": "multiple",
+          "options": [
+            "Plans et conception",
+            "Mise à l’enquête et permis",
+            "Calculs d’ingénieur",
+            "Direction des travaux",
+            "Étude de faisabilité"
+          ]
+        },
+        {
+          "label": "Type de projet",
+          "type": "single",
+          "options": [
+            "Rénovation",
+            "Transformation",
+            "Extension ou surélévation",
+            "Construction neuve"
+          ]
+        },
+        {
+          "label": "Budget approximatif des travaux",
+          "type": "single",
+          "options": [
+            "Moins de CHF 100’000",
+            "CHF 100’000 à 300’000",
+            "CHF 300’000 à 1 million",
+            "Plus de CHF 1 million",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "decorateur-interieur",
+      "name": "Décorateur d’intérieur",
+      "category": "conseil",
+      "icon": "palette",
+      "excerpt": "Conseil en ambiance, couleurs, mobilier et architecture d’intérieur",
+      "keywords": [
+        "décorateur",
+        "décoratrice",
+        "architecte d'intérieur",
+        "design d'intérieur",
+        "designer d'intérieur",
+        "décoration intérieure",
+        "décoration",
+        "déco",
+        "conseil couleur",
+        "choix des couleurs",
+        "harmonie des couleurs",
+        "ambiance",
+        "mobilier",
+        "aménagement du salon",
+        "moodboard",
+        "rideaux sur mesure",
+        "tissus",
+        "relooking",
+        "style scandinave",
+        "coaching déco",
+        "choix des matériaux",
+        "luminaires design",
+        "agencement du mobilier"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 30,
+      "questions": [
+        {
+          "label": "Pièces concernées",
+          "type": "multiple",
+          "options": [
+            "Salon",
+            "Chambre",
+            "Cuisine",
+            "Salle de bain",
+            "Bureau",
+            "Tout le logement"
+          ]
+        },
+        {
+          "label": "Type d’accompagnement",
+          "type": "single",
+          "options": [
+            "Conseil ponctuel",
+            "Projet complet avec plans 3D",
+            "Achats et suivi de la mise en place"
+          ]
+        },
+        {
+          "label": "Style recherché",
+          "type": "text",
+          "options": []
+        }
+      ]
+    },
+    {
+      "slug": "desamiantage",
+      "name": "Désamiantage",
+      "category": "traitements",
+      "icon": "alert",
+      "excerpt": "Diagnostic et retrait sécurisé d’amiante et autres polluants",
+      "keywords": [
+        "amiante",
+        "diagnostic amiante",
+        "expertise amiante",
+        "analyse amiante",
+        "repérage amiante",
+        "retrait d'amiante",
+        "enlever l'amiante",
+        "désamianteur",
+        "eternit",
+        "fibrociment",
+        "plaques ondulées",
+        "flocage amiante",
+        "colle amiante",
+        "dalles amiantées",
+        "plomb",
+        "diagnostic plomb",
+        "pcb",
+        "polluants",
+        "substances dangereuses",
+        "matériaux dangereux",
+        "suva",
+        "maison avant 1990",
+        "dépollution",
+        "radon",
+        "mesure du radon",
+        "diagnostic avant travaux"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 10,
+      "questions": [
+        {
+          "label": "Que souhaitez-vous ?",
+          "type": "single",
+          "options": [
+            "Diagnostic avant travaux",
+            "Retrait d’amiante",
+            "Analyse d’un échantillon",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Matériaux concernés",
+          "type": "multiple",
+          "options": [
+            "Fibrociment (Eternit)",
+            "Colles de carrelage",
+            "Revêtements de sol",
+            "Flocage ou isolation",
+            "Joints de fenêtres",
+            "Je ne sais pas"
+          ]
+        },
+        {
+          "label": "Année de construction",
+          "type": "single",
+          "options": [
+            "Avant 1960",
+            "1960 à 1990",
+            "Après 1990",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "traitement-humidite",
+      "name": "Traitement de l’humidité",
+      "category": "traitements",
+      "icon": "droplets",
+      "excerpt": "Murs humides, moisissures, remontées capillaires et assèchement",
+      "keywords": [
+        "mur humide",
+        "moisissure",
+        "moisissure dans la chambre",
+        "moisi",
+        "odeur de moisi",
+        "champignon",
+        "salpêtre",
+        "remontées capillaires",
+        "injection",
+        "assèchement",
+        "déshumidificateur",
+        "déshumidification",
+        "condensation",
+        "infiltration",
+        "infiltration d'eau",
+        "tache d'humidité",
+        "humidité salle de bain",
+        "mérule",
+        "drainage",
+        "cave humide",
+        "mur qui suinte",
+        "séchage après dégât d'eau",
+        "traitement anti-moisissure",
+        "barrière étanche",
+        "mur enterré"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 20,
+      "questions": [
+        {
+          "label": "Problèmes constatés",
+          "type": "multiple",
+          "options": [
+            "Moisissures",
+            "Taches d’humidité",
+            "Salpêtre",
+            "Condensation",
+            "Odeur de moisi",
+            "Infiltration d’eau"
+          ]
+        },
+        {
+          "label": "Où se situe le problème ?",
+          "type": "multiple",
+          "options": [
+            "Cave ou sous-sol",
+            "Salle de bain",
+            "Chambre",
+            "Murs extérieurs",
+            "Plusieurs pièces"
+          ]
+        },
+        {
+          "label": "Depuis quand ?",
+          "type": "single",
+          "options": [
+            "Récent (dégât d’eau)",
+            "Quelques mois",
+            "Plusieurs années",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "gestion-nuisibles",
+      "name": "Gestion des nuisibles",
+      "category": "traitements",
+      "icon": "bug",
+      "excerpt": "Insectes du bois, rongeurs, guêpes, punaises de lit et fouines",
+      "keywords": [
+        "nuisible",
+        "dératisation",
+        "dératiseur",
+        "rat",
+        "souris",
+        "rongeur",
+        "punaise de lit",
+        "cafard",
+        "blatte",
+        "guêpe",
+        "nid de guêpes",
+        "frelon",
+        "fourmi",
+        "termite",
+        "capricorne",
+        "vrillette",
+        "insectes xylophages",
+        "traitement de charpente",
+        "traitement du bois",
+        "désinsectisation",
+        "fouine",
+        "martre",
+        "mite",
+        "pigeon",
+        "anti-pigeons",
+        "puce",
+        "lutte antiparasitaire"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 30,
+      "questions": [
+        {
+          "label": "Type de nuisible",
+          "type": "single",
+          "options": [
+            "Insectes du bois",
+            "Rats ou souris",
+            "Punaises de lit",
+            "Cafards",
+            "Guêpes ou frelons",
+            "Fouines ou martres",
+            "Autre"
+          ]
+        },
+        {
+          "label": "Lieu concerné",
+          "type": "single",
+          "options": [
+            "Appartement",
+            "Maison",
+            "Charpente ou combles",
+            "Jardin",
+            "Local commercial"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "cave-a-vin",
+      "name": "Cave à vin",
+      "category": "confort",
+      "icon": "wine",
+      "excerpt": "Caves à vin climatisées, casiers et armoires à vin sur mesure",
+      "keywords": [
+        "vin",
+        "cave à vin sur mesure",
+        "cave climatisée",
+        "climatiseur de cave",
+        "armoire à vin",
+        "cellier",
+        "bouteilles de vin",
+        "rangement de bouteilles",
+        "casier à bouteilles",
+        "range-bouteilles",
+        "œnothèque",
+        "vitrine à vin",
+        "cave de vieillissement",
+        "température de cave",
+        "hygrométrie",
+        "mur à vin",
+        "salle de dégustation",
+        "cave à vin vitrée",
+        "collection de vins"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 10,
+      "questions": [
+        {
+          "label": "Type de projet",
+          "type": "single",
+          "options": [
+            "Cave enterrée à climatiser",
+            "Pièce dédiée vitrée",
+            "Armoire à vin",
+            "Casiers et rangements"
+          ]
+        },
+        {
+          "label": "Capacité souhaitée",
+          "type": "single",
+          "options": [
+            "Moins de 200 bouteilles",
+            "200 à 500 bouteilles",
+            "500 à 1000 bouteilles",
+            "Plus de 1000 bouteilles"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "home-cinema",
+      "name": "Home cinéma",
+      "category": "confort",
+      "icon": "film",
+      "excerpt": "Salle dédiée, projection, son surround et traitement acoustique",
+      "keywords": [
+        "salle de cinéma",
+        "cinéma privé",
+        "salle de projection",
+        "vidéoprojecteur",
+        "projecteur",
+        "écran de projection",
+        "écran motorisé",
+        "son surround",
+        "dolby atmos",
+        "enceinte",
+        "barre de son",
+        "traitement acoustique",
+        "panneau acoustique",
+        "acoustique",
+        "hi-fi",
+        "home theater",
+        "audiovisuel",
+        "intégrateur audio-vidéo",
+        "fauteuil de cinéma",
+        "système audio",
+        "salle multimédia",
+        "salle tv"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 20,
+      "questions": [
+        {
+          "label": "Type d’espace",
+          "type": "single",
+          "options": [
+            "Salle dédiée",
+            "Salon",
+            "Sous-sol"
+          ]
+        },
+        {
+          "label": "Équipements souhaités",
+          "type": "multiple",
+          "options": [
+            "Vidéoprojecteur et écran",
+            "Son surround",
+            "Traitement acoustique",
+            "Fauteuils",
+            "Éclairage d’ambiance",
+            "Pilotage domotique"
+          ]
+        },
+        {
+          "label": "Surface de la pièce",
+          "type": "single",
+          "options": [
+            "Moins de 15 m²",
+            "15 à 25 m²",
+            "25 à 40 m²",
+            "Plus de 40 m²"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "domotique",
+      "name": "Domotique (smart home)",
+      "category": "confort",
+      "icon": "smartphone",
+      "excerpt": "Maison connectée : éclairage, chauffage, stores et sécurité pilotés à distance",
+      "keywords": [
+        "smart home",
+        "installation domotique",
+        "maison connectée",
+        "maison intelligente",
+        "domoticien",
+        "knx",
+        "loxone",
+        "digitalstrom",
+        "volet connecté",
+        "store connecté",
+        "éclairage connecté",
+        "thermostat connecté",
+        "prise connectée",
+        "objet connecté",
+        "pilotage à distance",
+        "automatisation",
+        "commande centralisée",
+        "commande vocale",
+        "alexa",
+        "google home",
+        "home assistant",
+        "application smartphone",
+        "scénario",
+        "multiroom",
+        "gestion de l'énergie",
+        "wifi",
+        "câblage réseau",
+        "philips hue",
+        "zigbee"
+      ],
+      "popular": false,
+      "featured": false,
+      "image": "",
+      "order": 30,
+      "questions": [
+        {
+          "label": "Fonctions à piloter",
+          "type": "multiple",
+          "options": [
+            "Éclairage",
+            "Chauffage",
+            "Stores et volets",
+            "Sécurité et alarme",
+            "Audio multiroom",
+            "Gestion de l’énergie"
+          ]
+        },
+        {
+          "label": "Type de projet",
+          "type": "single",
+          "options": [
+            "Construction ou rénovation lourde",
+            "Logement existant (sans fil)",
+            "Extension d’un système existant"
+          ]
+        },
+        {
+          "label": "Système préféré",
+          "type": "single",
+          "options": [
+            "KNX",
+            "Loxone",
+            "Solution sans fil",
+            "Pas de préférence",
+            "Je ne sais pas"
+          ]
+        }
+      ]
+    }
+  ]
+}
