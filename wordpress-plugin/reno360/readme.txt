@@ -4,7 +4,7 @@ Tags: devis, travaux, artisans, crm, formulaire
 Requires at least: 6.2
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,6 +39,9 @@ Reno360 → Travaux et mots-clés → ouvrir le travail → taper le mot-clé pu
 Non. Elles sont supprimées à la désinstallation seulement si l'option est cochée dans Réglages → Données.
 
 == Changelog ==
+
+= 1.0.2 =
+* Les pages Reno360 s'affichent toujours en pleine largeur et sans titre, y compris la page d'accueil des thèmes à blocs (Twenty Twenty-Five…) où le modèle ne peut pas être choisi.
 
 = 1.0.1 =
 * Aucun numéro de téléphone affiché par défaut ; tous les textes s'adaptent quand le champ est vide.

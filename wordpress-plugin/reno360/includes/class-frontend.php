@@ -16,6 +16,9 @@ class Frontend {
 
 	const PAGE_TEMPLATE = 'reno360-full-width.php';
 
+	/** Shortcodes qui forment une page entière et appellent la pleine largeur. */
+	const PAGE_SHORTCODES = array( 'reno360_home', 'reno360_activities', 'reno360_request_form', 'reno360_client_portal', 'reno360_artisan', 'reno360_partner_form' );
+
 	/** @var bool */
 	private static $assets_done = false;
 
@@ -157,8 +160,44 @@ class Frontend {
 		return $templates;
 	}
 
+	/**
+	 * Une page s'affiche-t-elle avec le gabarit pleine largeur Reno360 ?
+	 *
+	 * Oui si ce gabarit est choisi, ou si aucun gabarit n'est choisi et que la page est une page Reno360
+	 * (créée par l'extension ou contenant un shortcode de page entière). Indispensable pour la page d'accueil
+	 * des thèmes à blocs, où WordPress ne permet pas de choisir le modèle. Un autre modèle choisi
+	 * explicitement, ou une page construite avec Divi, est respecté.
+	 *
+	 * @param \WP_Post|int|null $post Page.
+	 */
+	public static function is_full_width( $post = null ) {
+		$post = get_post( $post );
+		if ( ! $post || 'page' !== $post->post_type ) {
+			return false;
+		}
+		$template = (string) get_page_template_slug( $post );
+		if ( self::PAGE_TEMPLATE === $template ) {
+			return true;
+		}
+		if ( '' !== $template && 'default' !== $template ) {
+			return false;
+		}
+		if ( 'on' === get_post_meta( $post->ID, '_et_pb_use_builder', true ) || false !== strpos( $post->post_content, '[et_pb_' ) || false !== strpos( $post->post_content, '<!-- wp:divi/' ) ) {
+			return false;
+		}
+		if ( in_array( (int) $post->ID, array_map( 'intval', (array) get_option( 'reno360_pages', array() ) ), true ) ) {
+			return true;
+		}
+		foreach ( self::PAGE_SHORTCODES as $tag ) {
+			if ( has_shortcode( $post->post_content, $tag ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static function template_include( $template ) {
-		if ( is_page() && self::PAGE_TEMPLATE === get_page_template_slug() ) {
+		if ( is_page() && self::is_full_width( get_queried_object() ) ) {
 			$theme = locate_template( array( 'reno360/page-full-width.php' ) );
 			return $theme ? $theme : RENO360_DIR . 'templates/page-full-width.php';
 		}
@@ -173,7 +212,7 @@ class Frontend {
 	}
 
 	public static function body_class( $classes ) {
-		if ( is_page() && self::PAGE_TEMPLATE === get_page_template_slug() ) {
+		if ( is_page() && self::is_full_width( get_queried_object() ) ) {
 			$classes[] = 'rn-full-width';
 			$classes[] = 'et_full_width_page';
 		}
@@ -217,7 +256,7 @@ class Frontend {
 
 	private static function wrap( $html, $class = '' ) {
 		self::enqueue();
-		return '<div class="rn-app' . ( $class ? ' ' . esc_attr( $class ) : '' ) . '">' . $html . '</div>';
+		return '<div class="rn-app alignfull' . ( $class ? ' ' . esc_attr( $class ) : '' ) . '">' . $html . '</div>';
 	}
 
 	/* ------------------------------------------------------------------ */

@@ -58,6 +58,8 @@
 .rn-full-width #main-content .container,
 .rn-full-width .rn-main { width: 100%; max-width: none; padding: 0; }
 .rn-full-width #main-content .container::before { display: none; }
+/* « alignfull » sert aux modèles de thème à blocs ; dans le gabarit Reno360, on neutralise les règles des thèmes. */
+.rn-page-article > .rn-app.alignfull { width: auto; max-width: none; margin-left: 0; margin-right: 0; }
 .rn-main .rn-page-article { margin: 0; padding: 0; }
 
 .rn-container { width: 100%; max-width: 1240px; margin: 0 auto; padding: 0 24px; }
