@@ -3,7 +3,7 @@
  * Plugin Name:       Reno360 — Devis travaux et CRM
  * Plugin URI:        https://reno360.ch
  * Description:       Plateforme de demandes de devis travaux : recherche intelligente par mots-clés, formulaire guidé, espace client, liens artisans et back-office complet (demandes, travaux, artisans, devis, automatisations). Compatible Divi 5 via shortcodes.
- * Version:           1.0.2
+ * Version:           1.0.3
  * Requires at least: 6.2
  * Requires PHP:      7.4
  * Author:            Reno360
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'RENO360_VERSION', '1.0.2' );
+define( 'RENO360_VERSION', '1.0.3' );
 define( 'RENO360_DB_VERSION', '1' );
 define( 'RENO360_FILE', __FILE__ );
 define( 'RENO360_DIR', plugin_dir_path( __FILE__ ) );

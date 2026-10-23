@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 ?>
 </main>
 <?php if ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() ) : ?>
-	<?php block_template_part( 'footer' ); ?>
+	<?php echo \Reno360\Frontend::chrome_after(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 </div>
 	<?php wp_footer(); ?>
 </body>

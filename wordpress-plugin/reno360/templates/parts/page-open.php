@@ -18,7 +18,7 @@ if ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() ) : ?>
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 <div class="wp-site-blocks">
-	<?php block_template_part( 'header' ); ?>
+	<?php echo \Reno360\Frontend::chrome_before(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 <?php else : ?>
 	<?php get_header(); ?>
 <?php endif; ?>

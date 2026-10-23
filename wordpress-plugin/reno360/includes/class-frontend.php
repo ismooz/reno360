@@ -223,6 +223,92 @@ class Frontend {
 		return $classes;
 	}
 
+	/* ------------------------------------------------------------------ */
+	/* En-tête et pied de page des thèmes à blocs                          */
+	/* ------------------------------------------------------------------ */
+
+	/** @var array|null Blocs du modèle du thème avant et après la zone de contenu. */
+	private static $chrome = null;
+
+	/**
+	 * Découpe le modèle que le thème utiliserait pour cette page (logo, menu, bandeaux…) autour de son
+	 * bloc « Contenu », pour garder tout ce que l'utilisateur y a placé dans l'éditeur de site.
+	 * À défaut, reprend les parties « header » et « footer » du thème.
+	 */
+	private static function chrome() {
+		if ( null === self::$chrome ) {
+			global $_wp_current_template_content;
+			$split = empty( $_wp_current_template_content ) ? null : self::split_template( parse_blocks( $_wp_current_template_content ) );
+			if ( ! $split ) {
+				$split = array(
+					array( array( 'blockName' => 'core/template-part', 'attrs' => array( 'slug' => 'header', 'tagName' => 'header' ), 'innerBlocks' => array(), 'innerHTML' => '', 'innerContent' => array() ) ),
+					array( array( 'blockName' => 'core/template-part', 'attrs' => array( 'slug' => 'footer', 'tagName' => 'footer' ), 'innerBlocks' => array(), 'innerHTML' => '', 'innerContent' => array() ) ),
+				);
+			}
+			self::$chrome = $split;
+		}
+		return self::$chrome;
+	}
+
+	public static function chrome_before() {
+		return implode( '', array_map( 'render_block', self::chrome()[0] ) );
+	}
+
+	public static function chrome_after() {
+		return implode( '', array_map( 'render_block', self::chrome()[1] ) );
+	}
+
+	/**
+	 * @param array $blocks Blocs analysés.
+	 * @return array|null [ blocs avant, blocs après ] ou null sans bloc « Contenu ».
+	 */
+	private static function split_template( array $blocks ) {
+		foreach ( $blocks as $i => $block ) {
+			if ( ! self::has_block( $block, 'core/post-content' ) ) {
+				continue;
+			}
+			$before = array_slice( $blocks, 0, $i );
+			$after  = array_slice( $blocks, $i + 1 );
+			// En-tête ou pied de page dans le même conteneur que le contenu : on descend d'un niveau.
+			if ( 'core/post-content' !== $block['blockName'] && self::has_chrome_part( $block ) ) {
+				$inner = self::split_template( $block['innerBlocks'] );
+				if ( $inner ) {
+					return array( array_merge( $before, $inner[0] ), array_merge( $inner[1], $after ) );
+				}
+			}
+			return array( $before, $after );
+		}
+		return null;
+	}
+
+	private static function has_block( array $block, $name ) {
+		if ( $name === $block['blockName'] ) {
+			return true;
+		}
+		foreach ( $block['innerBlocks'] as $inner ) {
+			if ( self::has_block( $inner, $name ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static function has_chrome_part( array $block ) {
+		foreach ( $block['innerBlocks'] as $inner ) {
+			if ( 'core/template-part' === $inner['blockName'] ) {
+				$attrs = $inner['attrs'];
+				$label = ( isset( $attrs['area'] ) ? $attrs['area'] : '' ) . ' ' . ( isset( $attrs['slug'] ) ? $attrs['slug'] : '' ) . ' ' . ( isset( $attrs['tagName'] ) ? $attrs['tagName'] : '' );
+				if ( preg_match( '/header|footer/', $label ) ) {
+					return true;
+				}
+			}
+			if ( self::has_chrome_part( $inner ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static function robots( $robots ) {
 		if ( is_page() ) {
 			$id = get_queried_object_id();
