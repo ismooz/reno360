@@ -14,6 +14,35 @@
 	var idx = cfg.index || { items: [], stop: [], weak: [] };
 	var STOP = toSet( idx.stop || [] );
 	var WEAK = toSet( idx.weak || [] );
+	var loading = null;
+
+	function setIndex( index ) {
+		idx = index;
+		STOP = toSet( idx.stop || [] );
+		WEAK = toSet( idx.weak || [] );
+	}
+
+	/** Charge l'index s'il n'est pas dans la page (pages sans contenu Reno360). */
+	function ensureIndex() {
+		if ( idx.items && idx.items.length ) {
+			return Promise.resolve();
+		}
+		if ( ! cfg.indexUrl || ! root.fetch ) {
+			return Promise.resolve();
+		}
+		if ( ! loading ) {
+			loading = root.fetch( cfg.indexUrl, { credentials: 'same-origin' } ).then( function ( r ) {
+				return r.json();
+			} ).then( function ( j ) {
+				if ( j && j.items ) {
+					setIndex( j );
+				}
+			} ).catch( function () {
+				loading = null;
+			} );
+		}
+		return loading;
+	}
 
 	function toSet( list ) {
 		var s = Object.create( null );
@@ -427,6 +456,11 @@
 			return url + ( url.indexOf( '?' ) === -1 ? '?' : '&' ) + qs.join( '&' );
 		}
 
+		function npaValue() {
+			var el = box.querySelector( '[data-rn-npa]' );
+			return el ? el.value.trim() : '';
+		}
+
 		function choose( r ) {
 			var q = input.value;
 			if ( q.trim() ) {
@@ -439,14 +473,22 @@
 				box.dispatchEvent( new CustomEvent( 'rn:select', { detail: r.item, bubbles: true } ) );
 				return;
 			}
+			if ( target === 'modal' && root.Reno360Quote ) {
+				root.Reno360Quote.open( { id: r.item.id, npa: npaValue() } );
+				return;
+			}
 			root.location.href = target === 'page' ? r.item.url : formUrl( { travail: r.item.s } );
 		}
 
 		input.addEventListener( 'input', function () {
 			clearTimeout( timer );
-			timer = setTimeout( update, 40 );
+			timer = setTimeout( function () {
+				ensureIndex().then( update );
+			}, 40 );
 		} );
-		input.addEventListener( 'focus', update );
+		input.addEventListener( 'focus', function () {
+			ensureIndex().then( update );
+		} );
 		input.addEventListener( 'keydown', function ( e ) {
 			var n = state.results.length;
 			if ( e.key === 'ArrowDown' ) {
@@ -498,7 +540,15 @@
 					render();
 					return;
 				}
+				if ( target === 'modal' && root.Reno360Quote ) {
+					root.Reno360Quote.open( { q: q, npa: npaValue() } );
+					return;
+				}
 				root.location.href = formUrl( { q: q } );
+				return;
+			}
+			if ( target === 'modal' && root.Reno360Quote ) {
+				root.Reno360Quote.open( { npa: npaValue() } );
 				return;
 			}
 			if ( target !== 'select' ) {
@@ -548,11 +598,8 @@
 		esc: esc,
 		log: log,
 		attach: attach,
-		setIndex: function ( index ) {
-			idx = index;
-			STOP = toSet( idx.stop || [] );
-			WEAK = toSet( idx.weak || [] );
-		},
+		setIndex: setIndex,
+		ensureIndex: ensureIndex,
 	};
 
 	if ( root.document ) {

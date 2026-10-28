@@ -79,11 +79,21 @@ class Frontend {
 		}
 	}
 
-	/** Charge les styles et scripts (appelé aussi par chaque shortcode, au besoin). */
-	public static function enqueue() {
+	public static function assets_loaded() {
+		return self::$assets_done;
+	}
+
+	/**
+	 * Charge les styles et scripts (appelé aussi par chaque shortcode, au besoin).
+	 *
+	 * @param bool $with_index Inclure l'index de recherche dans la page (sinon chargé à la demande).
+	 */
+	public static function enqueue( $with_index = true ) {
 		if ( self::$assets_done ) {
 			return;
 		}
+		// Appelée aussi comme action WordPress, qui transmet une chaîne vide : seul « false » exclut l'index.
+		$with_index = false !== $with_index;
 		if ( ! wp_style_is( 'reno360', 'registered' ) ) {
 			self::register_assets();
 		}
@@ -92,10 +102,10 @@ class Frontend {
 		wp_add_inline_style( 'reno360', self::inline_css() );
 		wp_enqueue_script( 'reno360-search' );
 		wp_enqueue_script( 'reno360-front' );
-		wp_add_inline_script( 'reno360-search', 'window.RENO360 = ' . Util::json_script( self::js_config() ) . ';', 'before' );
+		wp_add_inline_script( 'reno360-search', 'window.RENO360 = ' . Util::json_script( self::js_config( $with_index ) ) . ';', 'before' );
 	}
 
-	public static function js_config() {
+	public static function js_config( $with_index = true ) {
 		$icons = array();
 		$all   = Icons::all();
 		foreach ( array_merge( Icons::activity_keys(), array( 'search', 'check', 'x', 'arrow', 'photo', 'file', 'plus' ) ) as $k ) {
@@ -106,49 +116,24 @@ class Frontend {
 			'formUrl'    => Settings::page_url( 'form' ),
 			'catalogUrl' => Settings::page_url( 'catalog' ),
 			'portalUrl'  => Settings::page_url( 'portal' ),
-			'index'      => Search::client_index(),
+			'index'      => $with_index ? Search::client_index() : null,
+			'indexUrl'   => esc_url_raw( rest_url( Rest::NS . '/index' ) ),
 			'icons'      => $icons,
 		);
 	}
 
 	/**
-	 * Couleurs et polices calculées depuis les réglages.
+	 * Palette et polices choisies dans les réglages.
 	 *
 	 * @return string
 	 */
 	public static function inline_css() {
-		$primary = sanitize_hex_color( Settings::get( 'primary_color', '#187A3E' ) );
-		$primary = $primary ? $primary : '#187A3E';
-		$css     = ':root{--rn-primary:' . $primary . ';--rn-primary-dark:' . self::mix( $primary, '#000000', 0.22 ) . ';--rn-primary-ink:' . self::mix( $primary, '#000000', 0.18 ) . ';--rn-primary-soft:' . self::mix( $primary, '#FFFFFF', 0.9 ) . ';--rn-primary-line:' . self::mix( $primary, '#FFFFFF', 0.6 ) . ';}';
+		$css = Theme::css_vars();
 		if ( Settings::get( 'use_fonts' ) ) {
-			$url  = RENO360_URL . 'assets/fonts/';
-			$css .= "@font-face{font-family:'Reno360 Display';font-style:normal;font-weight:200 800;font-display:swap;src:url('{$url}bricolage-grotesque-latin-wght-normal.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}";
-			$css .= "@font-face{font-family:'Reno360 Display';font-style:normal;font-weight:200 800;font-display:swap;src:url('{$url}bricolage-grotesque-latin-ext-wght-normal.woff2') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}";
-			$css .= "@font-face{font-family:'Reno360 Text';font-style:normal;font-weight:300 900;font-display:swap;src:url('{$url}figtree-latin-wght-normal.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}";
-			$css .= "@font-face{font-family:'Reno360 Text';font-style:normal;font-weight:300 900;font-display:swap;src:url('{$url}figtree-latin-ext-wght-normal.woff2') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}";
-			$css .= ".rn-app{--rn-font-display:'Reno360 Display','Reno360 Text',system-ui,sans-serif;--rn-font-text:'Reno360 Text',system-ui,-apple-system,'Segoe UI',sans-serif;}";
+			$css .= Theme::font_faces();
+			$css .= ":root{--rn-font-sans:'Reno360 Sans',system-ui,-apple-system,'Segoe UI',sans-serif;--rn-font-serif:'Reno360 Serif',Georgia,serif;--rn-font-mono:'Reno360 Mono',ui-monospace,SFMono-Regular,Menlo,monospace;}";
 		}
 		return $css;
-	}
-
-	/**
-	 * Mélange deux couleurs hexadécimales.
-	 *
-	 * @param string $a     Couleur A.
-	 * @param string $b     Couleur B.
-	 * @param float  $ratio Part de B (0 à 1).
-	 * @return string
-	 */
-	public static function mix( $a, $b, $ratio ) {
-		$a   = ltrim( $a, '#' );
-		$b   = ltrim( $b, '#' );
-		$out = '#';
-		for ( $i = 0; $i < 3; $i++ ) {
-			$ca   = hexdec( substr( $a, $i * 2, 2 ) );
-			$cb   = hexdec( substr( $b, $i * 2, 2 ) );
-			$out .= str_pad( dechex( (int) round( $ca + ( $cb - $ca ) * $ratio ) ), 2, '0', STR_PAD_LEFT );
-		}
-		return strtoupper( $out );
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -352,18 +337,28 @@ class Frontend {
 	public static function sc_home( $atts ) {
 		$atts = shortcode_atts(
 			array(
-				'title'    => 'Des artisans <em>vérifiés</em> pour tous vos travaux.',
-				'subtitle' => '',
-				'image'    => '',
+				'title'      => 'Des artisans <em>vérifiés</em> pour tous vos travaux.',
+				'subtitle'   => '',
+				'image'      => '',
+				'catalog'    => 'yes',
+				'comparison' => 'yes',
 			),
 			$atts,
 			'reno360_home'
 		);
 		$html  = self::render( 'sections/hero', $atts );
 		$html .= self::render( 'sections/trust' );
-		$html .= self::render( 'sections/featured', array( 'title' => 'Quels travaux souhaitez-vous réaliser ?' ) );
+		$html .= self::render(
+			'sections/featured',
+			array(
+				'title'   => 'Quels travaux souhaitez-vous réaliser ?',
+				'browser' => $atts['catalog'],
+			)
+		);
 		$html .= self::render( 'sections/how' );
-		$html .= self::render( 'sections/why' );
+		if ( 'no' !== $atts['comparison'] ) {
+			$html .= self::render( 'sections/why' );
+		}
 		$html .= self::render( 'sections/energy' );
 		$html .= self::render( 'sections/partner-cta' );
 		$html .= self::render( 'sections/faq', array( 'title' => 'Questions fréquentes' ) );
@@ -393,12 +388,19 @@ class Frontend {
 	}
 
 	public static function sc_featured( $atts ) {
-		$atts = shortcode_atts( array( 'title' => 'Quels travaux souhaitez-vous réaliser ?' ), $atts, 'reno360_featured' );
+		$atts = shortcode_atts(
+			array(
+				'title'   => 'Quels travaux souhaitez-vous réaliser ?',
+				'browser' => 'yes',
+			),
+			$atts,
+			'reno360_featured'
+		);
 		return self::wrap( self::render( 'sections/featured', $atts ) );
 	}
 
 	public static function sc_categories( $atts ) {
-		$atts = shortcode_atts( array( 'title' => 'Tous les corps de métier' ), $atts, 'reno360_categories' );
+		$atts = shortcode_atts( array( 'title' => '' ), $atts, 'reno360_categories' );
 		return self::wrap( self::render( 'sections/categories', $atts ) );
 	}
 
@@ -426,7 +428,7 @@ class Frontend {
 	public static function sc_cta( $atts ) {
 		$atts = shortcode_atts(
 			array(
-				'title' => 'Prêt à lancer votre projet ?',
+				'title' => 'Prêt à lancer votre *projet* ?',
 				'text'  => 'Recevez jusqu’à {max_artisans} devis d’artisans vérifiés. Gratuit et sans engagement.',
 			),
 			$atts,

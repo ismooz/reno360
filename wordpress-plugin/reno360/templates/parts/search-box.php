@@ -1,22 +1,22 @@
 <?php
 /**
- * Champ de recherche « Quels travaux ? » + NPA, avec suggestions instantanées.
+ * Champ de recherche « Quels travaux ? » + NPA, avec suggestions et travaux populaires.
  *
- * Variables : $placeholder, $button, $npa (yes|no), $target (form|page), $popular (yes|no), $source, $title, $subtitle.
+ * Variables : $placeholder, $button, $npa (yes|no), $target (modal|form|page), $popular (yes|no), $source, $title, $subtitle.
  *
  * @package Reno360
  */
 
 use Reno360\Activities;
-use Reno360\Frontend;
+use Reno360\Chrome;
 use Reno360\Settings;
 
 defined( 'ABSPATH' ) || exit;
 
-$placeholder = isset( $placeholder ) ? $placeholder : 'Ex. salle de bain, peinture, fuite…';
+$placeholder = isset( $placeholder ) ? $placeholder : 'Ex. salle de bain, fuite, PAC…';
 $button      = isset( $button ) ? $button : 'Recevoir mes devis';
 $show_npa    = ! isset( $npa ) || 'no' !== $npa;
-$target      = isset( $target ) && in_array( $target, array( 'form', 'page' ), true ) ? $target : 'form';
+$target      = isset( $target ) && in_array( $target, array( 'modal', 'form', 'page' ), true ) ? $target : 'modal';
 $show_pop    = ! isset( $popular ) || 'no' !== $popular;
 $source      = isset( $source ) ? $source : 'search';
 $uid         = wp_unique_id( 'rn-sb-' );
@@ -31,23 +31,19 @@ $uid         = wp_unique_id( 'rn-sb-' );
 	<label class="rn-searchbox__field rn-searchbox__field--main" for="<?php echo esc_attr( $uid ); ?>-q">
 		<span class="rn-searchbox__label">Quels travaux ?</span>
 		<span class="rn-searchbox__input">
-			<?php echo Frontend::icon( 'search', 18 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<input id="<?php echo esc_attr( $uid ); ?>-q" type="text" name="q" data-rn-search-input placeholder="<?php echo esc_attr( $placeholder ); ?>" autocomplete="off" enterkeyhint="search">
 		</span>
 	</label>
 	<?php if ( $show_npa ) : ?>
+		<span class="rn-searchbox__sep" aria-hidden="true"></span>
 		<label class="rn-searchbox__field rn-searchbox__field--npa" for="<?php echo esc_attr( $uid ); ?>-npa">
 			<span class="rn-searchbox__label">NPA</span>
 			<span class="rn-searchbox__input">
-				<?php echo Frontend::icon( 'pin', 18 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				<input id="<?php echo esc_attr( $uid ); ?>-npa" type="text" name="npa" data-rn-npa inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="1003" autocomplete="postal-code">
 			</span>
 		</label>
 	<?php endif; ?>
-	<button type="submit" class="rn-btn rn-btn--primary rn-btn--lg rn-searchbox__btn" data-rn-search-submit>
-		<?php echo esc_html( $button ); ?>
-		<?php echo Frontend::icon( 'arrow', 18 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-	</button>
+	<button type="submit" class="rn-btn rn-btn--primary rn-searchbox__btn" data-rn-search-submit><?php echo esc_html( $button ); ?></button>
 	<div class="rn-searchbox__anchor" data-rn-search-anchor></div>
 </form>
 <?php
@@ -56,7 +52,7 @@ if ( $show_pop ) :
 		array_filter(
 			Activities::all(),
 			static function ( $a ) {
-				return $a['popular'];
+				return $a['popular'] && $a['active'];
 			}
 		),
 		0,
@@ -67,7 +63,7 @@ if ( $show_pop ) :
 		<div class="rn-popular">
 			<span class="rn-popular__label">Populaire :</span>
 			<?php foreach ( $rn_popular as $rn_a ) : ?>
-				<a class="rn-chip" href="<?php echo esc_url( 'page' === $target ? $rn_a['url'] : Settings::page_url( 'form', array( 'travail' => $rn_a['slug'] ) ) ); ?>"><?php echo esc_html( $rn_a['name'] ); ?></a>
+				<a class="rn-chip" href="<?php echo esc_url( 'page' === $target ? $rn_a['url'] : Settings::page_url( 'form', array( 'travail' => $rn_a['slug'] ) ) ); ?>"<?php echo 'modal' === $target ? ' data-rn-quote="' . (int) $rn_a['id'] . '"' : ''; ?>><?php echo esc_html( Chrome::short_name( $rn_a['name'] ) ); ?></a>
 			<?php endforeach; ?>
 		</div>
 		<?php

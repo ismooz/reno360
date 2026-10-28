@@ -20,6 +20,7 @@ use Reno360\Requests;
 use Reno360\Search;
 use Reno360\Settings;
 use Reno360\Tasks;
+use Reno360\Theme;
 use Reno360\Util;
 
 defined( 'ABSPATH' ) || exit;
@@ -748,11 +749,11 @@ class Actions {
 	public static function settings_save() {
 		$tab    = sanitize_key( self::p( 'tab', 'general' ) );
 		$values = array();
-		$text   = array( 'company', 'public_email', 'phone', 'address', 'notify_emails', 'from_name', 'from_email', 'primary_color', 'activities_slug', 'terms_url', 'privacy_url', 'review_url' );
-		$area   = array( 'budgets', 'start_options', 'property_types', 'client_types', 'contact_prefs', 'contact_times', 'consent_text', 'success_text', 'faq' );
+		$text   = array( 'company', 'public_email', 'phone', 'address', 'notify_emails', 'from_name', 'from_email', 'palette', 'utility_text', 'activities_slug', 'terms_url', 'privacy_url', 'legal_url', 'review_url' );
+		$area   = array( 'budgets', 'start_options', 'property_types', 'client_types', 'contact_prefs', 'contact_times', 'consent_text', 'success_text', 'faq', 'footer_text' );
 		$ints   = array( 'logo_id', 'max_artisans', 'sla_hours', 'max_files', 'max_file_mb', 'min_description', 'auto_unhandled_hours', 'auto_artisan_days', 'auto_client_days', 'auto_review_days', 'auto_docs_days', 'retention_months', 'search_log_days' );
 		$bools  = array(
-			'general'       => array( 'use_fonts' ),
+			'general'       => array( 'use_fonts', 'site_chrome', 'show_utility' ),
 			'form'          => array( 'require_phone' ),
 			'notifications' => array( 'share_client_contact', 'notify_client_quote', 'notify_admin_quote', 'notify_losers' ),
 			'automations'   => array( 'auto_unhandled', 'auto_artisan', 'auto_client_choose', 'auto_review', 'auto_docs' ),
@@ -761,11 +762,11 @@ class Actions {
 		foreach ( $text as $k ) {
 			if ( null !== self::p( $k, null ) ) {
 				$v = sanitize_text_field( self::p( $k ) );
-				if ( in_array( $k, array( 'terms_url', 'privacy_url', 'review_url' ), true ) ) {
+				if ( in_array( $k, array( 'terms_url', 'privacy_url', 'legal_url', 'review_url' ), true ) ) {
 					$v = esc_url_raw( $v );
 				}
-				if ( 'primary_color' === $k ) {
-					$v = sanitize_hex_color( $v ) ? sanitize_hex_color( $v ) : '#187A3E';
+				if ( 'palette' === $k && ! isset( Theme::palettes()[ $v ] ) ) {
+					$v = Theme::DEFAULT_PALETTE;
 				}
 				$values[ $k ] = $v;
 			}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Comparatif « Reno360 vs annonce classique ».
+ * Accueil : pourquoi Reno360 (comparaison avec une annonce classique).
  *
  * @package Reno360
  */
@@ -18,25 +18,26 @@ $rn_rows    = array(
 	array( 'Coût pour vous', 'Gratuit', 'Gratuit' ),
 );
 ?>
-<section class="rn-section rn-section--dark">
+<section class="rn-section rn-why">
 	<div class="rn-container rn-split">
 		<div>
-			<span class="rn-eyebrow rn-eyebrow--light">Pourquoi <?php echo esc_html( $rn_company ); ?></span>
-			<h2 class="rn-h2">Une demande de devis, pas une mise aux enchères.</h2>
-			<p class="rn-lead rn-lead--light">Sur une plateforme d’annonces, votre demande peut être diffusée à de nombreuses entreprises, et votre téléphone ne s’arrête plus. Chez <?php echo esc_html( $rn_company ); ?>, un conseiller choisit pour vous les artisans les plus adaptés à votre projet, puis vous accompagne jusqu’à la fin du chantier.</p>
-			<a class="rn-btn rn-btn--white rn-btn--lg" href="<?php echo esc_url( Settings::page_url( 'form' ) ); ?>">Essayer gratuitement</a>
+			<span class="rn-overline">Pourquoi <?php echo esc_html( $rn_company ); ?></span>
+			<h2 class="rn-h2">Une demande de devis, pas une <em>mise aux enchères</em>.</h2>
+			<p class="rn-lead rn-lead--sm" style="margin:20px 0 28px;max-width:520px">Sur une plateforme d’annonces, votre demande peut être diffusée à de nombreuses entreprises, et votre téléphone ne s’arrête plus. Chez <?php echo esc_html( $rn_company ); ?>, un conseiller choisit pour vous les artisans les plus adaptés à votre projet, puis vous accompagne jusqu’à la fin du chantier.</p>
+			<a class="rn-btn rn-btn--primary rn-btn--lg" href="<?php echo esc_url( Settings::page_url( 'form' ) ); ?>" data-rn-quote>Essayer gratuitement</a>
 		</div>
-		<div class="rn-table-scroll">
+		<div class="rn-compare-box">
 			<table class="rn-compare">
+				<colgroup><col class="is-crit"><col><col></colgroup>
 				<thead>
-					<tr><th scope="col"><span class="screen-reader-text">Critère</span></th><th scope="col" class="is-us"><?php echo esc_html( $rn_company ); ?></th><th scope="col">Annonce classique</th></tr>
+					<tr><th scope="col" class="is-crit">Critère</th><th scope="col" class="is-us"><?php echo esc_html( $rn_company ); ?></th><th scope="col" class="is-other">Annonce classique</th></tr>
 				</thead>
 				<tbody>
-					<?php foreach ( $rn_rows as $rn_i => $rn_r ) : ?>
-						<tr<?php echo count( $rn_rows ) - 1 === $rn_i ? ' class="is-last"' : ''; ?>>
+					<?php foreach ( $rn_rows as $rn_r ) : ?>
+						<tr>
 							<th scope="row"><?php echo esc_html( $rn_r[0] ); ?></th>
 							<td class="is-us"><?php echo esc_html( $rn_r[1] ); ?></td>
-							<td><?php echo esc_html( $rn_r[2] ); ?></td>
+							<td class="is-other"><?php echo esc_html( $rn_r[2] ); ?></td>
 						</tr>
 					<?php endforeach; ?>
 				</tbody>

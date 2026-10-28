@@ -16,6 +16,6 @@ require __DIR__ . '/parts/page-open.php';
 while ( have_posts() ) :
 	the_post();
 	$rn_activity = Activities::get( get_the_ID() );
-	echo '<div class="rn-app rn-activity-page">' . Frontend::render( 'activity', array( 'a' => $rn_activity ) ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput
+	echo '<div class="rn-app rn-activity-page" data-rn-quote-default="' . (int) $rn_activity['id'] . '">' . Frontend::render( 'activity', array( 'a' => $rn_activity ) ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput
 endwhile;
 require __DIR__ . '/parts/page-close.php';

@@ -395,7 +395,7 @@ class Notifications {
 	 * @return string
 	 */
 	public static function layout( $title, $body, array $cta = array() ) {
-		$color   = sanitize_hex_color( Settings::get( 'primary_color', '#187A3E' ) ) ?: '#187A3E';
+		$color   = Theme::color( 'primary' );
 		$company = esc_html( Settings::get( 'company', 'Reno360' ) );
 		$logo    = esc_url( Settings::logo_url() );
 		$content = wpautop( make_clickable( esc_html( $body ) ) );

@@ -28,6 +28,7 @@ class Rest {
 		};
 
 		register_rest_route( self::NS, '/search', array( 'methods' => 'GET', 'callback' => array( __CLASS__, 'search' ), 'permission_callback' => $public ) );
+		register_rest_route( self::NS, '/index', array( 'methods' => 'GET', 'callback' => array( __CLASS__, 'index' ), 'permission_callback' => $public ) );
 		register_rest_route( self::NS, '/search/log', array( 'methods' => 'POST', 'callback' => array( __CLASS__, 'search_log' ), 'permission_callback' => $public ) );
 		register_rest_route( self::NS, '/requests', array( 'methods' => 'POST', 'callback' => array( __CLASS__, 'create_request' ), 'permission_callback' => $public ) );
 		register_rest_route( self::NS, '/partners', array( 'methods' => 'POST', 'callback' => array( __CLASS__, 'create_partner' ), 'permission_callback' => $public ) );
@@ -117,6 +118,9 @@ class Rest {
 		$get    = static function ( $k ) use ( $p ) {
 			return isset( $p[ $k ] ) && ! is_array( $p[ $k ] ) ? trim( wp_unslash( (string) $p[ $k ] ) ) : '';
 		};
+		// Demande rapide (fenêtre en 3 étapes) : les questions détaillées, la description et la localité
+		// sont facultatives, le conseiller les complète lors de la qualification.
+		$quick = 'quick' === $get( 'mode' );
 
 		// Travaux.
 		$activity = null;
@@ -153,7 +157,7 @@ class Rest {
 			} else {
 				$v = mb_substr( sanitize_text_field( is_array( $v ) ? '' : (string) $v ), 0, 200 );
 			}
-			if ( ! empty( $qn['required'] ) && ( '' === $v || array() === $v ) ) {
+			if ( ! $quick && ! empty( $qn['required'] ) && ( '' === $v || array() === $v ) ) {
 				$errors[ 'q_' . md5( $qn['label'] ) ] = 'Merci de répondre : ' . $qn['label'];
 			}
 			if ( '' !== $v && array() !== $v ) {
@@ -166,7 +170,7 @@ class Rest {
 
 		$description = sanitize_textarea_field( $get( 'description' ) );
 		$min_desc    = (int) Settings::get( 'min_description', 15 );
-		if ( mb_strlen( $description ) < $min_desc ) {
+		if ( ( ! $quick || '' !== $description ) && mb_strlen( $description ) < ( $quick ? min( $min_desc, 5 ) : $min_desc ) ) {
 			$errors['description'] = sprintf( 'Décrivez votre projet en quelques mots (au moins %d caractères).', $min_desc );
 		}
 		$npa = preg_replace( '/\D/', '', $get( 'npa' ) );
@@ -174,7 +178,7 @@ class Rest {
 			$errors['npa'] = 'Indiquez un NPA suisse à 4 chiffres.';
 		}
 		$city = sanitize_text_field( $get( 'city' ) );
-		if ( '' === $city ) {
+		if ( '' === $city && ! $quick ) {
 			$errors['city'] = 'Indiquez la localité.';
 		}
 		$first = sanitize_text_field( $get( 'first_name' ) );
@@ -242,7 +246,7 @@ class Rest {
 				'device'         => Util::device(),
 				'consent_at'     => Util::now(),
 			),
-			'Demande créée via le formulaire web.'
+			$quick ? 'Demande rapide créée depuis le site (à compléter lors de la qualification).' : 'Demande créée via le formulaire web.'
 		);
 		if ( is_wp_error( $id ) ) {
 			return self::error( $id->get_error_message(), 500 );
@@ -545,6 +549,13 @@ class Rest {
 				'label' => Util::status_label( $status ),
 			)
 		);
+	}
+
+	/** Index de recherche du navigateur, chargé à la demande sur les pages sans contenu Reno360. */
+	public static function index() {
+		$res = new WP_REST_Response( Search::client_index() );
+		$res->header( 'Cache-Control', 'public, max-age=600' );
+		return $res;
 	}
 
 	public static function admin_search_test( WP_REST_Request $req ) {

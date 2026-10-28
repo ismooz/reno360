@@ -9,6 +9,7 @@ namespace Reno360\Admin;
 
 use Reno360\Notifications;
 use Reno360\Settings;
+use Reno360\Theme;
 use Reno360\Util;
 
 defined( 'ABSPATH' ) || exit;
@@ -70,9 +71,28 @@ class Settings_Page {
 		self::text( 'public_email', 'E-mail public', $s['public_email'], 'Aussi utilisé comme adresse de réponse des e-mails.', 'email' );
 		self::text( 'address', 'Adresse', $s['address'] );
 		echo '</div><h2>Apparence</h2><div class="rn-settings-grid">';
-		self::text( 'primary_color', 'Couleur principale', $s['primary_color'], 'Boutons, liens et accents. Contraste conseillé avec le blanc : au moins 4,5:1.', 'color' );
-		echo '<div class="rn-setting"><span class="rn-setting__label">Logo (e-mails)</span><div class="rn-media" data-rn-media><input type="hidden" name="logo_id" value="' . (int) $s['logo_id'] . '" data-rn-media-id><div class="rn-media__preview rn-media__preview--logo" data-rn-media-preview><img src="' . esc_url( Settings::logo_url() ) . '" alt=""></div><button type="button" class="button" data-rn-media-pick>Choisir</button> <button type="button" class="button-link rn-danger" data-rn-media-clear>Logo par défaut</button></div></div>';
-		self::check( 'use_fonts', 'Utiliser la typographie Reno360 (hébergée sur votre site, sans Google Fonts)', $s['use_fonts'], 'Décochez pour reprendre les polices de votre thème Divi.' );
+		echo '<div class="rn-setting rn-setting--wide"><span class="rn-setting__label">Palette de couleurs</span><div class="rn-palettes">';
+		foreach ( Theme::palettes() as $key => $p ) {
+			printf(
+				'<label class="rn-palette"><input type="radio" name="palette" value="%1$s"%2$s><span class="rn-palette__swatches"><i style="background:%3$s"></i><i style="background:%4$s"></i><i style="background:%5$s"></i><i style="background:%6$s"></i></span><span>%7$s</span></label>',
+				esc_attr( $key ),
+				checked( Theme::palette_key(), $key, false ),
+				esc_attr( $p['primary'] ),
+				esc_attr( $p['dark'] ),
+				esc_attr( $p['accent'] ),
+				esc_attr( $p['bg'] ),
+				esc_html( $p['label'] )
+			);
+		}
+		echo '</div><small class="rn-muted">Couleurs du site, des boutons et des e-mails.</small></div>';
+		echo '<div class="rn-setting"><span class="rn-setting__label">Logo (site et e-mails)</span><div class="rn-media" data-rn-media><input type="hidden" name="logo_id" value="' . (int) $s['logo_id'] . '" data-rn-media-id><div class="rn-media__preview rn-media__preview--logo" data-rn-media-preview><img src="' . esc_url( Settings::logo_url() ) . '" alt=""></div><button type="button" class="button" data-rn-media-pick>Choisir</button> <button type="button" class="button-link rn-danger" data-rn-media-clear>Logo par défaut</button></div><small class="rn-muted">Sans logo choisi ici, l’en-tête utilise le logo du site WordPress (Apparence → Éditeur), sinon le nom de l’entreprise.</small></div>';
+		self::check( 'use_fonts', 'Utiliser la typographie Reno360 (hébergée sur votre site, sans Google Fonts)', $s['use_fonts'], 'Décochez pour reprendre les polices de votre thème.' );
+		echo '</div><h2>En-tête et pied de page</h2><div class="rn-settings-grid">';
+		self::check( 'site_chrome', 'Utiliser l’en-tête et le pied de page Reno360', $s['site_chrome'], 'Logo, menu « Travaux », bouton « Demander mes devis » et pied de page complet. Avec un thème à blocs (Twenty Twenty-Five…), ils remplacent ceux du thème sur tout le site. Avec Divi, collez <code>[reno360_header]</code> et <code>[reno360_footer]</code> dans le Theme Builder.' );
+		self::check( 'show_utility', 'Afficher le bandeau d’information en haut', $s['show_utility'] );
+		self::text( 'utility_text', 'Texte du bandeau', $s['utility_text'], 'Vide = « Toute la Suisse romande · » suivi des cantons desservis.' );
+		self::area( 'footer_text', 'Présentation dans le pied de page', $s['footer_text'], '', 3 );
+		self::text( 'legal_url', 'Lien des mentions légales', $s['legal_url'], 'Affiché dans le pied de page avec la protection des données et les conditions générales.', 'url' );
 		echo '</div><h2>Fonctionnement</h2><div class="rn-settings-grid">';
 		self::text( 'max_artisans', 'Nombre maximal d’artisans par demande', $s['max_artisans'], '', 'number', 'min="1" max="10"' );
 		self::text( 'sla_hours', 'Délai de prise en charge annoncé (heures ouvrées)', $s['sla_hours'], 'Affiché aux clients et utilisé pour signaler les demandes hors délai.', 'number', 'min="1"' );
@@ -195,11 +215,13 @@ class Settings_Page {
 		echo '</ol></section></div>';
 
 		$codes = array(
-			'[reno360_home]'                                     => 'Page d’accueil complète (toutes les sections ci-dessous)',
+			'[reno360_header]'                                   => 'En-tête du site : bandeau, logo, menu « Travaux », bouton « Demander mes devis » (Divi : Theme Builder → en-tête global)',
+			'[reno360_footer]'                                   => 'Pied de page du site (Divi : Theme Builder → pied de page global)',
+			'[reno360_home]'                                     => 'Page d’accueil complète. Options : catalog="no" (sans le catalogue intégré), comparison="no" (sans le comparatif)',
 			'[reno360_search title="" button="Recevoir mes devis"]' => 'Recherche « Quels travaux ? » + NPA avec suggestions',
 			'[reno360_trust]'                                    => 'Bandeau des engagements',
-			'[reno360_featured]'                                 => 'Travaux en vedette (photos) et catégories',
-			'[reno360_categories]'                               => 'Grille des catégories',
+			'[reno360_featured]'                                 => 'Travaux en vedette (photos) et catalogue intégré (browser="no" pour le masquer)',
+			'[reno360_categories]'                               => 'Catalogue intégré : recherche, catégories et travaux',
 			'[reno360_how_it_works]'                             => 'Comment ça marche (4 étapes)',
 			'[reno360_why]'                                      => 'Comparatif « pourquoi nous »',
 			'[reno360_energy]'                                   => 'Rénovation énergétique et subventions',

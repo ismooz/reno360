@@ -1,6 +1,6 @@
 # Reno360 pour WordPress
 
-Extension WordPress qui fait tourner tout reno360.ch : le site public de demandes de devis et le back-office qui gère les demandes, les artisans et les devis. Elle s'installe comme n'importe quelle extension et fonctionne avec Divi 5.
+Extension WordPress qui fait tourner tout reno360.ch : le site public de demandes de devis et le back-office qui gère les demandes, les artisans et les devis. Elle s'installe comme n'importe quelle extension et fonctionne avec un thème à blocs (Twenty Twenty-Five…) comme avec Divi 5.
 
 ## Installation
 
@@ -9,30 +9,42 @@ Extension WordPress qui fait tourner tout reno360.ch : le site public de demande
    - les tables de données (demandes, artisans, devis, historique, tâches, fichiers, journal de recherche) ;
    - les **60 types de travaux** répartis en 13 catégories, avec 1 555 mots-clés et les questions du formulaire ;
    - 6 pages : Accueil Reno360, Tous les travaux, Demande de devis, Mon espace (client), Espace artisan et Devenir partenaire.
-3. **Reno360 → Réglages → Général** : nom, e-mail public, téléphone (laissez vide pour n'afficher aucun numéro), adresse, logo, couleur et e-mails qui reçoivent les alertes.
+3. **Reno360 → Réglages → Général** : nom, e-mail public, téléphone (laissez vide pour n'afficher aucun numéro), adresse, logo, palette de couleurs, en-tête et pied de page, e-mails qui reçoivent les alertes.
 4. **Réglages → Pages et intégration Divi** : bouton « Définir Accueil Reno360 comme page d'accueil ».
 5. Installez une extension SMTP (WP Mail SMTP, FluentSMTP…) avec le serveur d'envoi de votre hébergeur (Infomaniak : `mail.infomaniak.com`, port 587). Faites ensuite un essai avec **Réglages → Notifications → Envoyer un e-mail de test**.
 6. Recommandé : ajoutez une tâche planifiée côté serveur qui appelle `https://votre-site.ch/wp-cron.php` toutes les 15 minutes. C'est ce qui déclenche les relances automatiques quand le site a peu de visites.
 
 Configuration requise : WordPress 6.2 ou plus, PHP 7.4 ou plus, MySQL/MariaDB.
 
+## Apparence
+
+- **Palettes** : Vert forêt (par défaut), Terracotta, Ardoise, Noir, Ardoise et noir. Elles changent tout le site et les e-mails (Réglages → Général).
+- **Typographie** : Schibsted Grotesk, Instrument Serif (mots en italique des titres) et IBM Plex Mono (petites étiquettes), hébergées sur votre site, sans Google Fonts.
+- **En-tête et pied de page Reno360** : bandeau d'information, logo, menu « Travaux » déroulant avec les 60 types de travaux, liens Comment ça marche / Subventions / Artisans / FAQ, boutons « Mon espace » et « Demander mes devis », menu mobile, pied de page complet (travaux, particuliers, artisans, régions, liens légaux).
+  - Thème à blocs (Twenty Twenty-Five…) : ils remplacent automatiquement l'en-tête et le pied de page du thème sur tout le site.
+  - Divi : collez `[reno360_header]` et `[reno360_footer]` dans un module Code du Theme Builder (en-tête et pied de page globaux).
+  - Le logo vient de Réglages → Général, sinon du logo du site WordPress, sinon le nom de l'entreprise s'affiche.
+- **Demande rapide** : tous les boutons « Demander un devis » ouvrent une fenêtre en 3 étapes (travaux, projet, coordonnées). Le formulaire détaillé en 5 étapes reste disponible sur la page « Demande de devis ».
+
 ## Avec Divi 5
 
 - Les pages créées utilisent le gabarit **« Reno360 — pleine largeur »**, qui garde l'en-tête et le pied de page de Divi.
 - Pour composer une page dans le Visual Builder, ajoutez un module **Code** (ou Texte) et collez-y un shortcode.
 - Les pages publiques des types de travaux (`/travaux/salle-de-bain/`…) sont mises en page automatiquement. Pour en composer une avec Divi, décochez « Mise en page automatique » dans la fiche du travail.
-- Le style de l'extension est isolé (préfixe `.rn-app`) et reprend la couleur choisie dans les réglages. Vous pouvez aussi désactiver la typographie Reno360 pour garder celle de votre thème.
+- Le style de l'extension est isolé (préfixe `.rn-app`). Vous pouvez désactiver la typographie Reno360 pour garder celle de votre thème.
 
 | Shortcode | Contenu |
 |---|---|
-| `[reno360_home]` | Page d'accueil complète |
+| `[reno360_header]` | En-tête du site (bandeau, logo, menu « Travaux », boutons) |
+| `[reno360_footer]` | Pied de page du site |
+| `[reno360_home]` | Page d'accueil complète (options `catalog="no"`, `comparison="no"`) |
 | `[reno360_search]` | Recherche « Quels travaux ? » + NPA, avec suggestions |
 | `[reno360_trust]` | Bandeau des engagements |
-| `[reno360_featured]` | Travaux en vedette (grandes cartes) |
-| `[reno360_categories]` | Tous les corps de métier |
-| `[reno360_how_it_works]` | « Comment ça marche » en 3 étapes |
+| `[reno360_featured]` | Travaux en vedette et catalogue intégré (`browser="no"` pour le masquer) |
+| `[reno360_categories]` | Catalogue intégré : recherche, catégories, travaux |
+| `[reno360_how_it_works]` | « Comment ça marche » en 4 étapes |
 | `[reno360_why]` | Pourquoi Reno360 |
-| `[reno360_energy]` | Bloc rénovation énergétique |
+| `[reno360_energy]` | Rénovation énergétique et simulateur de subventions |
 | `[reno360_partner_cta]` | Appel aux artisans |
 | `[reno360_faq]` | Questions fréquentes (+ données structurées Google) |
 | `[reno360_cta]` | Bandeau d'appel à l'action |
@@ -88,7 +100,7 @@ Rôle **Conseiller Reno360** : accès au back-office Reno360, sans droits d'admi
 
 ## Parcours
 
-1. Le client cherche un travail et remplit le formulaire (photos comprises). Il reçoit un e-mail de confirmation avec le lien vers son espace.
+1. Le client cherche un travail et envoie sa demande : en 3 étapes dans la fenêtre de demande rapide, ou en détail avec le formulaire complet (questions propres au travail, photos). Il reçoit un e-mail de confirmation avec le lien vers son espace. Une demande rapide est signalée dans l'historique : le conseiller la complète lors de la qualification.
 2. Vous qualifiez la demande et proposez des artisans. Chaque artisan reçoit un lien personnel pour déposer son devis (PDF), sans compte ni mot de passe.
 3. Le client compare les devis dans son espace, pose ses questions et accepte celui qu'il choisit. L'artisan retenu, les autres et vous êtes prévenus automatiquement.
 

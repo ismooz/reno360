@@ -4,7 +4,7 @@ Tags: devis, travaux, artisans, crm, formulaire
 Requires at least: 6.2
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,7 +19,8 @@ Plateforme de demandes de devis travaux : recherche intelligente, formulaire gui
 * Lien sécurisé pour chaque artisan : dépôt du devis PDF ou refus.
 * Back-office : tableau de bord, demandes en liste ou en Kanban, historique, tâches, artisans, devis, clients, analyse des recherches.
 * E-mails modifiables et automatisations (relances, rappels, demande d'avis, conservation nLPD).
-* Compatible Divi 5 : gabarit pleine largeur et 16 shortcodes.
+* 5 palettes de couleurs, en-tête et pied de page complets, demande rapide en 3 étapes.
+* Compatible Divi 5 et thèmes à blocs : gabarit pleine largeur et 18 shortcodes.
 
 == Installation ==
 
@@ -39,6 +40,12 @@ Reno360 → Travaux et mots-clés → ouvrir le travail → taper le mot-clé pu
 Non. Elles sont supprimées à la désinstallation seulement si l'option est cochée dans Réglages → Données.
 
 == Changelog ==
+
+= 1.1.0 =
+* Nouvelle identité visuelle reprise de la maquette : typographies Schibsted Grotesk, Instrument Serif et IBM Plex Mono, 5 palettes de couleurs au choix.
+* En-tête et pied de page Reno360 (bandeau, menu « Travaux » déroulant, menu mobile), automatiques avec un thème à blocs, par shortcode avec Divi.
+* Demande rapide en 3 étapes dans une fenêtre, depuis tous les boutons « Demander un devis ».
+* Accueil : catalogue intégré par catégories avec recherche, simulateur de subventions, FAQ en accordéon.
 
 = 1.0.3 =
 * Thèmes à blocs : les pages Reno360 reprennent l'en-tête et le pied de page du modèle réellement utilisé par le thème (logo, menu, variantes d'en-tête et blocs ajoutés dans l'éditeur de site).

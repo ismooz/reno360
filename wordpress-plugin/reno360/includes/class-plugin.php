@@ -29,6 +29,7 @@ class Plugin {
 		Portal::init();
 		Files::init();
 		Frontend::init();
+		Chrome::init();
 		Automations::init();
 		Notifications::init();
 
